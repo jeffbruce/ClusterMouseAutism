@@ -1,0 +1,16 @@
+{
+    "contents" : "library(shiny)\n\nsetwd('//micehome//jbruce//Documents//Code//R//')\nrunApp('ClusterMouseAutism')",
+    "created" : 1421703610783.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "915502131",
+    "id" : "53E6CF96",
+    "lastKnownWriteTime" : 1421703631,
+    "path" : "~/Documents/Code/R/ClusterMouseAutism/RunClusterMouseAutism.R",
+    "project_path" : "RunClusterMouseAutism.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

@@ -1,0 +1,16 @@
+{
+    "contents" : "# server.R\n\nlibrary(gplots)\n\nshinyServer(\n  function(input, output) {\n    \n    output$heatmap = renderPlot({\n      # Take a dependency on input$recalculate\n      input$recalculate\n      \n      # Add error checking for input$strains and input$regions >= 2.  At least one of them must be greater than 2\n      # to perform clustering.\n      \n      # Use isolate() to avoid dependency on input$strains and input$regions\n      mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])\n      nr = dim(mousedatamat)[1]\n      nc = dim(mousedatamat)[2]\n      \n      heatmap.2(mousedatamat, distfun=jdfs, col=bluered, margins=c(8,14), trace=\"none\", cexRow = 0.2 + 2/log10(nr), cexCol = 0.2 + 2/log10(nc), density.info=\"histogram\", keysize=0.8, symkey=TRUE, symbreaks=TRUE)     \n\n    })\n  }\n)\n",
+    "created" : 1421703657957.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1179692625",
+    "id" : "7332B717",
+    "lastKnownWriteTime" : 1421703454,
+    "path" : "~/Documents/Code/R/ClusterMouseAutism/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
