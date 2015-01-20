@@ -1,0 +1,16 @@
+{
+    "contents" : "# ui.R\n# this file is run once, and it generates HTML which is cached\n# and sent to each browser that connects\n\n#use navbarPage instead for a multi-page app\n\nshinyUI(fluidPage(\n  \n  titlePanel('Clustering Autism in the Mouse'),\n  \n  p('This web app presents results from the research paper by Ellegood et al. (2014), entitled: ', em(\"Clustering autism: \n     using neuroanatomical differences in 26 mouse models to gain insight into the heterogeneity.\"), '  With this tool,\n     you can interactively explore mouse models of autism.  Select a subset of mouse strains and brain regions that \n     you are interested in investigating, then click Recalculate to see which mouse strains and brain regions cluster together.'),\n  \n  hr(),\n  \n  fluidRow(column(12, plotOutput(outputId = 'heatmap', height = \"650px\"))),\n  \n  hr(),\n  \n  fluidRow(\n    \n    column(4, checkboxInput(inputId = 'selectAllStrains', label = 'Select/Deselect all strains', value = TRUE)),\n    \n    column(4, checkboxInput(inputId = 'selectAllRegions', label = 'Select/Deselect all regions', value = TRUE))\n    \n  ),\n  \n  hr(),\n  \n  fluidRow(\n    \n    column(4, uiOutput('selectStrains')),\n    \n    column(4, uiOutput('selectRegions')),\n    \n    column(4, actionButton('recalculate', 'Recalculate'))\n  )\n))",
+    "created" : 1421774071921.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1914237559",
+    "id" : "315D9F27",
+    "lastKnownWriteTime" : 1421777282,
+    "path" : "~/Documents/Code/R/ClusterMouseAutism/ui.R",
+    "project_path" : "ui.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

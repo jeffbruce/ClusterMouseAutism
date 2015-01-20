@@ -21,9 +21,9 @@ shinyUI(fluidPage(
   
   fluidRow(
     
-    column(4, checkboxInput(inputId = 'selectAllStrains', label = 'Select/Deselect all strains', value = FALSE)),
+    column(4, checkboxInput(inputId = 'selectAllStrains', label = 'Select/Deselect all strains', value = TRUE)),
     
-    column(4, checkboxInput(inputId = 'selectAllRegions', label = 'Select/Deselect all regions', value = FALSE))
+    column(4, checkboxInput(inputId = 'selectAllRegions', label = 'Select/Deselect all regions', value = TRUE))
     
   ),
   
@@ -31,15 +31,9 @@ shinyUI(fluidPage(
   
   fluidRow(
     
-    column(4, checkboxGroupInput(inputId = 'strains', 
-                                 label = h3('Mouse Strains'), 
-                                 choices = rownames(mousedata),
-                                 selected = rownames(mousedata))),
+    column(4, uiOutput('selectStrains')),
     
-    column(4, checkboxGroupInput(inputId = 'regions', 
-                                 label = h3('Brain Regions'), 
-                                 choices = colnames(mousedata),
-                                 selected = colnames(mousedata))),
+    column(4, uiOutput('selectRegions')),
     
     column(4, actionButton('recalculate', 'Recalculate'))
   )
