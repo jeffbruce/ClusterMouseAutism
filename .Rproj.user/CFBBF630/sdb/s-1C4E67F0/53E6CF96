@@ -1,13 +1,13 @@
 {
-    "contents" : "library(shiny)\n\nsetwd('//micehome//jbruce//Documents//Code//R//')\nrunApp('ClusterMouseAutism')",
+    "contents" : "library(shiny)\n\nsetwd('//micehome//jbruce//Documents//Code//R//')\nrunApp(appDir = 'ClusterMouseAutism', launch.browser = TRUE, display.mode = 'showcase')\nrunApp(appDir = 'ClusterMouseAutism', launch.browser = TRUE, display.mode = 'normal')\n",
     "created" : 1421703610783.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "915502131",
+    "hash" : "1480367043",
     "id" : "53E6CF96",
-    "lastKnownWriteTime" : 1421703631,
-    "path" : "~/Documents/Code/R/ClusterMouseAutism/RunClusterMouseAutism.R",
+    "lastKnownWriteTime" : 1422377458,
+    "path" : "/micehome/jbruce/Documents/Code/R/ClusterMouseAutism/RunClusterMouseAutism.R",
     "project_path" : "RunClusterMouseAutism.R",
     "properties" : {
     },

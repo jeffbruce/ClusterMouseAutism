@@ -249,6 +249,10 @@ alleffects <- function(datadefs, boot=F) {
   }
   
   rownames(out) <- datadefs$name
+  
+  # comment out this line if it's returning incorrect column names 
+  colnames(out) <- RelabelColNames()
+  
   return(out)
 }
 
@@ -386,4 +390,78 @@ plotconfints <- function(cints, ymin=-4, ymax=4) {
                   legend.position="none")
   p1 <- p1 + ylab("Effect size") + xlab("Structure")
   return(p1)
+}
+
+
+# RelabelColNames ----------------------------------------------------------
+# called by alleffects when creating the effect size data
+# this function will need to be modified when a new atlas is used
+# or when data files with differently ordered columns are used
+RelabelColNames <- function() {
+  
+  # manually supply brain region labels
+  goodcolnames = c('Amygdala',
+                   'Anterior Commissure - Anterior',
+                   'Anterior Commissure - Posterior',
+                   'Arbor Vita of Cerebellum',
+                   'Basal Forebrain',
+                   'Stria Terminalis',
+                   'Cerebellar Cortex',
+                   'Cerebellar Peduncle - Inferior',
+                   'Cerebellar Peduncle - Middle',
+                   'Cerebellar Peduncle - Superior',
+                   'Cerebral Aqueduct',
+                   'Entorhinal Cortex',
+                   'Frontal Lobe',
+                   'Occipital Lobe',
+                   'Parieto-Temporal Lobe',
+                   'Cerebral Peduncle',
+                   'Inferior Colliculus',
+                   'Superior Colliculus',
+                   'Corpus Callosum',
+                   'Cortico-Spinal Tract',
+                   'Cuneate Nucleus',
+                   'Dentate Gyrus',
+                   'Cranial Nerve 7',
+                   'Fasciculus Retroflexus',
+                   'Fimbria',
+                   'Fornix',
+                   'Fourth Ventricle',
+                   'Fundus of Striatum',
+                   'Globus Pallidus',
+                   'Habenular Commissure',
+                   'Hippocampus',
+                   'Hypothalamus',
+                   'Inferior Olivary Complex',
+                   'Internal Capsule',
+                   'Interpeduncular Nucleus',
+                   'Lateral Olfactory Tract',
+                   'Lateral Septum',
+                   'Lateral Ventricle',
+                   'Mammillary Bodies',
+                   'Mammilothalamic Tract',
+                   'Medial Longitudinal Fasciculus',
+                   'Medial Septum',
+                   'Medulla',
+                   'Midbrain',
+                   'Nucleus Accumbens',
+                   'Olfactory Bulbs',
+                   'Olfactory Tubercle',
+                   'Optic Tract',
+                   'Periaqueductal Grey',
+                   'Pons',
+                   'Pontine Nucleus',
+                   'Posterior Commissure',
+                   'Pre-Para Subiculum',
+                   'Stratum Granulosum',
+                   'Stria Medullaris',
+                   'Stria Terminalis',
+                   'Striatum',
+                   'Rhinocele',
+                   'Superior Olivary Complex',
+                   'Thalamus',
+                   'Third Ventricle',
+                   'Ventral Tegmental Decussation'
+  )
+  return(goodcolnames)
 }
