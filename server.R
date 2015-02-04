@@ -1,7 +1,12 @@
 # server.R
+# define all shared stuff in this top section
 
 library(gplots)
 library(ggplot2)
+library(data.table)
+
+# contains data for every region of every mouse in long format
+individualData = IndividualData(datadefs)
 
 shinyServer(
   function(input, output) {
@@ -71,31 +76,81 @@ shinyServer(
                   multiple = TRUE)
     })
     
-    # Page 2 control for specifying the plot type (box, violin, bar)
+    # Page 2 control for box/violin/bar plot
     #output$value <- renderPrint({ input$radio })
+    output$meansPlot = renderPlot({
+
+      if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
+        
+        groupMeans = 
+        
+        if (input$plotType == 1) {
+          
+        } else if (input$plotType == 2) {
+          
+        } else if (input$plotType == 3) {
+          
+        }
+        
+        # Return the plot
+        return(meansPlot)
+      }
+    }, height=800)
     
     # Page 2 control for effect size plots
     output$effectSizePlot = renderPlot({
-      # Regenerate this plot when the value in selectBoxStrainRegion changes
       
+      # Select region/strain data/labels depending on which option is picked
       if (!is.null(input$selectBoxStrainRegion)) {
         if (input$plotBy == 1) {
-          #effectSizePlot = ggplot(mousedata)
-          effectSizeData = mousedata[input$selectBoxStrainRegion, isolate(input$regions)]
+          effectSizeData = data.frame(region = isolate(input$regions), 
+                                     effectSize = mousedata[input$selectBoxStrainRegion, isolate(input$regions)],
+                                     row.names = NULL)
+          effectSizePlot = ggplot(data = effectSizeData, 
+                                  aes(x = stats:::reorder.default(region, effectSize), y = effectSize))
+          effectSizePlot = effectSizePlot + labs(x = "", 
+                                                 y = "Effect Size")
         } else if (input$plotBy == 2) {
-          effectSizeData = mousedata[isolate(input$strains), input$selectBoxStrainRegion]
+          effectSizeData = data.frame(strain = isolate(input$strains), 
+                                      effectSize = mousedata[isolate(input$strains), input$selectBoxStrainRegion],
+                                      row.names = NULL)
+          effectSizePlot = ggplot(data = effectSizeData, 
+                                  aes(x = stats:::reorder.default(strain, effectSize), y = effectSize))
+          effectSizePlot = effectSizePlot + labs(x = "", 
+                                                 y = "Effect Size")
         }
-        effectSizePlot = ggplot()
-        qplot(x = names(effectSizeData), 
-              y = effectSizeData, 
-              fill = 'navajowhite4',
-              geom = 'bar',
-              stat = 'identity',
-              xlab = '',
-              ylab = 'Effect Sizes',
-              main = input$selectBoxStrainRegion)
+        
+        # Customize other aspects of the plot
+        effectSizePlot = effectSizePlot +
+        geom_bar(stat = 'identity', 
+                 fill = 'thistle1', 
+                 colour='black') +
+        ggtitle(input$selectBoxStrainRegion) +
+        theme(plot.title = element_text(color="#000000", 
+                                        face="bold", 
+                                        family="Trebuchet MS", 
+                                        size=32)) +
+        theme(axis.title = element_text(color="#000000", 
+                                        face="bold", 
+                                        family="Trebuchet MS", 
+                                        size=24)) +
+        theme(axis.title.y = element_text(angle=90)) + 
+        theme(axis.text.x = element_text(angle=90, 
+                                         color="#000000", 
+                                         face="bold", 
+                                         family="Trebuchet MS", 
+                                         hjust=0, 
+                                         size=14)) +
+        theme(axis.text.y = element_text(color="#000000", 
+                                         face="bold", 
+                                         family="Trebuchet MS", 
+                                         size=14)) +
+        ylim(-2.5, 2.5)
+        
+        # Return the plot
+        return(effectSizePlot)
       }
-    })
+    }, height=800)
     
     # Page 1 heatmap for reclustering
     output$heatmap1 = renderPlot({
@@ -112,9 +167,19 @@ shinyServer(
      
       if (min(dim(mousedatamat)) != 0) {
         #heatmap.2(mousedatamat, distfun=jdfs, col=bluered, margins=c(8,14), trace="none", cexRow = 0.2 + 2/log10(nr), cexCol = 0.2 + 2/log10(nc), density.info="histogram", keysize=0.8, symkey=TRUE, symbreaks=TRUE)
-        heatmap.2(mousedatamat, distfun=jdfs, col=bluered, margins=c(20,14), trace="none", cexRow = 1.5, cexCol = 1.5, density.info="histogram", keysize=0.8, symkey=TRUE, symbreaks=TRUE)
+        heatmap.2(x=mousedatamat, 
+                  distfun=jdfs, 
+                  col=bluered, 
+                  margins=c(20,14), 
+                  trace="none", 
+                  cexRow = 1.5, 
+                  cexCol = 1.5, 
+                  density.info="histogram", 
+                  keysize=0.8, 
+                  symkey=TRUE, 
+                  symbreaks=TRUE)
       }
-    }, height = 800)
+    }, height=800)
     
     # Page 2 heatmap for generating individual or group plots
     output$heatmap2 = renderPlot({
@@ -131,8 +196,18 @@ shinyServer(
       
       if (min(dim(mousedatamat)) != 0) {
         #heatmap.2(mousedatamat, distfun=jdfs, col=bluered, margins=c(8,14), trace="none", cexRow = 0.2 + 2/log10(nr), cexCol = 0.2 + 2/log10(nc), density.info="histogram", keysize=0.8, symkey=TRUE, symbreaks=TRUE)
-        heatmap.2(mousedatamat, distfun=jdfs, col=bluered, margins=c(20,14), trace="none", cexRow = 1.5, cexCol = 1.5, density.info="histogram", keysize=0.8, symkey=TRUE, symbreaks=TRUE) 
+        heatmap.2(x=mousedatamat, 
+                  distfun=jdfs, 
+                  col=bluered, 
+                  margins=c(20,14),
+                  trace="none", 
+                  cexRow = 1.5, 
+                  cexCol = 1.5, 
+                  density.info="histogram", 
+                  keysize=0.8, 
+                  symkey=TRUE, 
+                  symbreaks=TRUE) 
       }
-    }, height = 800)
+    }, height=800)
   }
 )

@@ -45,7 +45,7 @@ shinyUI(navbarPage('Menu',
       
       fluidRow(
         column(12, plotOutput(outputId = 'heatmap2', 
-                              height = "800px"))
+                              height = '800px'))
       ),
       
       hr(),
@@ -72,7 +72,8 @@ shinyUI(navbarPage('Menu',
         ),
         hr(),
         fluidRow(
-          column(12, plotOutput(outputId = 'effectSizePlot'))
+          column(12, plotOutput(outputId = 'effectSizePlot',
+                                height = '800px'))
         )
       ),
       

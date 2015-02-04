@@ -1,3 +1,6 @@
+library(plyr)
+library(reshape2)
+
 datadefs <- rbind(c(name="FMR1vB6 (-/Y)", 
                     gf="gf_FMR1_relative", 
                     data="Combined_vols_FMR1_relative",
@@ -189,13 +192,19 @@ datadefs = datadefs[c(-24,-25),]
 # jdfs --------------------------------------------------------------------
 # Distance function used for clustering.  Basically causes values to range between 0
 # (perfect positive correlation) and 2 (perfect negative correlation).
-jdfs = function(x) as.dist(1-cor(t(x)))
-jdfs_absolute = function(x) abs(jdfs(x))
+jdfs = function(x) 
+{
+  as.dist(1-cor(t(x)))  
+}
 
+jdfs_absolute = function(x) {
+  abs(jdfs(x))
+}
 
 # cohensd -----------------------------------------------------------------
 # Effect size.
-cohensd <- function(g1, g2) {
+cohensd <- function(g1, g2) 
+{
   return( (mean(g2) - mean(g1)) / sd(g1) )
 }
 
@@ -203,7 +212,8 @@ cohensd <- function(g1, g2) {
 # structureeffects --------------------------------------------------------
 # Calculates the effect sizes for the first group (ind1) and the second group (ind2)
 # for each brain region.
-structureeffects <- function(ind1, ind2, datatable) {
+structureeffects <- function(ind1, ind2, datatable) 
+{
   
   effects <- vector(length=ncol(datatable))
   for (i in 1:ncol(datatable)) {
@@ -217,7 +227,8 @@ structureeffects <- function(ind1, ind2, datatable) {
 
 # structureeffectsfromdatadefs --------------------------------------------
 # Calls structureeffects on either a bootstrapped or real sample.
-structureeffectsfromdatadefs <- function(datadefs, i, boot=F) {
+structureeffectsfromdatadefs <- function(datadefs, i, boot=F) 
+{
   
   # Get data and appropriate labels from Combined_vols and gf files.
   dt <- get(datadefs$data[i])
@@ -235,11 +246,63 @@ structureeffectsfromdatadefs <- function(datadefs, i, boot=F) {
   
   return(structureeffects(ind1, ind2, dt))
 }
-  
 
+
+# IndividualData -------------------------------------------------------------
+# Creates a data table containing volume data for every brain region, for
+# every individual mouse, in long format.
+IndividualData <- function(datadefs)
+{
+  individualData = data.table(matrix(ncol = 2 + length(GetColNames())))
+  individualData = individualData[-1, ]  # remove NAs from initialization
+  setnames(individualData, c('name', 'genotype', GetColNames()))
+  
+  for (i in 1:nrow(datadefs))
+  {
+    # Get data associated with a row of the data frame
+    row = datadefs[i,]
+    tempData = get(row$data)
+    tempData = as.data.table(tempData)
+     
+    # Set proper column names
+    setnames(tempData, GetColNames())
+    tempData$name = row$name
+    tempData$genotype = NA
+    
+    # Set proper genotype labels for WT and KO.
+    genotypeTerms = get(row$term, get(row$gf))
+    wtIndices = grep(row$G1, genotypeTerms)
+    koIndices = grep(row$G2, genotypeTerms)
+    tempData$genotype[wtIndices] = row$G1
+    tempData$genotype[koIndices] = row$G2
+    tempData = subset(tempData, (genotype == row$G1 | genotype == row$G2))
+    
+    # Append data to total dataset
+    individualData = rbind(individualData, tempData)
+  }
+  
+  # Make long format and set appropriate column names
+  individualData = reshape2:::melt(individualData, id=c('name','genotype'))
+  setnames(individualData, c('name','genotype','region','volume'))
+  
+  return(individualData)
+}
+
+
+# SummaryData -------------------------------------------------------------
+# Computes means and standard deviations for each strain * genotype * region
+SummaryData = function(individualData)
+{
+  summaryData = aggregate( .~name:genotype:region, individualData, FUN = function(x) c(mn=mean(x), stdev=sd(x)))
+
+  return(summaryData)
+}
+
+  
 # alleffects --------------------------------------------------------------
 # Loops through all mouse models and computes the effect size for each.
-alleffects <- function(datadefs, boot=F) {
+alleffects <- function(datadefs, boot=F) 
+{
   
   neffects <- nrow(datadefs)
   
@@ -251,7 +314,7 @@ alleffects <- function(datadefs, boot=F) {
   rownames(out) <- datadefs$name
   
   # comment out this line if it's returning incorrect column names 
-  colnames(out) <- RelabelColNames()
+  colnames(out) <- GetColNames()
   
   return(out)
 }
@@ -260,7 +323,8 @@ alleffects <- function(datadefs, boot=F) {
 # bootalleffects ----------------------------------------------------------
 # Get effect sizes for each genotype and structure with repeated sampling with
 # replacement.  This function takes > 1 minute to run in its current implementation.
-bootalleffects <- function(datadefs, n=1000) {
+bootalleffects <- function(datadefs, n=1000) 
+{
   
   a = array(0, dim=c(n, nrow(datadefs), 62))
   
@@ -275,7 +339,8 @@ bootalleffects <- function(datadefs, n=1000) {
 # bootallconfints ---------------------------------------------------------
 # Takes the output of bootalleffects and returns an array of confidence
 # intervals and medians.
-bootallconfints <-function(bootarray, datadefs, hierarchy=FALSE) {
+bootallconfints <-function(bootarray, datadefs, hierarchy=FALSE) 
+{
   # compute the confidence intervals by combining apply with the quantile func
   s <- apply(bootarray, c(2,3), quantile, c(0.025, 0.5, 0.975))
   # get all the effects - but just for column and row names purposes
@@ -304,7 +369,8 @@ bootallconfints <-function(bootarray, datadefs, hierarchy=FALSE) {
 
 # bootalldist -------------------------------------------------------------
 # Compute the distance function on bootstrapped effects.
-bootalldist <- function(bootarray, distfun) {
+bootalldist <- function(bootarray, distfun) 
+{
   
   ngroups <- dim(bootarray)[2]
   nboot <- dim(bootarray)[1]
@@ -319,7 +385,8 @@ bootalldist <- function(bootarray, distfun) {
 
 
 # bootalldistregion -------------------------------------------------------
-bootalldistregion<- function(bootarray, distfun) {
+bootalldistregion<- function(bootarray, distfun) 
+{
   ngroups <- dim(bootarray)[3]
   nboot <- dim(bootarray)[1]
   out <- array(0, dim=c(nboot, ngroups, ngroups))
@@ -331,7 +398,8 @@ bootalldistregion<- function(bootarray, distfun) {
 
 
 # bootdistcint ------------------------------------------------------------
-bootdistcint <- function(bootdistarray, datadefs) {
+bootdistcint <- function(bootdistarray, datadefs) 
+{
   s <- apply(bootdistarray, c(2,3), quantile, c(0.05, 0.5, 0.9))
   m1 <- melt(s[1,,])
   m2 <- melt(s[2,,])
@@ -347,7 +415,8 @@ bootdistcint <- function(bootdistarray, datadefs) {
 
 # clustmember -------------------------------------------------------------
 # How often are cluster memberships shared?
-clustmember <- function(bootdistarray, cutsize=2, datadefs=datadefs) {
+clustmember <- function(bootdistarray, cutsize=2, datadefs=datadefs) 
+{
   
   out <- array(0, dim=dim(bootdistarray))
   
@@ -370,7 +439,8 @@ clustmember <- function(bootdistarray, cutsize=2, datadefs=datadefs) {
 
 # plotconfints ------------------------------------------------------------
 # Plot the confidence intervals.
-plotconfints <- function(cints, ymin=-4, ymax=4) {
+plotconfints <- function(cints, ymin=-4, ymax=4) 
+{
   p1 <- ggplot(data=cints, mapping=aes(x=X2, y=median, ymin=c05, ymax=c95,
                           colour=abs(median)))
   p1 <- p1 + geom_pointrange()
@@ -393,14 +463,15 @@ plotconfints <- function(cints, ymin=-4, ymax=4) {
 }
 
 
-# RelabelColNames ----------------------------------------------------------
+# GetColNames ----------------------------------------------------------
 # called by alleffects when creating the effect size data
 # this function will need to be modified when a new atlas is used
 # or when data files with differently ordered columns are used
-RelabelColNames <- function() {
+GetColNames <- function() 
+{
   
   # manually supply brain region labels
-  goodcolnames = c('Amygdala',
+  goodColNames = c('Amygdala',
                    'Anterior Commissure - Anterior',
                    'Anterior Commissure - Posterior',
                    'Arbor Vita of Cerebellum',
@@ -463,5 +534,5 @@ RelabelColNames <- function() {
                    'Third Ventricle',
                    'Ventral Tegmental Decussation'
   )
-  return(goodcolnames)
+  return(goodColNames)
 }
