@@ -1,12 +1,6 @@
 # server.R
-# define all shared stuff in this top section
-
-library(gplots)
-library(ggplot2)
-library(data.table)
-
-# contains data for every region of every mouse in long format
-individualData = IndividualData(datadefs)
+# all shared stuff is declared in global.R instead of here
+# because ui.R needs to access some libraries/data
 
 shinyServer(
   function(input, output) {
@@ -77,20 +71,47 @@ shinyServer(
     })
     
     # Page 2 control for box/violin/bar plot
-    #output$value <- renderPrint({ input$radio })
+    # output$value <- renderPrint({ input$radio })
     output$meansPlot = renderPlot({
 
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
         
-        groupMeans = 
+        meansData = with(individualData, subset(x=individualData, subset=(name==input$selectInputStrains)))
+        meansData = meansData[meansData$region %in% input$selectInputRegions,]
         
         if (input$plotType == 1) {
-          
+          dodge = position_dodge(width=0.9)
+          meansPlot = ggplot(data=meansData,
+                             aes(x=name, y=volume, fill=genotype, colour=genotype))
+          meansPlot = meansPlot +
+            stat_summary(fun.y=mean, position=position_dodge(), geom='bar') +
+            facet_wrap( ~ region, scales='free')
+          # add error bars in as well
         } else if (input$plotType == 2) {
-          
+          meansPlot = ggplot(data=meansData,
+                             aes(x=name, y=volume, fill=genotype, colour=genotype))
+          meansPlot = meansPlot +
+            geom_point(position=position_jitterdodge(dodge.width=0.9)) +
+            geom_boxplot(fill='white', position=position_dodge(width=0.9), alpha=0.5) +
+            facet_wrap( ~ region, scales='free')
         } else if (input$plotType == 3) {
-          
+          meansPlot = ggplot(data=meansData,
+                             aes(x=name, y=volume, fill=genotype, colour=genotype))
+          meansPlot = meansPlot +
+            geom_violin(fill='white', position=position_dodge(width=0.9), alpha=0.5) +
+            facet_wrap( ~ region, scales='free')
         }
+        
+        # Customize theme aspects of the plot
+        meansPlot = meansPlot +
+          labs(x='strain', y='Volume (mm^3)') +
+          theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32)) +
+          theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24)) +
+          theme(axis.title.y = element_text(angle=90)) + 
+          theme(axis.text.x = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14)) +
+          theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14)) +
+          theme(strip.text = element_text(size=24)) + 
+          theme(legend.text = element_text(size=14))
         
         # Return the plot
         return(meansPlot)
@@ -108,44 +129,26 @@ shinyServer(
                                      row.names = NULL)
           effectSizePlot = ggplot(data = effectSizeData, 
                                   aes(x = stats:::reorder.default(region, effectSize), y = effectSize))
-          effectSizePlot = effectSizePlot + labs(x = "", 
-                                                 y = "Effect Size")
+          effectSizePlot = effectSizePlot + labs(x = '', y = 'Effect Size')
         } else if (input$plotBy == 2) {
           effectSizeData = data.frame(strain = isolate(input$strains), 
                                       effectSize = mousedata[isolate(input$strains), input$selectBoxStrainRegion],
                                       row.names = NULL)
           effectSizePlot = ggplot(data = effectSizeData, 
                                   aes(x = stats:::reorder.default(strain, effectSize), y = effectSize))
-          effectSizePlot = effectSizePlot + labs(x = "", 
-                                                 y = "Effect Size")
+          effectSizePlot = effectSizePlot + labs(x = '', y = 'Effect Size')
         }
         
-        # Customize other aspects of the plot
+        # Customize theme aspects of the plot
         effectSizePlot = effectSizePlot +
-        geom_bar(stat = 'identity', 
-                 fill = 'thistle1', 
-                 colour='black') +
-        ggtitle(input$selectBoxStrainRegion) +
-        theme(plot.title = element_text(color="#000000", 
-                                        face="bold", 
-                                        family="Trebuchet MS", 
-                                        size=32)) +
-        theme(axis.title = element_text(color="#000000", 
-                                        face="bold", 
-                                        family="Trebuchet MS", 
-                                        size=24)) +
-        theme(axis.title.y = element_text(angle=90)) + 
-        theme(axis.text.x = element_text(angle=90, 
-                                         color="#000000", 
-                                         face="bold", 
-                                         family="Trebuchet MS", 
-                                         hjust=0, 
-                                         size=14)) +
-        theme(axis.text.y = element_text(color="#000000", 
-                                         face="bold", 
-                                         family="Trebuchet MS", 
-                                         size=14)) +
-        ylim(-2.5, 2.5)
+          geom_bar(stat = 'identity', fill = 'thistle1', colour='black') +
+          ggtitle(input$selectBoxStrainRegion) +
+          theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32)) +
+          theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24)) +
+          theme(axis.title.y = element_text(angle=90)) + 
+          theme(axis.text.x = element_text(angle=90, color='#000000', face='bold', family='Trebuchet MS', hjust=0, size=14)) +
+          theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14)) +
+          ylim(-2.5, 2.5)
         
         # Return the plot
         return(effectSizePlot)
@@ -166,15 +169,14 @@ shinyServer(
       nc = dim(mousedatamat)[2]
      
       if (min(dim(mousedatamat)) != 0) {
-        #heatmap.2(mousedatamat, distfun=jdfs, col=bluered, margins=c(8,14), trace="none", cexRow = 0.2 + 2/log10(nr), cexCol = 0.2 + 2/log10(nc), density.info="histogram", keysize=0.8, symkey=TRUE, symbreaks=TRUE)
         heatmap.2(x=mousedatamat, 
                   distfun=jdfs, 
                   col=bluered, 
                   margins=c(20,14), 
                   trace="none", 
-                  cexRow = 1.5, 
-                  cexCol = 1.5, 
-                  density.info="histogram", 
+                  cexRow=1.5, 
+                  cexCol=1.5, 
+                  density.info='histogram', 
                   keysize=0.8, 
                   symkey=TRUE, 
                   symbreaks=TRUE)
@@ -195,15 +197,14 @@ shinyServer(
       nc = dim(mousedatamat)[2]
       
       if (min(dim(mousedatamat)) != 0) {
-        #heatmap.2(mousedatamat, distfun=jdfs, col=bluered, margins=c(8,14), trace="none", cexRow = 0.2 + 2/log10(nr), cexCol = 0.2 + 2/log10(nc), density.info="histogram", keysize=0.8, symkey=TRUE, symbreaks=TRUE)
         heatmap.2(x=mousedatamat, 
                   distfun=jdfs, 
                   col=bluered, 
                   margins=c(20,14),
-                  trace="none", 
-                  cexRow = 1.5, 
-                  cexCol = 1.5, 
-                  density.info="histogram", 
+                  trace='none', 
+                  cexRow=1.5, 
+                  cexCol=1.5, 
+                  density.info='histogram', 
                   keysize=0.8, 
                   symkey=TRUE, 
                   symbreaks=TRUE) 

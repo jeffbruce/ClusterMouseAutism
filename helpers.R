@@ -1,6 +1,3 @@
-library(plyr)
-library(reshape2)
-
 datadefs <- rbind(c(name="FMR1vB6 (-/Y)", 
                     gf="gf_FMR1_relative", 
                     data="Combined_vols_FMR1_relative",
@@ -273,6 +270,10 @@ IndividualData <- function(datadefs)
     genotypeTerms = get(row$term, get(row$gf))
     wtIndices = grep(row$G1, genotypeTerms)
     koIndices = grep(row$G2, genotypeTerms)
+    
+#     tempData$genotype[wtIndices] = 'WT'
+#     tempData$genotype[koIndices] = 'KO'
+#     tempData = subset(tempData, (genotype == 'WT' | genotype == 'KO'))
     tempData$genotype[wtIndices] = row$G1
     tempData$genotype[koIndices] = row$G2
     tempData = subset(tempData, (genotype == row$G1 | genotype == row$G2))
@@ -284,6 +285,9 @@ IndividualData <- function(datadefs)
   # Make long format and set appropriate column names
   individualData = reshape2:::melt(individualData, id=c('name','genotype'))
   setnames(individualData, c('name','genotype','region','volume'))
+  individualData$genotype = as.factor(individualData$genotype)
+  individualData$region = as.factor(individualData$region)
+  individualData$name = as.factor(individualData$name)
   
   return(individualData)
 }
@@ -294,7 +298,13 @@ IndividualData <- function(datadefs)
 SummaryData = function(individualData)
 {
   summaryData = aggregate( .~name:genotype:region, individualData, FUN = function(x) c(mn=mean(x), stdev=sd(x)))
-
+  
+  # 'volume' is a matrix inside of a data frame.
+  # Need to extract the mean and sd data inside of the 'volume' matrix.
+  summaryData$mean = summaryData$volume[,1]
+  summaryData$sd = summaryData$volume[,2]
+  summaryData$volume = NULL
+  
   return(summaryData)
 }
 

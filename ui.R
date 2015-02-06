@@ -93,6 +93,11 @@ shinyUI(navbarPage('Menu',
                                  choices = list('Yes' = 1, 
                                                 'No' = 2),
                                  selected = 1))
+        ),
+        hr(),
+        fluidRow(
+          column(12, plotOutput(outputId = 'meansPlot',
+                                height = '800px'))
         )
       )
     )
