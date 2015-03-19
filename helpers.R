@@ -186,6 +186,12 @@ datadefs <- as.data.frame(datadefs, stringsAsFactors=FALSE)
 datadefs = datadefs[c(-24,-25),]
 
 
+
+# hclust-avg --------------------------------------------------------------
+hclust.avg <- function(x) hclust(x, method="average")
+ 
+
+
 # jdfs --------------------------------------------------------------------
 # Distance function used for clustering.  Basically causes values to range between 0
 # (perfect positive correlation) and 2 (perfect negative correlation).

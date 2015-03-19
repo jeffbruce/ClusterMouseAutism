@@ -6,7 +6,7 @@ shinyUI(navbarPage('Menu',
                 
     # PAGE 1 ------------------------------------------------------------------
                    
-    tabPanel('Reclustering',
+    tabPanel('Filter and Recluster',
   
       titlePanel('Clustering Autism in the Mouse'),
       
@@ -41,7 +41,7 @@ shinyUI(navbarPage('Menu',
     
     # PAGE 2 ------------------------------------------------------------------
     
-    tabPanel('Plots',
+    tabPanel('Plot Means and Effect Sizes',
       
       fluidRow(
         column(12, plotOutput(outputId = 'heatmap2', 
@@ -88,11 +88,11 @@ shinyUI(navbarPage('Menu',
                                                 'Box' = 2, 
                                                 'Violin' = 3),
                                  selected = 1)),
-          column(3, radioButtons(inputId = 'separatePlots',
-                                 label = h4('Separate Plots?'),
+          column(3, radioButtons(inputId = 'flipAxes',
+                                 label = h4('Flip Axes?'),
                                  choices = list('Yes' = 1, 
                                                 'No' = 2),
-                                 selected = 1))
+                                 selected = 2))
         ),
         hr(),
         fluidRow(

@@ -28,7 +28,7 @@ SimulateMouseData = function(dist='unif', xdim=60, ydim=20) {
 ### save() and load()
 # saves the name of the variable along with the actual object data
 # not ideal because loading the variable can conflict with a current variable with the same name
-# one advantage is at allows you to save multiple objects into one file
+# one advantage is it allows you to save multiple objects into one file
 # save() produces an .rda file 
 
 ### saveRDS(), readRDS()
