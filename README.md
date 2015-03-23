@@ -28,7 +28,6 @@ To use the app, it is recommended that you do the following:
 
 #### Fix Bugs
 
-- sort checkboxGroupInput on page 1 in alphabetical order to make the interface easier to use
 - make the row/column dendrogram labels actually line up with the rows/columns
 - handle edge cases of selecting <= 1 strain or <= 1 brain region
     - obviously it doesn't make sense to select 0 strains or 0 regions
@@ -47,6 +46,7 @@ To use the app, it is recommended that you do the following:
 
 - ensure that the dendrogram lengths make sense
 - add dashed lines going through the heatmap so it's easier to read
+- improve y axis scaling for bar plot
 
 #### Add Hosting
 

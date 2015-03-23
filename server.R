@@ -15,12 +15,12 @@ shinyServer(
       if (input$selectAllRegions == TRUE) {
         checkboxGroupInput(inputId = 'regions', 
                            label = h3('Brain Regions'), 
-                           choices = colnames(mousedata),
+                           choices = sort(colnames(mousedata)),
                            selected = colnames(mousedata))
       } else {
         checkboxGroupInput(inputId = 'regions', 
                            label = h3('Brain Regions'), 
-                           choices = colnames(mousedata),
+                           choices = sort(colnames(mousedata)),
                            selected = vector(mode="character", length=0))
       }    
     })
@@ -30,12 +30,12 @@ shinyServer(
       if (input$selectAllStrains == TRUE) {
         checkboxGroupInput(inputId = 'strains', 
                            label = h3('Mouse Strains'), 
-                           choices = rownames(mousedata),
+                           choices = sort(rownames(mousedata)),
                            selected = rownames(mousedata))
       } else {
         checkboxGroupInput(inputId = 'strains', 
                            label = h3('Mouse Strains'), 
-                           choices = rownames(mousedata),
+                           choices = sort(rownames(mousedata)),
                            selected = vector(mode="character", length=0))
       }    
     })
@@ -79,9 +79,7 @@ shinyServer(
     output$meansPlot = renderPlot({
 
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
-        
-        browser()
-        
+
         meansData = individualData
         meansData = meansData[meansData$name %in% input$selectInputStrains,]
         meansData = meansData[meansData$region %in% input$selectInputRegions,]
@@ -93,9 +91,8 @@ shinyServer(
                                   y=volume, 
                                   fill=genotype, 
                                   colour=genotype))
-                       + stat_summary(fun.y=mean, position=position_dodge(), geom='bar')
-                       + facet_wrap( ~ region, scales='free'))
-          # add error bars in as well
+                       + stat_summary(fun.y=mean, position=position_dodge(width=1), geom='bar')
+                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
         } else if (input$plotType == 2) {
           meansPlot = (ggplot(data=meansData,
                               aes(x=name, 
@@ -103,16 +100,14 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + geom_point(position=position_jitterdodge(dodge.width=0.9))
-                       + geom_boxplot(fill='white', position=position_dodge(width=0.9), alpha=0.5)
-                       + facet_wrap( ~ region, scales='free'))
+                       + geom_boxplot(fill='white', position=position_dodge(width=0.9), alpha=0.5))
         } else if (input$plotType == 3) {
           meansPlot = (ggplot(data=meansData,
                               aes(x=name, 
                                   y=volume, 
                                   fill=genotype, 
                                   colour=genotype))
-                       + geom_violin(fill='white', position=position_dodge(width=0.9), alpha=0.5)
-                       + facet_wrap( ~ region, scales='free'))
+                       + geom_violin(fill='white', position=position_dodge(width=0.9), alpha=0.5))
         } else if (input$plotType == 4) {
           means = tapply(meansData$volume, meansData$genotype, mean)
           sds = tapply(meansData$volume, meansData$genotype, sd)
@@ -122,12 +117,12 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + geom_point(position=position_jitterdodge(dodge=1.0))
-                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5)
-                       + facet_wrap( ~ region, scales='free'))
+                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
         }
         
         # Customize theme aspects of the plot
         meansPlot = (meansPlot
+          + facet_wrap( ~ region, scales='free')
           + labs(x='strain', y='Volume (mm^3)')
           + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
           + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
