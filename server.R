@@ -5,6 +5,11 @@
 shinyServer(
   function(input, output) {
     
+    # Helper functions
+    stderr <- function(x){sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))}
+    lowsd <- function(x){return(mean(x)-stderr(x))}
+    highsd <- function(x){return(mean(x)+stderr(x))}
+    
     # Page 1 dynamic control - select all brain regions
     output$selectRegions = renderUI({
       if (input$selectAllRegions == TRUE) {
@@ -75,7 +80,10 @@ shinyServer(
 
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
         
-        meansData = with(individualData, subset(x=individualData, subset=(name==input$selectInputStrains)))
+        browser()
+        
+        meansData = individualData
+        meansData = meansData[meansData$name %in% input$selectInputStrains,]
         meansData = meansData[meansData$region %in% input$selectInputRegions,]
         
         if (input$plotType == 1) {
@@ -104,6 +112,17 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + geom_violin(fill='white', position=position_dodge(width=0.9), alpha=0.5)
+                       + facet_wrap( ~ region, scales='free'))
+        } else if (input$plotType == 4) {
+          means = tapply(meansData$volume, meansData$genotype, mean)
+          sds = tapply(meansData$volume, meansData$genotype, sd)
+          meansPlot = (ggplot(data=meansData,
+                              aes(x=name, 
+                                  y=volume, 
+                                  fill=genotype, 
+                                  colour=genotype))
+                       + geom_point(position=position_jitterdodge(dodge=1.0))
+                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5)
                        + facet_wrap( ~ region, scales='free'))
         }
         

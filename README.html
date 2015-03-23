@@ -95,24 +95,26 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li>selecting just 1 strain also doesn’t make sense, because you may as well go to page 2 and do an effect size plot, which sorts it for you</li>
 <li>still need to check that these errors are handled</li>
 </ul></li>
-<li>at what point does the analysis lose credibility?
-<ul>
 <li>can you cluster by just 1 dimension?
 <ul>
-<li>there is an option to specify this in the heatmap call, but the clustering of each dimension is independent</li>
+<li>there is an option to specify this in the heatmap call, but the clustering of each dimension is independent so it isn’t worth it</li>
 </ul></li>
-</ul></li>
-<li>verify that effect size calculations / data are correct</li>
+<li>verify that effect size calculations / data are correct
+<ul>
 <li>two Stria Terminalis regions when there should only be one
 <ul>
-<li>this is resulting in incorrect clustering and double bar stacking on the effect size plot, and probably also the bimodal distribution for stria terminalis</li>
+<li>this is resulting in incorrect clustering and double bar stacking on the effect size plot</li>
 </ul></li>
-<li>boxplot plots black dots and no whisker on occasion (probably due to the data itself but need to understand why – does this only occur for stria terminalis?)</li>
+</ul></li>
+<li>boxplot plots black dots and no whisker on occasion
+<ul>
+<li>I believe the black dots denote outliers… but then why are the whiskers not always drawn to the edge of 1.5*IQR? (see Cerebellar Peduncle, Entorhinal Cortex, Fourth Ventricle for 15q11-13)</li>
+</ul></li>
 <li>heatmap doesn’t immediately show up when you launch the app (it does sometimes but not all the time)</li>
 </ul>
 </div>
-<div id="lower-priority-bugs" class="section level4">
-<h4>Lower Priority “Bugs”</h4>
+<div id="lower-priority-issues" class="section level4">
+<h4>Lower Priority Issues</h4>
 <ul>
 <li>ensure that the dendrogram lengths make sense</li>
 <li>add dashed lines going through the heatmap so it’s easier to read</li>
@@ -144,41 +146,65 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <div id="add-new-features" class="section level4">
 <h4>Add New Features</h4>
 <ul>
+<li>upgraded plots
+<ul>
+<li>bootstrapped violin plot (in general, page with bootstrapped means / effect sizes?)</li>
+<li>dot plot with standard error / standard deviations?</li>
+<li>I need to understand bootstrapping better (more specifically, the conditions under which it fails)</li>
+</ul></li>
 <li>show statistical tests?</li>
+<li>plot dashed line on effect size plot showing associated .05 p value?</li>
 <li>allow clustering by different methods by changing hclustfun? (e.g. Ward’s, single-linkage, complete-linkage, top-down K-means?)
 <ul>
-<li>was this investigated in the paper to see if you could cluster the strains/regions into more meaningful groups?</li>
+<li>was this investigated in the paper to see if you could cluster the strains/regions into more meaningful groups with different clustering methods?</li>
 </ul></li>
 <li>allow other users to view/download the summary data?</li>
-<li>sort by a specific column or row and list correlations on side instead of dendrograms along with certainty?
+<li>sort by a specific column or row and list correlations on side instead of dendrograms?
 <ul>
 <li>might be possible by supplying an argument to reorderfun</li>
+<li>could be more interpretable by others</li>
+<li>use pvclust to plot the actual appropriateness of the clusters</li>
 </ul></li>
-<li>provide user with control to select groups of regions according to common attributes (synaptic effects, groups of brain regions, etc.)</li>
+<li>provide user with a control to select groups of regions according to common attributes (synaptic effects, groups of brain regions, etc.)</li>
 <li>replace collaborator pdf summaries of scanned brains with generic Shiny app</li>
 <li>demonstrate bootstrapping on a separate Shiny page</li>
 <li>relate Shiny app to genetic information of the mouse models?</li>
 <li>add confidence of analysis as you change the number of strains / regions to cluster on?</li>
 <li>instead of weighting each brain region equally, allow user to add in their own weighting system, for example, where each region gets a weight corresponding to its size, or proportion of different cell types, etc.
 <ul>
-<li>but, total brain size isn’t predictive on its own of autism</li>
+<li>but, total brain size isn’t predictive on its own of autism so size isn’t necessarily an interesting thing to cluster on</li>
 </ul></li>
-<li>group mouse models by differences in connectivity?</li>
-<li>any methods for combining neuroanatomical, genetic, behavioural, basically multimodal data to subtype these models?
+<li>group mouse models by differences in connectivity?
+<ul>
+<li>any papers that do this or groups working on this?</li>
+<li>are we working on this with DTI data?</li>
+</ul></li>
+<li>any methods for combining multimodal data (neuroanatomical, genetic, behavioural) to subtype these models?
 <ul>
 <li>use something like PCA to predetermine how many clusters there might be?</li>
 </ul></li>
-<li>upgrade to heatmap.3 over heatmap.2?</li>
-<li>in general, would be useful if more stats and code were on the micewiki</li>
-<li>given a dendrogram, can you break it out into an optimal number of clusters?</li>
+<li>upgrade to heatmap.3 over heatmap.2?
+<ul>
+<li>what are the differences between these functions?</li>
+</ul></li>
+<li>in general, would be useful if more stats and code were on the micewiki
+<ul>
+<li>seems like people might be wasting time trying to find code templates in their own libraries, leading to sub-optimal ways of sharing code</li>
+<li>i wonder if you can associate github repos to higher level repos for given users, so a lab can then search a collection of repos for the specific plot or function that they need</li>
+</ul></li>
+<li>given a dendrogram, can one break it out into an optimal number of clusters?
+<ul>
+<li>the length of a branch represents how similar the two rows/columns are</li>
+</ul></li>
+<li>best papers on the reliability of methods at MICe (there’s that one MICe paper claiming that you need x number of subjects to maintain a given confidence level, which I need to read)</li>
 </ul>
 </div>
-<div id="figure-out-uncertainties" class="section level4">
-<h4>Figure Out Uncertainties</h4>
+<div id="theoretical-quandaries" class="section level4">
+<h4>Theoretical Quandaries</h4>
 <div id="effect-size-calculation" class="section level6">
 <h6>Effect size calculation</h6>
 <ul>
-<li>why always normalize by the wildtype group and not vice versa?</li>
+<li>why always normalize by the wildtype group and not vice versa? basically the variance of one of the groups is ignored, which seems inappropriate to me.</li>
 </ul>
 </div>
 <div id="bootstrapping-in-the-paper" class="section level6">
@@ -191,7 +217,8 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </ul></li>
 <li>what does this sentence mean: “Different group assumptions (+/- 1) and connection thresholds (+/-5%) were tested and the results were consistent”</li>
 <li>pvclust assesses clustering uncertainty via multiscale bootstrap resampling</li>
-<li>the hierarchical clustering method used was ‘complete’, and the distance metric was ‘correlation’ which used the Pearson method an alpha &lt; 0.10 was used to determine the clusters</li>
+<li>the hierarchical clustering method used was ‘complete’, and the distance metric was ‘correlation’ which used the Pearson method</li>
+<li>an alpha &lt; 0.10 was used to determine the clusters</li>
 </ul>
 </div>
 <div id="verification-of-clusters-section" class="section level6">
