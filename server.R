@@ -55,7 +55,7 @@ shinyServer(
       nr = dim(mousedatamat)[1]
       nc = dim(mousedatamat)[2]
      
-      if (min(dim(mousedatamat)) != 0) {
+      if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
         heatmap.2(x=mousedatamat, 
                   distfun=jdfs,
                   #hclustfun=hclust.avg,
@@ -154,6 +154,7 @@ shinyServer(
                                   colour=genotype))
                        + geom_point(position=position_jitterdodge(dodge=1.0))
                        + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5))
+                       #+ stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
         
         # Customize theme aspects of the plot
@@ -225,7 +226,7 @@ shinyServer(
       nr = dim(mousedatamat)[1]
       nc = dim(mousedatamat)[2]
       
-      if (min(dim(mousedatamat)) != 0) {
+      if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
         heatmap.2(x=mousedatamat, 
                   distfun=jdfs,
                   #hclustfun=hclust.avg,

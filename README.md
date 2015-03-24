@@ -32,18 +32,21 @@ There's probably no point in giving the option to cluster by just 1 dimension, d
 #### Fix Bugs
 
 - make the row/column dendrogram labels actually line up with the rows/columns
+    - maybe doesn't exist on all browsers / displays
 - handle edge cases of selecting <= 1 strain or <= 1 brain region
     - obviously it doesn't make sense to select 0 strains or 0 regions
     - selecting just 1 strain also doesn't make sense, because you may as well go to page 2 and do an effect size plot, which sorts it for you
     - still need to check that these errors are handled
+- change scale of bar plot to be more user friendly
 - "Warning: Stacking not well defined when ymin != 0"
 - "Error in mousedata[isolate(input$strains), input$selectBoxStrainRegion]"
 - "ymax not defined: adjusting position using y instead"
     - only occurs for boxplots -- tried setting the ymax but it didn't work
-- can you cluster by just 1 dimension?
-    - there is an option to specify this in the heatmap call, but the clustering of each dimension is independent so it isn't worth it
 - verify that effect size calculations / data are correct
+    - ask Jacob for original alleffects code
 - heatmap doesn't immediately show up when you launch the app (it does sometimes but not all the time)
+    - need to resize the window first or go to the next tab
+    - maybe wait on this bug until I've launched it to see if it exists in the launch version
 
 #### Lower Priority Issues
 
