@@ -5,11 +5,14 @@
 shinyServer(
   function(input, output) {
     
-    # Helper functions
+# Helper Functions --------------------------------------------------------
+    
     stderr <- function(x){sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))}
     lowsd <- function(x){return(mean(x)-stderr(x))}
     highsd <- function(x){return(mean(x)+stderr(x))}
-    
+
+# Page 1 Widgets ---------------------------------------------------------
+
     # Page 1 dynamic control - select all brain regions
     output$selectRegions = renderUI({
       if (input$selectAllRegions == TRUE) {
@@ -40,6 +43,37 @@ shinyServer(
       }    
     })
     
+    # Page 1 plot - heatmap for reclustering
+    output$heatmap1 = renderPlot({
+      input$recalculate
+      
+      # Add error checking for input$strains and input$regions >= 2.  At least one of them must be greater than 2
+      # to perform clustering.
+      
+      # isolate() prevents heatmap from regenerating every time a new strain/region is selected
+      mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
+      nr = dim(mousedatamat)[1]
+      nc = dim(mousedatamat)[2]
+     
+      if (min(dim(mousedatamat)) != 0) {
+        heatmap.2(x=mousedatamat, 
+                  distfun=jdfs,
+                  #hclustfun=hclust.avg,
+                  col=bluered, 
+                  margins=c(20,14), 
+                  trace='none', 
+                  cexRow=1.5, 
+                  cexCol=1.5, 
+                  density.info='histogram', 
+                  keysize=0.8, 
+                  symkey=TRUE, 
+                  symbreaks=TRUE)
+      }
+    }, height=800)
+    
+
+# Page 2 Widgets ---------------------------------------------------------
+
     # Page 2 dynamic control - select single strain/region for which to plot effect sizes
     output$selectBoxStrainRegion = renderUI({
       if (input$plotBy == 1) {
@@ -77,9 +111,9 @@ shinyServer(
     
     # Page 2 plot - box/violin/bar
     output$meansPlot = renderPlot({
-
+      
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
-
+        
         meansData = individualData
         meansData = meansData[meansData$name %in% input$selectInputStrains,]
         meansData = meansData[meansData$region %in% input$selectInputRegions,]
@@ -96,17 +130,19 @@ shinyServer(
         } else if (input$plotType == 2) {
           meansPlot = (ggplot(data=meansData,
                               aes(x=name, 
-                                  y=volume, 
+                                  y=volume,
                                   fill=genotype, 
                                   colour=genotype))
                        + geom_point(position=position_jitterdodge(dodge.width=0.9))
-                       + geom_boxplot(fill='white', position=position_dodge(width=0.9), alpha=0.5))
+                       + geom_boxplot(fill='white', position=position_dodge(width=0.9), alpha=0.5, outlier.size=0)
+                       + stat_summary(fun.y=mean, position=position_dodge(width=0.9), shape=3, col='red', geom='point'))
         } else if (input$plotType == 3) {
           meansPlot = (ggplot(data=meansData,
                               aes(x=name, 
                                   y=volume, 
                                   fill=genotype, 
                                   colour=genotype))
+                       + geom_point(position=position_jitterdodge(dodge.width=0.9))
                        + geom_violin(fill='white', position=position_dodge(width=0.9), alpha=0.5))
         } else if (input$plotType == 4) {
           means = tapply(meansData$volume, meansData$genotype, mean)
@@ -117,20 +153,20 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + geom_point(position=position_jitterdodge(dodge=1.0))
-                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
+                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5))
         }
         
         # Customize theme aspects of the plot
         meansPlot = (meansPlot
-          + facet_wrap( ~ region, scales='free')
-          + labs(x='strain', y='Volume (mm^3)')
-          + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
-          + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
-          + theme(axis.title.y = element_text(angle=90))
-          + theme(axis.text.x = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
-          + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
-          + theme(strip.text = element_text(size=24))
-          + theme(legend.text = element_text(size=14)))
+                     + facet_wrap( ~ region, scales='free')
+                     + labs(x='strain', y=bquote(Volume~(mm^{3})))
+                     + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
+                     + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
+                     + theme(axis.title.y = element_text(angle=90))
+                     + theme(axis.text.x = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
+                     + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
+                     + theme(strip.text = element_text(size=24))
+                     + theme(legend.text = element_text(size=14)))
         
         # Return the plot
         return(meansPlot)
@@ -162,48 +198,21 @@ shinyServer(
         
         # Customize theme aspects of the plot
         effectSizePlot = (effectSizePlot
-          + geom_bar(stat = 'identity', fill = 'thistle1', colour='black')
-          + ggtitle(input$selectBoxStrainRegion)
-          + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
-          + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
-          + theme(axis.title.y = element_text(angle=90))
-          + theme(axis.text.x = element_text(angle=90, color='#000000', face='bold', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
-          + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
-          + ylim(-2.5, 2.5))
+                          + geom_bar(stat = 'identity', fill = 'thistle1', colour='black')
+                          + ggtitle(input$selectBoxStrainRegion)
+                          + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
+                          + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
+                          + theme(axis.title.y = element_text(angle=90))
+                          + theme(axis.text.x = element_text(angle=90, color='#000000', face='bold', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
+                          + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
+                          + ylim(-2.5, 2.5))
         
         # Return the plot
         return(effectSizePlot)
       }
     }, height=800)
-    
-    # Page 1 plot - heatmap for reclustering
-    output$heatmap1 = renderPlot({
-      input$recalculate
-      
-      # Add error checking for input$strains and input$regions >= 2.  At least one of them must be greater than 2
-      # to perform clustering.
-      
-      # isolate() prevents heatmap from regenerating every time a new strain/region is selected
-      mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
-      nr = dim(mousedatamat)[1]
-      nc = dim(mousedatamat)[2]
-     
-      if (min(dim(mousedatamat)) != 0) {
-        heatmap.2(x=mousedatamat, 
-                  distfun=jdfs,
-                  #hclustfun=hclust.avg,
-                  col=bluered, 
-                  margins=c(20,14), 
-                  trace='none', 
-                  cexRow=1.5, 
-                  cexCol=1.5, 
-                  density.info='histogram', 
-                  keysize=0.8, 
-                  symkey=TRUE, 
-                  symbreaks=TRUE)
-      }
-    }, height=800)
-    
+
+
     # Page 2 plot - heatmap used as reference to generate individual or group plots
     output$heatmap2 = renderPlot({
       input$recalculate

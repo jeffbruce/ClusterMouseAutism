@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 # ClusterMouseAutism
 
 ## Introduction
@@ -16,12 +19,12 @@ To use the app, it is recommended that you do the following:
 
 ## Development Notes and Rationales
 
+There's probably no point in giving the option to cluster by just 1 dimension, despite the option of doing so in the heatmap call, because the dimensions are clustered independently.  The dendrograms don't make the plot significantly more difficult to read or anything.
 
 #### Inspirations
 
 - Devium Web (reference)
 - Radiant (reference)
-
 
 
 ## TO DO
@@ -33,13 +36,13 @@ To use the app, it is recommended that you do the following:
     - obviously it doesn't make sense to select 0 strains or 0 regions
     - selecting just 1 strain also doesn't make sense, because you may as well go to page 2 and do an effect size plot, which sorts it for you
     - still need to check that these errors are handled
+- "Warning: Stacking not well defined when ymin != 0"
+- "Error in mousedata[isolate(input$strains), input$selectBoxStrainRegion]"
+- "ymax not defined: adjusting position using y instead"
+    - only occurs for boxplots -- tried setting the ymax but it didn't work
 - can you cluster by just 1 dimension?
     - there is an option to specify this in the heatmap call, but the clustering of each dimension is independent so it isn't worth it
 - verify that effect size calculations / data are correct
-    - two Stria Terminalis regions when there should only be one 
-        - this is resulting in incorrect clustering and double bar stacking on the effect size plot
-- boxplot plots black dots and no whisker on occasion
-    - I believe the black dots denote outliers... but then why are the whiskers not always drawn to the edge of 1.5*IQR? (see Cerebellar Peduncle, Entorhinal Cortex, Fourth Ventricle for 15q11-13)
 - heatmap doesn't immediately show up when you launch the app (it does sometimes but not all the time)
 
 #### Lower Priority Issues
@@ -64,10 +67,13 @@ To use the app, it is recommended that you do the following:
 #### Add New Features
 
 - upgraded plots
+    - upgraded violin plot to also include IQR and median which is standard in many violin plots?
     - bootstrapped violin plot (in general, page with bootstrapped means / effect sizes?)
-    - dot plot with standard error / standard deviations?
+    - change dot plot / bar plot to have standard error instead of standard deviation?
     - I need to understand bootstrapping better (more specifically, the conditions under which it fails)
+- speed up bootstrapping somehow?
 - show statistical tests?
+- demonstrate bootstrapping on a separate Shiny page
 - plot dashed line on effect size plot showing associated .05 p value?
 - allow clustering by different methods by changing hclustfun?  (e.g. Ward's, single-linkage, complete-linkage, top-down K-means?)
     - was this investigated in the paper to see if you could cluster the strains/regions into more meaningful groups with different clustering methods?
@@ -76,9 +82,9 @@ To use the app, it is recommended that you do the following:
     - might be possible by supplying an argument to reorderfun
     - could be more interpretable by others
     - use pvclust to plot the actual appropriateness of the clusters
-- provide user with a control to select groups of regions according to common attributes (synaptic effects, groups of brain regions, etc.)
+    - this doesn't seem very useful because you can infer the most similar model directly from the length of the dendrogram branch
+- provide user with a control to select groups of regions according to common attributes (gene models that affect the synapse, white matter / social perception & autonomic regulation, etc.)
 - replace collaborator pdf summaries of scanned brains with generic Shiny app
-- demonstrate bootstrapping on a separate Shiny page
 - relate Shiny app to genetic information of the mouse models?
 - add confidence of analysis as you change the number of strains / regions to cluster on?
 - instead of weighting each brain region equally, allow user to add in their own weighting system, for example, where each region gets a weight corresponding to its size, or proportion of different cell types, etc.

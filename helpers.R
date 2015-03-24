@@ -186,11 +186,9 @@ datadefs <- as.data.frame(datadefs, stringsAsFactors=FALSE)
 datadefs = datadefs[c(-24,-25),]
 
 
-
 # hclust-avg --------------------------------------------------------------
 hclust.avg <- function(x) hclust(x, method="average")
  
-
 
 # jdfs --------------------------------------------------------------------
 # Distance function used for clustering.  Basically causes values to range between 0
@@ -204,6 +202,7 @@ jdfs_absolute = function(x) {
   abs(jdfs(x))
 }
 
+
 # cohensd -----------------------------------------------------------------
 # Effect size.
 cohensd <- function(g1, g2) 
@@ -213,11 +212,10 @@ cohensd <- function(g1, g2)
 
 
 # structureeffects --------------------------------------------------------
-# Calculates the effect sizes for the first group (ind1) and the second group (ind2)
+# Calculates the effect size between the first group (ind1) and the second group (ind2)
 # for each brain region.
 structureeffects <- function(ind1, ind2, datatable) 
 {
-  
   effects <- vector(length=ncol(datatable))
   for (i in 1:ncol(datatable)) {
     effects[i] <- cohensd(datatable[ind1, i],
@@ -232,7 +230,6 @@ structureeffects <- function(ind1, ind2, datatable)
 # Calls structureeffects on either a bootstrapped or real sample.
 structureeffectsfromdatadefs <- function(datadefs, i, boot=F) 
 {
-  
   # Get data and appropriate labels from Combined_vols and gf files.
   dt <- get(datadefs$data[i])
   gterm <- get(datadefs$term[i], get(datadefs$gf[i]))
@@ -319,7 +316,6 @@ SummaryData = function(individualData)
 # Loops through all mouse models and computes the effect size for each.
 alleffects <- function(datadefs, boot=F) 
 {
-  
   neffects <- nrow(datadefs)
   
   out <- structureeffectsfromdatadefs(datadefs, 1, boot)
@@ -341,7 +337,6 @@ alleffects <- function(datadefs, boot=F)
 # replacement.  This function takes > 1 minute to run in its current implementation.
 bootalleffects <- function(datadefs, n=1000) 
 {
-  
   a = array(0, dim=c(n, nrow(datadefs), 62))
   
   for (i in 1:n) {
@@ -387,7 +382,6 @@ bootallconfints <-function(bootarray, datadefs, hierarchy=FALSE)
 # Compute the distance function on bootstrapped effects.
 bootalldist <- function(bootarray, distfun) 
 {
-  
   ngroups <- dim(bootarray)[2]
   nboot <- dim(bootarray)[1]
   out <- array(0, dim=c(nboot, ngroups, ngroups))
@@ -433,7 +427,6 @@ bootdistcint <- function(bootdistarray, datadefs)
 # How often are cluster memberships shared?
 clustmember <- function(bootdistarray, cutsize=2, datadefs=datadefs) 
 {
-  
   out <- array(0, dim=dim(bootdistarray))
   
   for (i in 1:dim(bootdistarray)[1]) {
@@ -485,14 +478,13 @@ plotconfints <- function(cints, ymin=-4, ymax=4)
 # or when data files with differently ordered columns are used
 GetColNames <- function() 
 {
-  
   # manually supply brain region labels
   goodColNames = c('Amygdala',
                    'Anterior Commissure - Anterior',
                    'Anterior Commissure - Posterior',
                    'Arbor Vita of Cerebellum',
                    'Basal Forebrain',
-                   'Stria Terminalis',
+                   'Bed Nucleus of Stria Terminalis',
                    'Cerebellar Cortex',
                    'Cerebellar Peduncle - Inferior',
                    'Cerebellar Peduncle - Middle',

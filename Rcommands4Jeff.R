@@ -29,7 +29,7 @@ pvrect(pv_MM,alpha=0.85)
 Effects_relative_13Jun_MM_new_boot_MEDIAN <- apply(Effects_relative_13Jun_MM_new_boot, c(2,3), median)
 Effects_relative_13Jun_MM_new_boot_MEDIAN_named <- data.frame(Effects_relative_13Jun_MM_new_boot_MEDIAN)
 rownames(Effects_relative_13Jun_MM_new_boot_MEDIAN_named) <- datadefs$name
-colnames(Effects_relative_13Jun_MMnew_boot_MEDIAN_named) <- colnames(Effects_relative_13Jun_new)
+colnames(Effects_relative_13Jun_MM_new_boot_MEDIAN_named) <- colnames(Effects_relative_13Jun_new)
 colnames(Effects_relative_13Jun_MM_new_boot_MEDIAN_named) <- colnames(Effects_relative_13Jun_new)
 Effects_relative_13Jun_MM_new_boot_MEDIAN_named_new <- Effects_relative_13Jun_MM_new_boot_MEDIAN_named
 Effects_relative_13Jun_MM_new_boot_MEDIAN_named_new[Effects_relative_13Jun_MM_new_boot_MEDIAN_named_new < -3] <- -3
@@ -46,3 +46,4 @@ Effects_relative_13Jun_MM_new_boot_MEAN_named_new[Effects_relative_13Jun_MM_new_
 Effects_relative_13Jun_MM_new_boot_MEAN_named_new[Effects_relative_13Jun_MM_new_boot_MEAN_named_new > 3] <- 3
 heatmap.2(as.matrix(Effects_relative_13Jun_MM_new_boot_MEAN_named_new), distfun=jdfs, col=bluered, margins=c(8,14), trace="none", density.info="histogram", keysize=1.2, symkey=TRUE, symbreaks=TRUE)
 heatmap.2(as.matrix(Effects_relative_13Jun_MM_new_boot_MEAN_named_new), distfun=jdfs_absolute, col=bluered, margins=c(8,14), trace="none", density.info="histogram", keysize=1.2, symkey=TRUE, symbreaks=TRUE)
+

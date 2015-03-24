@@ -74,6 +74,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="development-notes-and-rationales" class="section level2">
 <h2>Development Notes and Rationales</h2>
+<p>There’s probably no point in giving the option to cluster by just 1 dimension, despite the option of doing so in the heatmap call, because the dimensions are clustered independently. The dendrograms don’t make the plot significantly more difficult to read or anything.</p>
 <div id="inspirations" class="section level4">
 <h4>Inspirations</h4>
 <ul>
@@ -94,21 +95,17 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li>selecting just 1 strain also doesn’t make sense, because you may as well go to page 2 and do an effect size plot, which sorts it for you</li>
 <li>still need to check that these errors are handled</li>
 </ul></li>
+<li>“Warning: Stacking not well defined when ymin != 0”</li>
+<li>“Error in mousedata[isolate(input<span class="math">\(strains), input\)</span>selectBoxStrainRegion]”</li>
+<li>“ymax not defined: adjusting position using y instead”
+<ul>
+<li>only occurs for boxplots – tried setting the ymax but it didn’t work</li>
+</ul></li>
 <li>can you cluster by just 1 dimension?
 <ul>
 <li>there is an option to specify this in the heatmap call, but the clustering of each dimension is independent so it isn’t worth it</li>
 </ul></li>
-<li>verify that effect size calculations / data are correct
-<ul>
-<li>two Stria Terminalis regions when there should only be one
-<ul>
-<li>this is resulting in incorrect clustering and double bar stacking on the effect size plot</li>
-</ul></li>
-</ul></li>
-<li>boxplot plots black dots and no whisker on occasion
-<ul>
-<li>I believe the black dots denote outliers… but then why are the whiskers not always drawn to the edge of 1.5*IQR? (see Cerebellar Peduncle, Entorhinal Cortex, Fourth Ventricle for 15q11-13)</li>
-</ul></li>
+<li>verify that effect size calculations / data are correct</li>
 <li>heatmap doesn’t immediately show up when you launch the app (it does sometimes but not all the time)</li>
 </ul>
 </div>
@@ -148,11 +145,14 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <ul>
 <li>upgraded plots
 <ul>
+<li>upgraded violin plot to also include IQR and median which is standard in many violin plots?</li>
 <li>bootstrapped violin plot (in general, page with bootstrapped means / effect sizes?)</li>
-<li>dot plot with standard error / standard deviations?</li>
+<li>change dot plot / bar plot to have standard error instead of standard deviation?</li>
 <li>I need to understand bootstrapping better (more specifically, the conditions under which it fails)</li>
 </ul></li>
+<li>speed up bootstrapping somehow?</li>
 <li>show statistical tests?</li>
+<li>demonstrate bootstrapping on a separate Shiny page</li>
 <li>plot dashed line on effect size plot showing associated .05 p value?</li>
 <li>allow clustering by different methods by changing hclustfun? (e.g. Ward’s, single-linkage, complete-linkage, top-down K-means?)
 <ul>
@@ -164,10 +164,10 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li>might be possible by supplying an argument to reorderfun</li>
 <li>could be more interpretable by others</li>
 <li>use pvclust to plot the actual appropriateness of the clusters</li>
+<li>this doesn’t seem very useful because you can infer the most similar model directly from the length of the dendrogram branch</li>
 </ul></li>
-<li>provide user with a control to select groups of regions according to common attributes (synaptic effects, groups of brain regions, etc.)</li>
+<li>provide user with a control to select groups of regions according to common attributes (gene models that affect the synapse, white matter / social perception &amp; autonomic regulation, etc.)</li>
 <li>replace collaborator pdf summaries of scanned brains with generic Shiny app</li>
-<li>demonstrate bootstrapping on a separate Shiny page</li>
 <li>relate Shiny app to genetic information of the mouse models?</li>
 <li>add confidence of analysis as you change the number of strains / regions to cluster on?</li>
 <li>instead of weighting each brain region equally, allow user to add in their own weighting system, for example, where each region gets a weight corresponding to its size, or proportion of different cell types, etc.
