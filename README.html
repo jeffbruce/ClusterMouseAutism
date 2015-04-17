@@ -127,22 +127,31 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h2>TO DO</h2>
 <div id="fix-bugs" class="section level4">
 <h4>Fix Bugs</h4>
+<div id="hosting-bugs" class="section level6">
+<h6>Hosting Bugs</h6>
+<ul>
+<li>doesn’t work on firefox consistently
+<ul>
+<li>think it might be related to the browser extension</li>
+</ul></li>
+</ul>
+</div>
+<div id="major-bugs" class="section level6">
+<h6>Major Bugs</h6>
 <ul>
 <li>make the row/column dendrogram labels actually line up with the rows/columns
 <ul>
-<li>WAIT</li>
 <li>maybe this bug doesn’t exist on all browsers / displays</li>
 </ul></li>
 <li>heatmap doesn’t immediately show up when you launch the app
 <ul>
-<li>WAIT</li>
 <li>only resizing the window or clicking Recalculate makes the heatmap show – the heatmap on the second page always shows</li>
-<li>maybe wait on this bug until I’ve launched it to see if it exists in the launch version</li>
 </ul></li>
+<li>resize barplot y scales appropriately</li>
 </ul>
 </div>
-<div id="lower-priority-issues" class="section level4">
-<h4>Lower Priority Issues</h4>
+<div id="minor-bugs" class="section level6">
+<h6>Minor Bugs</h6>
 <ul>
 <li>ensure that the dendrogram lengths make sense</li>
 <li>improve y-axis scaling for bar plot</li>
@@ -155,8 +164,9 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </ul></li>
 </ul>
 </div>
-<div id="add-hosting" class="section level4">
-<h4>Add Hosting</h4>
+</div>
+<div id="add-proper-hosting" class="section level4">
+<h4>Add Proper Hosting</h4>
 <ul>
 <li>figure out issues related to hosting on a private Shiny server on a linux virtual machine
 <ul>
@@ -236,8 +246,8 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li>best papers on the reliability of methods at MICe (there’s that one MICe paper claiming that you need x number of subjects to maintain a given confidence level, which I need to read)</li>
 </ul>
 </div>
-<div id="theoretical-quandaries" class="section level4">
-<h4>Theoretical Quandaries</h4>
+<div id="address-theoretical-quandaries" class="section level4">
+<h4>Address Theoretical Quandaries</h4>
 <div id="effect-size-calculation" class="section level6">
 <h6>Effect size calculation</h6>
 <ul>
