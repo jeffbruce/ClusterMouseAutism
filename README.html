@@ -56,25 +56,65 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h1>ClusterMouseAutism</h1>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This project is an interactive web application coded in <a href="http://www.r-project.org/">R</a> for clustering mouse models of autism using neuroanatomical data. It makes use of the <a href="http://shiny.rstudio.com/">Shiny</a> web application framework. The app presents data from a research paper published in Nature Neuroscience (reference) entitled <insert paper title> (reference).</p>
+<p>This project is an interactive web application coded in <a href="http://www.r-project.org/">R</a> for clustering mouse models of autism using neuroanatomical data. It makes use of the <a href="http://shiny.rstudio.com/">Shiny</a> web application framework (a package in R). The app presents data from a research paper published in Nature Neuroscience (reference) entitled <insert paper title> (reference).</p>
 </div>
 <div id="workflow" class="section level2">
 <h2>Workflow</h2>
-<p>To use the app, it is recommended that you do the following:</p>
+<p>The app can be accessed in many ways. Options include:</p>
+<ol style="list-style-type: decimal">
+<li>Launching the app locally, assuming you have R installed</li>
+</ol>
+<ul>
+<li>download the app folder from GitHub</li>
+<li>launch R in the terminal or launch RStudio</li>
+<li>from within R, load the Shiny package and set your working directory to the folder <em>containing</em> the app folder you just downloaded:
+<ul>
+<li>setwd(<em>insert folder containing app folder you just downloaded</em>)</li>
+</ul></li>
+<li>launch the app with:
+<ul>
+<li>runApp(appDir = ‘ClusterMouseAutism’, launch.browser = TRUE, display.mode = ‘normal’), which will launch the app in your default browser</li>
+</ul></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Launch the app directly from GitHub</li>
+</ol>
+<ul>
+<li>use this command:
+<ul>
+<li>runGitHub(repo=‘ClusterMouseAutism’, username=‘jeffbruce’)</li>
+</ul></li>
+<li>this option distorts the style of the app for whatever reason</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Access the app through the web</li>
+</ol>
+<ul>
+<li>the app is currently hosted on a private Shiny server which resides on a Linux virtual machine</li>
+<li>the app can be accessed by visiting the following site:
+<ul>
+<li><insert domain here></li>
+</ul></li>
+</ul>
 </div>
 <div id="dependencies" class="section level2">
 <h2>Dependencies</h2>
+<p>If you decide to run the app locally, you will need a number of R packages installed, potentially along with some additional configuration.</p>
 <ul>
 <li>R packages:
 <ul>
 <li>shiny</li>
 <li>gplots</li>
+<li>ggplot2</li>
+<li>data.table</li>
+<li>plyr</li>
+<li>reshape2</li>
+<li>stats</li>
 </ul></li>
 </ul>
 </div>
 <div id="development-notes-and-rationales" class="section level2">
 <h2>Development Notes and Rationales</h2>
-<p>There’s probably no point in giving the option to cluster by just 1 dimension, despite the option of doing so in the heatmap call, because the dimensions are clustered independently. The dendrograms don’t make the plot significantly more difficult to read or anything.</p>
 <div id="inspirations" class="section level4">
 <h4>Inspirations</h4>
 <ul>
@@ -88,55 +128,52 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <div id="fix-bugs" class="section level4">
 <h4>Fix Bugs</h4>
 <ul>
-<li>make the row/column dendrogram labels actually line up with the rows/columns</li>
-<li>handle edge cases of selecting &lt;= 1 strain or &lt;= 1 brain region
+<li>make the row/column dendrogram labels actually line up with the rows/columns
 <ul>
-<li>obviously it doesn’t make sense to select 0 strains or 0 regions</li>
-<li>selecting just 1 strain also doesn’t make sense, because you may as well go to page 2 and do an effect size plot, which sorts it for you</li>
-<li>still need to check that these errors are handled</li>
+<li>WAIT</li>
+<li>maybe this bug doesn’t exist on all browsers / displays</li>
 </ul></li>
-<li>“Warning: Stacking not well defined when ymin != 0”</li>
-<li>“Error in mousedata[isolate(input<span class="math">\(strains), input\)</span>selectBoxStrainRegion]”</li>
-<li>“ymax not defined: adjusting position using y instead”
+<li>heatmap doesn’t immediately show up when you launch the app
 <ul>
-<li>only occurs for boxplots – tried setting the ymax but it didn’t work</li>
+<li>WAIT</li>
+<li>only resizing the window or clicking Recalculate makes the heatmap show – the heatmap on the second page always shows</li>
+<li>maybe wait on this bug until I’ve launched it to see if it exists in the launch version</li>
 </ul></li>
-<li>can you cluster by just 1 dimension?
-<ul>
-<li>there is an option to specify this in the heatmap call, but the clustering of each dimension is independent so it isn’t worth it</li>
-</ul></li>
-<li>verify that effect size calculations / data are correct</li>
-<li>heatmap doesn’t immediately show up when you launch the app (it does sometimes but not all the time)</li>
 </ul>
 </div>
 <div id="lower-priority-issues" class="section level4">
 <h4>Lower Priority Issues</h4>
 <ul>
 <li>ensure that the dendrogram lengths make sense</li>
-<li>add dashed lines going through the heatmap so it’s easier to read</li>
-<li>improve y axis scaling for bar plot</li>
+<li>improve y-axis scaling for bar plot</li>
+<li>“Warning: Stacking not well defined when ymin != 0”</li>
+<li>“Error in mousedata[isolate(input<span class="math">\(strains), input\)</span>selectBoxStrainRegion]”</li>
+<li>“ymax not defined: adjusting position using y instead”
+<ul>
+<li>only occurs for boxplots – tried setting the ymax but it didn’t work</li>
+<li>the number of errors output multiplies by the number of subplots</li>
+</ul></li>
 </ul>
 </div>
 <div id="add-hosting" class="section level4">
 <h4>Add Hosting</h4>
 <ul>
-<li>bug Fernando about configuring VNC to allow me to launch graphical applications from the vm</li>
-<li>figure out how to host the app on a Linux server here</li>
-<li>3 (4?) options:
+<li>figure out issues related to hosting on a private Shiny server on a linux virtual machine
 <ul>
-<li>can host on Github so R users can run the app directly from the R command line</li>
-<li>can host on Shiny’s public servers (shinyapps.io)
+<li>can a custom domain be used? how to set this up?</li>
+<li>load testing – how many users can use the app at the same time?
 <ul>
-<li>only professional version ($3000 a year) offers custom domains, authentication of users, and free version only allows 10 applications, 50 active hours per month</li>
+<li>is there a limit on the number of active hours of the app?</li>
 </ul></li>
-<li>can use a private ShinyServer hosted on a Linux server (there is a free version and a professional version)
-<ul>
-<li>main differences between free and ($10000) paid version is that paid version allows multiple R processes per app, provides admin dashboard with performance data, and supports SSL/authentication</li>
+<li>does the app work well on any browser?</li>
+<li>how to ensure that the app is secure?</li>
+<li>write a script to automatically configure the vm, including downloading and installing the Shiny server, downloading the app and putting it in the right directory, and any additional configuration that was involved</li>
 </ul></li>
-<li>apparently the Shiny library comes with a web server, and is designed to only host one app at a time – maybe if we’re only hosting one app then this would be easiest?
+<li>apparently the Shiny library comes with a web server, and is designed to only host one app at a time
 <ul>
-<li>can this be done on a virtual machine? how to change the domain name?</li>
-</ul></li>
+<li>maybe if we’re only hosting one app then this would be easiest?</li>
+<li>can this be done on a virtual machine?</li>
+<li>can you change the domain, etc.?</li>
 </ul></li>
 </ul>
 </div>
@@ -164,7 +201,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li>might be possible by supplying an argument to reorderfun</li>
 <li>could be more interpretable by others</li>
 <li>use pvclust to plot the actual appropriateness of the clusters</li>
-<li>this doesn’t seem very useful because you can infer the most similar model directly from the length of the dendrogram branch</li>
+<li>this doesn’t seem very useful because you can infer the most similar strain directly from the length of the dendrogram branch</li>
 </ul></li>
 <li>provide user with a control to select groups of regions according to common attributes (gene models that affect the synapse, white matter / social perception &amp; autonomic regulation, etc.)</li>
 <li>replace collaborator pdf summaries of scanned brains with generic Shiny app</li>

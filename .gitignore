@@ -2,6 +2,16 @@
 *.Rproj.user
 *.Rhistory
 *.RData
+.Rproj.user*
 
 # locked files
 *.~lock
+
+# unnecessary folders
+/shinyapps
+/data/extras
+/data/random
+
+# sensitive files
+RunClusterMouseAutism.R
+.Rproj.user

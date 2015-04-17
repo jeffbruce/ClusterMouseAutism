@@ -1,5 +1,23 @@
+# run app locally in default browser
+
 library(shiny)
 
 setwd('//micehome//jbruce//Documents//Code//R//')
 # runApp(appDir = 'ClusterMouseAutism', launch.browser = TRUE, display.mode = 'showcase')
 runApp(appDir = 'ClusterMouseAutism', launch.browser = TRUE, display.mode = 'normal')
+
+
+# deploy app on shinyapps.io server
+
+library(shinyapps)
+
+# this command below needs to be run for each workstation you're running it on -- not sure if you need
+# a different token or secret though.
+# shinyapps::setAccountInfo(name='jeffmouseimaging', token='261FE9A47737054D41282DDD34C926E8', secret='Yh56qQxV2HE8PM2BM4DRRu2hZvimRCUJfAA5HX+f')
+
+setwd('//micehome//jbruce//Documents//Code//R//')
+shinyapps::deployApp('ClusterMouseAutism')
+
+# Application successfully deployed to http://jeffmouseimaging.shinyapps.io/ClusterMouseAutism
+# Application fails the same way that it does on the mousecluster vm shinyserver
+# - it actually immediately fails instead of failing after 15ish seconds though

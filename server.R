@@ -1,15 +1,25 @@
 # server.R
-# all shared stuff is declared in global.R instead of here
-# because ui.R needs to access some libraries/data
+# all shared data/libraries are declared in global.R instead of here
+# because ui.R needs to access them
 
 shinyServer(
   function(input, output) {
+    
+    # this code is run for each user, every time they refresh their browser
     
 # Helper Functions --------------------------------------------------------
     
     stderr <- function(x){sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))}
     lowsd <- function(x){return(mean(x)-stderr(x))}
     highsd <- function(x){return(mean(x)+stderr(x))}
+
+    # takes a vector of effect sizes, and sets everything below the lower limit
+    # to the lower limit, and everything above the upper limit to the upper limit
+    # setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
+    #   effectSizes[effectSizes > upperLimit] = upperLimit
+    #   effectSizes[effectSizes < lowerLimit] = lowerLimit
+    #   return(effectSizes)
+    # }
 
 # Page 1 Widgets ---------------------------------------------------------
 
@@ -47,14 +57,13 @@ shinyServer(
     output$heatmap1 = renderPlot({
       input$recalculate
       
-      # Add error checking for input$strains and input$regions >= 2.  At least one of them must be greater than 2
-      # to perform clustering.
-      
       # isolate() prevents heatmap from regenerating every time a new strain/region is selected
       mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
       nr = dim(mousedatamat)[1]
       nc = dim(mousedatamat)[2]
-     
+            
+      #browser()
+      
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
         heatmap.2(x=mousedatamat, 
                   distfun=jdfs,
@@ -109,7 +118,7 @@ shinyServer(
                   multiple = TRUE)
     })
     
-    # Page 2 plot - box/violin/bar
+    # Page 2 plot - box/violin/bar/dot
     output$meansPlot = renderPlot({
       
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
@@ -168,7 +177,7 @@ shinyServer(
                      + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
                      + theme(strip.text = element_text(size=24))
                      + theme(legend.text = element_text(size=14)))
-        
+
         # Return the plot
         return(meansPlot)
       }
@@ -183,6 +192,7 @@ shinyServer(
           effectSizeData = data.frame(region = isolate(input$regions), 
                                       effectSize = mousedata[input$selectBoxStrainRegion, isolate(input$regions)],
                                       row.names = NULL)
+          #effectSizeData$effectSize = setEffectSizeLimits(effectSizeData$effectSize, lowerLimit=-3, upperLimit=3)
           effectSizePlot = (ggplot(data = effectSizeData, 
                                    aes(x = stats:::reorder.default(region, effectSize), 
                                        y = effectSize))
@@ -200,13 +210,15 @@ shinyServer(
         # Customize theme aspects of the plot
         effectSizePlot = (effectSizePlot
                           + geom_bar(stat = 'identity', fill = 'thistle1', colour='black')
+                          + geom_hline(yintercept=3)
+                          + geom_hline(yintercept=-3)
                           + ggtitle(input$selectBoxStrainRegion)
                           + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
                           + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
                           + theme(axis.title.y = element_text(angle=90))
                           + theme(axis.text.x = element_text(angle=90, color='#000000', face='bold', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
                           + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
-                          + ylim(-2.5, 2.5))
+                          + scale_y_continuous(breaks=seq(-3.5, 3.5, 0.5)))
         
         # Return the plot
         return(effectSizePlot)
@@ -217,9 +229,6 @@ shinyServer(
     # Page 2 plot - heatmap used as reference to generate individual or group plots
     output$heatmap2 = renderPlot({
       input$recalculate
-      
-      # Add error checking for input$strains and input$regions >= 2.  At least one of them must be greater than 2
-      # to perform clustering.
       
       # isolate() prevents heatmap from regenerating every time a new strain/region is selected
       mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])

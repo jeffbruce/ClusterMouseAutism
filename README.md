@@ -1,25 +1,46 @@
 ---
-output: pdf_document
+output: html_document
 ---
 # ClusterMouseAutism
 
 ## Introduction
 
-This project is an interactive web application coded in [R][1] for clustering mouse models of autism using neuroanatomical data.  It makes use of the [Shiny][2] web application framework.  The app presents data from a research paper published in Nature Neuroscience (reference) entitled <insert paper title> (reference).  
+This project is an interactive web application coded in [R][1] for clustering mouse models of autism using neuroanatomical data.  It makes use of the [Shiny][2] web application framework (a package in R).  The app presents data from a research paper published in Nature Neuroscience (reference) entitled <insert paper title> (reference).  
 
 ## Workflow
 
-To use the app, it is recommended that you do the following:
+The app can be accessed in many ways.  Options include:
+
+1. Launching the app locally, assuming you have R installed
+- download the app folder from GitHub
+- launch R in the terminal or launch RStudio
+- from within R, load the Shiny package and set your working directory to the folder _containing_ the app folder you just downloaded: 
+    - setwd(_insert folder containing app folder you just downloaded_)
+- launch the app with: 
+    - runApp(appDir = 'ClusterMouseAutism', launch.browser = TRUE, display.mode = 'normal'), which will launch the app in your default browser
+2. Launch the app directly from GitHub
+- use this command: 
+    - runGitHub(repo='ClusterMouseAutism', username='jeffbruce')
+- this option distorts the style of the app for whatever reason
+3. Access the app through the web
+- the app is currently hosted on a private Shiny server which resides on a Linux virtual machine
+- the app can be accessed by visiting the following site: 
+    - <insert domain here>
 
 ## Dependencies
+
+If you decide to run the app locally, you will need a number of R packages installed, potentially along with some additional configuration.
 
 - R packages:
     - shiny
     - gplots
+    - ggplot2
+    - data.table
+    - plyr
+    - reshape2
+    - stats
 
 ## Development Notes and Rationales
-
-There's probably no point in giving the option to cluster by just 1 dimension, despite the option of doing so in the heatmap call, because the dimensions are clustered independently.  The dendrograms don't make the plot significantly more difficult to read or anything.
 
 #### Inspirations
 
@@ -31,41 +52,42 @@ There's probably no point in giving the option to cluster by just 1 dimension, d
 
 #### Fix Bugs
 
+###### Hosting Bugs
+
+- doesn't work on firefox consistently
+    - think it might be related to the browser extension
+
+###### Major Bugs
+
 - make the row/column dendrogram labels actually line up with the rows/columns
-    - maybe doesn't exist on all browsers / displays
-- handle edge cases of selecting <= 1 strain or <= 1 brain region
-    - obviously it doesn't make sense to select 0 strains or 0 regions
-    - selecting just 1 strain also doesn't make sense, because you may as well go to page 2 and do an effect size plot, which sorts it for you
-    - still need to check that these errors are handled
-- change scale of bar plot to be more user friendly
+    - maybe this bug doesn't exist on all browsers / displays
+- heatmap doesn't immediately show up when you launch the app
+    - only resizing the window or clicking Recalculate makes the heatmap show -- the heatmap on the second page always shows
+- resize barplot y scales appropriately
+
+###### Minor Bugs
+
+- ensure that the dendrogram lengths make sense
+- improve y-axis scaling for bar plot
 - "Warning: Stacking not well defined when ymin != 0"
 - "Error in mousedata[isolate(input$strains), input$selectBoxStrainRegion]"
 - "ymax not defined: adjusting position using y instead"
     - only occurs for boxplots -- tried setting the ymax but it didn't work
-- verify that effect size calculations / data are correct
-    - ask Jacob for original alleffects code
-- heatmap doesn't immediately show up when you launch the app (it does sometimes but not all the time)
-    - need to resize the window first or go to the next tab
-    - maybe wait on this bug until I've launched it to see if it exists in the launch version
+    - the number of errors output multiplies by the number of subplots
 
-#### Lower Priority Issues
+#### Add Proper Hosting
 
-- ensure that the dendrogram lengths make sense
-- add dashed lines going through the heatmap so it's easier to read
-- improve y axis scaling for bar plot
-
-#### Add Hosting
-
-- bug Fernando about configuring VNC to allow me to launch graphical applications from the vm
-- figure out how to host the app on a Linux server here
-- 3 (4?) options:
-    - can host on Github so R users can run the app directly from the R command line
-    - can host on Shiny's public servers (shinyapps.io)
-        - only professional version ($3000 a year) offers custom domains, authentication of users, and free version only allows 10 applications, 50 active hours per month
-    - can use a private ShinyServer hosted on a Linux server (there is a free version and a professional version)
-        - main differences between free and ($10000) paid version is that paid version allows multiple R processes per app, provides admin dashboard with performance data, and supports SSL/authentication
-    - apparently the Shiny library comes with a web server, and is designed to only host one app at a time – maybe if we're only hosting one app then this would be easiest?
-        - can this be done on a virtual machine?  how to change the domain name?
+- figure out issues related to hosting on a private Shiny server on a linux virtual machine
+    - can a custom domain be used?  how to set this up?
+    - load testing -- how many users can use the app at the same time?
+        - is there a limit on the number of active hours of the app?
+    - does the app work well on any browser?
+    - how to ensure that the app is secure?
+    - write a script to automatically configure the vm, including downloading and installing the Shiny server, downloading the app and putting it in the right directory, and any additional configuration that was involved
+- apparently the Shiny library comes with a web server, and is designed to only host one app at a time
+    - maybe if we're only hosting one app then this would be easiest?
+    - can this be done on a virtual machine?
+    - can you change the domain, etc.?
         
 #### Add New Features
 
@@ -85,7 +107,7 @@ There's probably no point in giving the option to cluster by just 1 dimension, d
     - might be possible by supplying an argument to reorderfun
     - could be more interpretable by others
     - use pvclust to plot the actual appropriateness of the clusters
-    - this doesn't seem very useful because you can infer the most similar model directly from the length of the dendrogram branch
+    - this doesn't seem very useful because you can infer the most similar strain directly from the length of the dendrogram branch
 - provide user with a control to select groups of regions according to common attributes (gene models that affect the synapse, white matter / social perception & autonomic regulation, etc.)
 - replace collaborator pdf summaries of scanned brains with generic Shiny app
 - relate Shiny app to genetic information of the mouse models?
@@ -106,7 +128,7 @@ There's probably no point in giving the option to cluster by just 1 dimension, d
     - the length of a branch represents how similar the two rows/columns are
 - best papers on the reliability of methods at MICe (there's that one MICe paper claiming that you need x number of subjects to maintain a given confidence level, which I need to read)
 
-#### Theoretical Quandaries
+#### Address Theoretical Quandaries
 
 ###### Effect size calculation
 

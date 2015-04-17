@@ -3,7 +3,7 @@
 require(gplots)
 require(ggplot2)
 require(data.table)
-# should always load plyr and then dplyr apparently
+# should load plyr before dplyr apparently
 require(plyr)
 #require(dplyr)
 require(reshape2)
