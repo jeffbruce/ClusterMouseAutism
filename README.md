@@ -15,7 +15,7 @@ The app can be accessed in many ways.  Options include:
     - download the app folder from GitHub
     - launch R in the terminal or launch RStudio
     - from within R, load the Shiny package and set your working directory to the folder _containing_ the app folder you just downloaded: 
-        - setwd(_insert folder containing app folder you just downloaded_)
+        - setwd(_insert path name of app folder you just downloaded_)
     - launch the app with: 
         - runApp(appDir = 'ClusterMouseAutism', launch.browser = TRUE, display.mode = 'normal'), which will launch the app in your default browser
 2. Launch the app directly from GitHub
@@ -39,6 +39,8 @@ If you decide to run the app locally, you will need a number of R packages insta
     - plyr
     - reshape2
     - stats
+- Additional configuration:
+    - none known as of yet
 
 ## Development Notes and Rationales
 
@@ -52,7 +54,7 @@ If you decide to run the app locally, you will need a number of R packages insta
 
 #### Fix Bugs
 
-###### Hosting Bugs
+###### Web Bugs
 
 - doesn't work on firefox consistently
     - think it might be related to the browser extension
