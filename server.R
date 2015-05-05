@@ -1,25 +1,52 @@
 # server.R
-# all shared data/libraries are declared in global.R instead of here
-# because ui.R needs to access them
+
+# Shared data/libraries are declared in global.R 
+# instead of here because ui.R needs access.
+
+# Utility Functions --------------------------------------------------------
+
+#     cint <- function(x, alpha) {
+#       sem(x) * qt(1-alpha/2, length(na.omit(x))-1)
+#     }
+
+# right now assumes alpha = 0.05!
+cint <- function(x) {
+  sem(x) * qt(1-0.05/2, length(na.omit(x))-1)
+}
+
+low95cint <- function(x) {
+  mean(x) - cint(x)
+}
+
+high95cint <- function(x) {
+  mean(x) + cint(x)
+}
+
+sem <- function(x) {
+  sqrt( var(x,na.rm=TRUE) / length(na.omit(x)) )
+}
+
+lowsd <- function(x) {
+  return( mean(x) - sem(x) )
+}
+
+highsd <- function(x) {
+  return(mean(x) + sem(x))
+}
+
+# setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
+    # Restricts range of a vector of effect sizes.   
+#   effectSizes[effectSizes > upperLimit] = upperLimit
+#   effectSizes[effectSizes < lowerLimit] = lowerLimit
+#   return(effectSizes)
+# }
 
 shinyServer(
   function(input, output) {
     
     # this code is run for each user, every time they refresh their browser
     
-# Helper Functions --------------------------------------------------------
-    
-    stderr <- function(x){sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))}
-    lowsd <- function(x){return(mean(x)-stderr(x))}
-    highsd <- function(x){return(mean(x)+stderr(x))}
 
-    # takes a vector of effect sizes, and sets everything below the lower limit
-    # to the lower limit, and everything above the upper limit to the upper limit
-    # setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
-    #   effectSizes[effectSizes > upperLimit] = upperLimit
-    #   effectSizes[effectSizes < lowerLimit] = lowerLimit
-    #   return(effectSizes)
-    # }
 
 # Page 1 Widgets ---------------------------------------------------------
 
@@ -56,13 +83,19 @@ shinyServer(
     # Page 1 plot - heatmap for reclustering
     output$heatmap1 = renderPlot({
       input$recalculate
+
+      # ensures that the plot renders when the app is initially loaded
+      if (is.null(isolate(input$strains))) {
+        validate(need(input$strains, FALSE))
+      }
+      if (is.null(isolate(input$regions))) {
+        validate(need(input$regions, FALSE))
+      }
       
       # isolate() prevents heatmap from regenerating every time a new strain/region is selected
       mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
       nr = dim(mousedatamat)[1]
       nc = dim(mousedatamat)[2]
-            
-      #browser()
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
         heatmap.2(x=mousedatamat, 
@@ -135,7 +168,8 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + stat_summary(fun.y=mean, position=position_dodge(width=1), geom='bar')
-                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
+                       + stat_summary(fun.y=mean, fun.ymin=low95cint, fun.ymax=high95cint, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
+#                        + stat_summary(fun.y=mean, fun.ymin=mean(volume) - cint(x=volume, alpha=0.05), fun.ymax=mean(volume) + cint(x=volume, alpha=0.05), position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
         } else if (input$plotType == 2) {
           meansPlot = (ggplot(data=meansData,
                               aes(x=name, 
@@ -162,8 +196,9 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + geom_point(position=position_jitterdodge(dodge=1.0))
-                       + stat_summary(fun.y=mean, fun.ymin=lowsd, fun.ymax=highsd, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5))
-                       #+ stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
+                       + stat_summary(fun.y=mean, fun.ymin=low95cint, fun.ymax=high95cint, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5)
+#                        + stat_summary(fun.y=mean, fun.ymin=mean(volume) - cint(x=volume, alpha=0.05), fun.ymax=mean(volume) + cint(x=volume, alpha=0.05), position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5)
+                       + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
         
         # Customize theme aspects of the plot
@@ -229,6 +264,14 @@ shinyServer(
     # Page 2 plot - heatmap used as reference to generate individual or group plots
     output$heatmap2 = renderPlot({
       input$recalculate
+      
+      # ensures that the plot renders when the app is initially loaded
+      if (is.null(isolate(input$strains))) {
+        validate(need(input$strains, FALSE))
+      }
+      if (is.null(isolate(input$regions))) {
+        validate(need(input$regions, FALSE))
+      }
       
       # isolate() prevents heatmap from regenerating every time a new strain/region is selected
       mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])

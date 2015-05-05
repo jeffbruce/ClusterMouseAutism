@@ -2,7 +2,8 @@
 # this file is run once, and it generates HTML which is cached
 # and sent to each browser that connects
 
-shinyUI(navbarPage('Menu',
+shinyUI(
+  navbarPage('Menu',
                 
     # PAGE 1 ------------------------------------------------------------------
                    
@@ -102,6 +103,7 @@ shinyUI(navbarPage('Menu',
         )
       )
     )
-))
+  )
+)
 
 
