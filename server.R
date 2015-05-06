@@ -45,9 +45,7 @@ shinyServer(
   function(input, output) {
     
     # this code is run for each user, every time they refresh their browser
-    
-
-
+  
 # Page 1 Widgets ---------------------------------------------------------
 
     # Page 1 dynamic control - select all brain regions
@@ -159,7 +157,7 @@ shinyServer(
         meansData = individualData
         meansData = meansData[meansData$name %in% input$selectInputStrains,]
         meansData = meansData[meansData$region %in% input$selectInputRegions,]
-        
+                
         if (input$plotType == 1) {
           dodge = position_dodge(width=0.9)
           meansPlot = (ggplot(data=meansData,
@@ -168,8 +166,7 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + stat_summary(fun.y=mean, position=position_dodge(width=1), geom='bar')
-                       + stat_summary(fun.y=mean, fun.ymin=low95cint, fun.ymax=high95cint, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
-#                        + stat_summary(fun.y=mean, fun.ymin=mean(volume) - cint(x=volume, alpha=0.05), fun.ymax=mean(volume) + cint(x=volume, alpha=0.05), position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
+                       + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
         } else if (input$plotType == 2) {
           meansPlot = (ggplot(data=meansData,
                               aes(x=name, 
@@ -196,8 +193,7 @@ shinyServer(
                                   fill=genotype, 
                                   colour=genotype))
                        + geom_point(position=position_jitterdodge(dodge=1.0))
-                       + stat_summary(fun.y=mean, fun.ymin=low95cint, fun.ymax=high95cint, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5)
-#                        + stat_summary(fun.y=mean, fun.ymin=mean(volume) - cint(x=volume, alpha=0.05), fun.ymax=mean(volume) + cint(x=volume, alpha=0.05), position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5)
+                       + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5)
                        + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
         
