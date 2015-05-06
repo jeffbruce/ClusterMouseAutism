@@ -81,20 +81,15 @@ shinyUI(
       conditionalPanel(
         condition = "input.statisticType == '2'",
         fluidRow(
-          column(3, uiOutput('selectInputStrains')),
-          column(3, uiOutput('selectInputRegions')),
-          column(3, radioButtons(inputId = 'plotType',
+          column(4, uiOutput('selectInputStrains')),
+          column(4, uiOutput('selectInputRegions')),
+          column(4, radioButtons(inputId = 'plotType',
                                  label = h4('Plot Type:'),
                                  choices = list('Bar' = 1, 
                                                 'Box' = 2, 
                                                 'Violin' = 3,
                                                 'Dot' = 4),
-                                 selected = 1)),
-          column(3, radioButtons(inputId = 'flipAxes',
-                                 label = h4('Flip Axes?'),
-                                 choices = list('Yes' = 1, 
-                                                'No' = 2),
-                                 selected = 2))
+                                 selected = 1))
         ),
         hr(),
         fluidRow(

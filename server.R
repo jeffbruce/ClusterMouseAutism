@@ -10,29 +10,29 @@
 #     }
 
 # right now assumes alpha = 0.05!
-cint <- function(x) {
-  sem(x) * qt(1-0.05/2, length(na.omit(x))-1)
-}
-
-low95cint <- function(x) {
-  mean(x) - cint(x)
-}
-
-high95cint <- function(x) {
-  mean(x) + cint(x)
-}
-
-sem <- function(x) {
-  sqrt( var(x,na.rm=TRUE) / length(na.omit(x)) )
-}
-
-lowsd <- function(x) {
-  return( mean(x) - sem(x) )
-}
-
-highsd <- function(x) {
-  return(mean(x) + sem(x))
-}
+# cint <- function(x) {
+#   sem(x) * qt(1-0.05/2, length(na.omit(x))-1)
+# }
+# 
+# low95cint <- function(x) {
+#   mean(x) - cint(x)
+# }
+# 
+# high95cint <- function(x) {
+#   mean(x) + cint(x)
+# }
+# 
+# sem <- function(x) {
+#   sqrt( var(x,na.rm=TRUE) / length(na.omit(x)) )
+# }
+# 
+# lowsd <- function(x) {
+#   return( mean(x) - sem(x) )
+# }
+# 
+# highsd <- function(x) {
+#   return(mean(x) + sem(x))
+# }
 
 # setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
     # Restricts range of a vector of effect sizes.   
@@ -157,41 +157,27 @@ shinyServer(
         meansData = individualData
         meansData = meansData[meansData$name %in% input$selectInputStrains,]
         meansData = meansData[meansData$region %in% input$selectInputRegions,]
-                
+        
+        meansPlot = ggplot(data=meansData, aes(x=name, y=volume, fill=genotype, colour=genotype))
+        
         if (input$plotType == 1) {
           dodge = position_dodge(width=0.9)
-          meansPlot = (ggplot(data=meansData,
-                              aes(x=name, 
-                                  y=volume, 
-                                  fill=genotype, 
-                                  colour=genotype))
+          meansPlot = (meansPlot
                        + stat_summary(fun.y=mean, position=position_dodge(width=1), geom='bar')
                        + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
         } else if (input$plotType == 2) {
-          meansPlot = (ggplot(data=meansData,
-                              aes(x=name, 
-                                  y=volume,
-                                  fill=genotype, 
-                                  colour=genotype))
+          meansPlot = (meansPlot
                        + geom_point(position=position_jitterdodge(dodge.width=0.9))
                        + geom_boxplot(fill='white', position=position_dodge(width=0.9), alpha=0.5, outlier.size=0)
                        + stat_summary(fun.y=mean, position=position_dodge(width=0.9), shape=3, col='red', geom='point'))
         } else if (input$plotType == 3) {
-          meansPlot = (ggplot(data=meansData,
-                              aes(x=name, 
-                                  y=volume, 
-                                  fill=genotype, 
-                                  colour=genotype))
+          meansPlot = (meansPlot
                        + geom_point(position=position_jitterdodge(dodge.width=0.9))
                        + geom_violin(fill='white', position=position_dodge(width=0.9), alpha=0.5))
         } else if (input$plotType == 4) {
           means = tapply(meansData$volume, meansData$genotype, mean)
           sds = tapply(meansData$volume, meansData$genotype, sd)
-          meansPlot = (ggplot(data=meansData,
-                              aes(x=name, 
-                                  y=volume, 
-                                  fill=genotype, 
-                                  colour=genotype))
+          meansPlot = (meansPlot
                        + geom_point(position=position_jitterdodge(dodge=1.0))
                        + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5)
                        + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
@@ -208,7 +194,7 @@ shinyServer(
                      + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
                      + theme(strip.text = element_text(size=24))
                      + theme(legend.text = element_text(size=14)))
-
+        
         # Return the plot
         return(meansPlot)
       }
