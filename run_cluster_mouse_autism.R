@@ -1,14 +1,23 @@
 # run app locally in default browser
 
+# PACKAGE DEPENDENCIES
+# install.packages('shiny')
+# install.packages('gplots')
+# install.packages('ggplot2')
+# install.packages('data.table')
+# install.packages('Hmisc')
+
 library(shiny)
 
+# LINUX
 setwd('//micehome//jbruce//Documents//Code//R//')
+# MAC
+setwd('/Users/jeffbruce/Projects/Development/')
 #runApp(appDir='ClusterMouseAutism', launch.browser=TRUE, display.mode='showcase')
 runApp(appDir='ClusterMouseAutism', launch.browser=TRUE, display.mode='normal')
 
 
 # deploy app on shinyapps.io server
-
 library(shinyapps)
 
 # this command below needs to be run for each workstation you're running it on -- not sure if you need

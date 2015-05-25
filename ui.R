@@ -10,27 +10,47 @@ shinyUI(
     tabPanel('Overview',
       
       titlePanel('Clustering Autism in the Mouse'),
+      
+      br(),
              
-      p('This web app presents results from the research paper by Ellegood et al. (2014), entitled: ', em('Clustering autism: 
+      p('This web app presents results from the research paper by Ellegood et al. (2014) published in Molecular Psychiatry, entitled: ', em('Clustering autism: 
         using neuroanatomical differences in 26 mouse models to gain insight into the heterogeneity.'), '  In the ', em('Overview '),
-        'tab (the current tab), the paper\'s key findings are summarized.  The other tabs give you a chance to play with and visualize 
-        the data.'),  
+        'tab, the paper\'s key findings are summarized.  The other tabs give you a chance to play with and visualize 
+        the data.'),
       
       p('By making the data open and public, our aim is to allow researchers and interested parties to help generate and test their own 
         hypotheses with our data to help tease apart the complex heterogeneity and etiology at play in autism spectrum disorder.'),
       
       p('Research efforts are ongoing using additional mouse models of autism, adding to the long list of strains which were scanned 
-        and analyzed in the original work.  This research could not have been done without the help from a long list of collaborators, 
-        who we would like to recognize for their great work:')
-
+        and analyzed in the original work.  This research could not have been done without the help from a long list of people, 
+        who we would like to recognize for their great work:'),
+      
+      ul('Jacob Ellegood', 'Jason Lerch'),
+      
+      p('ADD IN AWESOME COLLABORATORS HERE'),
+      
+      p('Below, you will find the key figures in the aforementioned paper'),
+      
+      br(),
+      
+      img(src='/images/figure1.png', align = "center"),
+      img(src='/images/figure2.png', align = "center"),
+      img(src='/images/figure3.png', align = "center"),
+      img(src='/images/figure4.png', align = "center"),
+      img(src='/images/figure5.png', align = "center")
+      
     ),
     
     tabPanel('Filter and Recluster',
   
       titlePanel('Filter and Recluster'),
       
-      p('Select a subset of mouse strains and brain regions that you are interested in investigating, then click Recalculate 
+      p('Select a subset of mouse strains and brain regions that you are interested in investigating further, and then click Recalculate 
         to see which mouse strains and brain regions cluster together.'),
+      
+      p('Note that the heatmap displayed here will be slightly different than Figure 3 found in the original paper, because Figure 3 uses
+        the median bootstrapped effect sizes whereas this figure uses the original data without any bootstrapping.  Unfortunately,
+        the bootstrapping procedure is too computationally intensive to present in this web app.'),
 
       hr(),
       
