@@ -1,6 +1,6 @@
 # Creates a simulated dataset of xdim mouse-region-volumes by ydim strains.
 # You can specify the type of distribution you want to sample from.
-SimulateMouseData = function(dist='unif', xdim=60, ydim=20) {
+simulate_mouse_data = function(dist='unif', xdim=60, ydim=20) {
   
   xnames = rep(1:xdim, 1)
   ynames = c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',

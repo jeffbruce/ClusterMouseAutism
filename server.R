@@ -46,9 +46,14 @@ shinyServer(
     
     # this code is run for each user, every time they refresh their browser
   
-# Page 1 Widgets ---------------------------------------------------------
 
-    # Page 1 dynamic control - select all brain regions
+# Page 1 Widgets ----------------------------------------------------------
+
+    
+    
+# Page 2 Widgets ---------------------------------------------------------
+
+    # Page 2 dynamic control - select all brain regions
     output$selectRegions = renderUI({
       if (input$selectAllRegions == TRUE) {
         checkboxGroupInput(inputId = 'regions', 
@@ -63,7 +68,7 @@ shinyServer(
       }    
     })
     
-    # Page 1 dynamic control - select all mouse strains
+    # Page 2 dynamic control - select all mouse strains
     output$selectStrains = renderUI({
       if (input$selectAllStrains == TRUE) {
         checkboxGroupInput(inputId = 'strains', 
@@ -78,7 +83,7 @@ shinyServer(
       }    
     })
     
-    # Page 1 plot - heatmap for reclustering
+    # Page 2 plot - heatmap for reclustering
     output$heatmap1 = renderPlot({
       input$recalculate
 
@@ -96,25 +101,53 @@ shinyServer(
       nc = dim(mousedatamat)[2]
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-        heatmap.2(x=mousedatamat, 
-                  distfun=jdfs,
-                  #hclustfun=hclust.avg,
-                  col=bluered, 
-                  margins=c(20,14), 
-                  trace='none', 
-                  cexRow=1.5, 
-                  cexCol=1.5, 
-                  density.info='histogram', 
-                  keysize=0.8, 
-                  symkey=TRUE, 
-                  symbreaks=TRUE)
+        
+#         mousedatamat[mousedatamat < -3] = -3
+#         mousedatamat[mousedatamat > 3] = 3
+        
+        heatmap = heatmap.2(x=mousedatamat,
+                            #Rowv=as.dendrogram(hr),
+                            #Colv=as.dendrogram(hc),
+                            distfun=jdfs,
+                            #hclustfun=hclust.avg,
+                            col=bluered, 
+                            margins=c(20,14),
+                            trace='none', 
+                            cexRow=1.5, 
+                            cexCol=1.5, 
+                            density.info='histogram', 
+                            keysize=0.8, 
+                            symkey=TRUE, 
+                            symbreaks=TRUE)
+        
+#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
+#         hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
+#         
+#         mousedatamat[mousedatamat < -3] = -3
+#         mousedatamat[mousedatamat > 3] = 3
+#                      
+#         heatmap = heatmap.2(x=mousedatamat,
+#                             Rowv=as.dendrogram(hr),
+#                             Colv=as.dendrogram(hc),
+#                             distfun=jdfs,
+#                             #hclustfun=hclust.avg,
+#                             col=bluered, 
+#                             margins=c(20,14),
+#                             trace='none', 
+#                             cexRow=1.5, 
+#                             cexCol=1.5, 
+#                             density.info='histogram', 
+#                             keysize=0.8, 
+#                             symkey=TRUE, 
+#                             symbreaks=TRUE)
       }
+      heatmap
     }, height=800)
     
 
-# Page 2 Widgets ---------------------------------------------------------
+# Page 3 Widgets ---------------------------------------------------------
 
-    # Page 2 dynamic control - select single strain/region for which to plot effect sizes
+    # Page 3 dynamic control - select single strain/region for which to plot effect sizes
     output$selectBoxStrainRegion = renderUI({
       if (input$plotBy == 1) {
         selectInput(inputId = 'selectBoxStrainRegion',
@@ -131,7 +164,7 @@ shinyServer(
       }
     })
     
-    # Page 2 dynamic control - select several brain regions to plot
+    # Page 3 dynamic control - select several brain regions to plot
     output$selectInputRegions = renderUI({
       selectInput(inputId = 'selectInputRegions', 
                   label = h4('Regions to Plot:'), 
@@ -140,7 +173,7 @@ shinyServer(
                   multiple = TRUE)
     })
     
-    # Page 2 dynamic control - selecting several mouse strains to plot
+    # Page 3 dynamic control - selecting several mouse strains to plot
     output$selectInputStrains = renderUI({
       selectInput(inputId = 'selectInputStrains', 
                   label = h4('Strains to Plot:'), 
@@ -149,7 +182,7 @@ shinyServer(
                   multiple = TRUE)
     })
     
-    # Page 2 plot - box/violin/bar/dot
+    # Page 3 plot - box/violin/bar/dot
     output$meansPlot = renderPlot({
       
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
@@ -200,7 +233,7 @@ shinyServer(
       }
     }, height=800)
     
-    # Page 2 plot - effect size
+    # Page 3 plot - effect size
     output$effectSizePlot = renderPlot({
       
       # Select region/strain data/labels depending on which option is picked
@@ -243,7 +276,7 @@ shinyServer(
     }, height=800)
 
 
-    # Page 2 plot - heatmap used as reference to generate individual or group plots
+    # Page 3 plot - heatmap used as reference to generate individual or group plots
     output$heatmap2 = renderPlot({
       input$recalculate
       
@@ -261,18 +294,32 @@ shinyServer(
       nc = dim(mousedatamat)[2]
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-        heatmap.2(x=mousedatamat, 
-                  distfun=jdfs,
-                  #hclustfun=hclust.avg,
-                  col=bluered, 
-                  margins=c(20,14),
-                  trace='none', 
-                  cexRow=1.5, 
-                  cexCol=1.5, 
-                  density.info='histogram', 
-                  keysize=0.8, 
-                  symkey=TRUE, 
-                  symbreaks=TRUE) 
+        heatmap = heatmap.2(x=mousedatamat, 
+                            distfun=jdfs,
+                            #hclustfun=hclust.avg,
+                            col=bluered, 
+                            margins=c(20,14),
+                            trace='none', 
+                            cexRow=1.5, 
+                            cexCol=1.5, 
+                            density.info='histogram', 
+                            keysize=0.8, 
+                            symkey=TRUE, 
+                            symbreaks=TRUE)
+        mousedatamat[mousedatamat < -3] = -3
+        mousedatamat[mousedatamat > 3] = 3
+        heatmap2 = heatmap.2(x=mousedatamat, 
+                             distfun=jdfs,
+                             #hclustfun=hclust.avg,
+                             col=bluered, 
+                             margins=c(20,14),
+                             trace='none', 
+                             cexRow=1.5, 
+                             cexCol=1.5, 
+                             density.info='histogram', 
+                             keysize=0.8, 
+                             symkey=TRUE, 
+                             symbreaks=TRUE)
       }
     }, height=800)
   }

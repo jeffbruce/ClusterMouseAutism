@@ -1,4 +1,4 @@
-setwd("/micehome/jbruce/Documents/Code/R/ShinyMouseCluster")
+setwd("/micehome/jbruce/Documents/Code/R/ClusterMouseAutism")
 source('loaddata.R')
 source('helpers.R')
 

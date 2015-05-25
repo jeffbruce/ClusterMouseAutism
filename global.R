@@ -14,7 +14,7 @@ require(stats)
 source('helpers.R')
 source('loaddata.R')
 mousedata = alleffects(datadefs)
-mousedata[mousedata < -3] = -3
-mousedata[mousedata > 3] = 3
+# mousedata[mousedata < -3] = -3
+# mousedata[mousedata > 3] = 3
 individualData = IndividualData(datadefs)
 summaryData = SummaryData(individualData)
