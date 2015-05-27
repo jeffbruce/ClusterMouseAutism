@@ -137,7 +137,9 @@ shinyServer(
                             cexRow=1.5, 
                             cexCol=1.5, 
                             density.info='histogram', 
-                            keysize=0.8, 
+                            keysize=0.8,
+                            key.title='Effect Size',
+                            key.xlab='Relative to Wildtype',
                             symkey=TRUE, 
                             symbreaks=TRUE)
       }
@@ -324,7 +326,9 @@ shinyServer(
                             cexRow=1.5, 
                             cexCol=1.5, 
                             density.info='histogram', 
-                            keysize=0.8, 
+                            keysize=0.8,
+                            key.title='Effect Size',
+                            key.xlab='Relative to Wildtype',
                             symkey=TRUE, 
                             symbreaks=TRUE)
       }
