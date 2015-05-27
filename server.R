@@ -105,30 +105,9 @@ shinyServer(
 #         mousedatamat[mousedatamat < -3] = -3
 #         mousedatamat[mousedatamat > 3] = 3
         
-        heatmap = heatmap.2(x=mousedatamat,
-                            #Rowv=as.dendrogram(hr),
-                            #Colv=as.dendrogram(hc),
-                            distfun=jdfs,
-                            #hclustfun=hclust.avg,
-                            col=bluered, 
-                            margins=c(20,14),
-                            trace='none', 
-                            cexRow=1.5, 
-                            cexCol=1.5, 
-                            density.info='histogram', 
-                            keysize=0.8, 
-                            symkey=TRUE, 
-                            symbreaks=TRUE)
-        
-#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
-#         hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
-#         
-#         mousedatamat[mousedatamat < -3] = -3
-#         mousedatamat[mousedatamat > 3] = 3
-#                      
 #         heatmap = heatmap.2(x=mousedatamat,
-#                             Rowv=as.dendrogram(hr),
-#                             Colv=as.dendrogram(hc),
+#                             #Rowv=as.dendrogram(hr),
+#                             #Colv=as.dendrogram(hc),
 #                             distfun=jdfs,
 #                             #hclustfun=hclust.avg,
 #                             col=bluered, 
@@ -140,6 +119,27 @@ shinyServer(
 #                             keysize=0.8, 
 #                             symkey=TRUE, 
 #                             symbreaks=TRUE)
+        
+        hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
+        hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
+        
+        mousedatamat[mousedatamat < -3] = -3
+        mousedatamat[mousedatamat > 3] = 3
+                     
+        heatmap = heatmap.2(x=mousedatamat,
+                            Rowv=as.dendrogram(hr),
+                            Colv=as.dendrogram(hc),
+                            distfun=jdfs,
+                            #hclustfun=hclust.avg,
+                            col=bluered, 
+                            margins=c(20,14),
+                            trace='none', 
+                            cexRow=1.5, 
+                            cexCol=1.5, 
+                            density.info='histogram', 
+                            keysize=0.8, 
+                            symkey=TRUE, 
+                            symbreaks=TRUE)
       }
       heatmap
     }, height=800)
@@ -294,7 +294,28 @@ shinyServer(
       nc = dim(mousedatamat)[2]
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-        heatmap = heatmap.2(x=mousedatamat, 
+#         heatmap = heatmap.2(x=mousedatamat, 
+#                             distfun=jdfs,
+#                             #hclustfun=hclust.avg,
+#                             col=bluered, 
+#                             margins=c(20,14),
+#                             trace='none', 
+#                             cexRow=1.5, 
+#                             cexCol=1.5, 
+#                             density.info='histogram', 
+#                             keysize=0.8, 
+#                             symkey=TRUE, 
+#                             symbreaks=TRUE)
+        
+        hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
+        hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
+        
+        mousedatamat[mousedatamat < -3] = -3
+        mousedatamat[mousedatamat > 3] = 3
+        
+        heatmap = heatmap.2(x=mousedatamat,
+                            Rowv=as.dendrogram(hr),
+                            Colv=as.dendrogram(hc),
                             distfun=jdfs,
                             #hclustfun=hclust.avg,
                             col=bluered, 
@@ -306,20 +327,6 @@ shinyServer(
                             keysize=0.8, 
                             symkey=TRUE, 
                             symbreaks=TRUE)
-        mousedatamat[mousedatamat < -3] = -3
-        mousedatamat[mousedatamat > 3] = 3
-        heatmap2 = heatmap.2(x=mousedatamat, 
-                             distfun=jdfs,
-                             #hclustfun=hclust.avg,
-                             col=bluered, 
-                             margins=c(20,14),
-                             trace='none', 
-                             cexRow=1.5, 
-                             cexCol=1.5, 
-                             density.info='histogram', 
-                             keysize=0.8, 
-                             symkey=TRUE, 
-                             symbreaks=TRUE)
       }
     }, height=800)
   }
