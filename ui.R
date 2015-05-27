@@ -3,13 +3,13 @@
 # is cached and sent to each browser that connects
 
 shinyUI(
-  navbarPage('Menu',
+  navbarPage('Clustering Autism in the Mouse',
                 
     # PAGE 1 ------------------------------------------------------------------
     
     tabPanel('Overview',
       
-      titlePanel('Clustering Autism in the Mouse'),
+      titlePanel('Overview'),
       
       hr(),
              
@@ -117,6 +117,8 @@ shinyUI(
   
       titlePanel('Filter and Recluster'),
       
+      hr(),
+      
       p('Select a subset of mouse strains and brain regions that you are interested in investigating further, and then click Recalculate to see which mouse strains and brain regions cluster together.'),
       
       p('Note that the heatmap displayed here will be slightly different than Figure 3 depicted in the original paper, because Figure 3 uses the median bootstrapped effect sizes whereas this figure uses the original data without any statistical bootstrapping.  Unfortunately, the bootstrapping procedure is too computationally intensive to present in the context of this web app.'),
@@ -151,6 +153,8 @@ shinyUI(
       
       titlePanel('Plot Means and Effect Sizes'),
              
+      hr(),
+      
       p('Using the data you filtered and reclustered in the ', em('Filter and Recluster'), ' tab, here you can zone in on particular mouse strains and brain regions of interest to plot means and effect sizes, using your preferred plot type.'),
       
       hr(),
