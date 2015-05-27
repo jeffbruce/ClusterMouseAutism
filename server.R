@@ -34,12 +34,12 @@
 #   return(mean(x) + sem(x))
 # }
 
-# setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
-    # Restricts range of a vector of effect sizes.   
-#   effectSizes[effectSizes > upperLimit] = upperLimit
-#   effectSizes[effectSizes < lowerLimit] = lowerLimit
-#   return(effectSizes)
-# }
+setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
+  # Restricts range of a vector of effect sizes.   
+  effectSizes[effectSizes > upperLimit] = upperLimit
+  effectSizes[effectSizes < lowerLimit] = lowerLimit
+  return(effectSizes)
+}
 
 shinyServer(
   function(input, output) {
@@ -242,7 +242,7 @@ shinyServer(
           effectSizeData = data.frame(region = isolate(input$regions), 
                                       effectSize = mousedata[input$selectBoxStrainRegion, isolate(input$regions)],
                                       row.names = NULL)
-          #effectSizeData$effectSize = setEffectSizeLimits(effectSizeData$effectSize, lowerLimit=-3, upperLimit=3)
+          effectSizeData$effectSize = setEffectSizeLimits(effectSizeData$effectSize, lowerLimit=-3, upperLimit=3)
           effectSizePlot = (ggplot(data = effectSizeData, 
                                    aes(x = stats:::reorder.default(region, effectSize), 
                                        y = effectSize))

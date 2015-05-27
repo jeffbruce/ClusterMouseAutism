@@ -183,6 +183,7 @@ shinyUI(
           column(4, uiOutput('selectBoxStrainRegion'))
         ),
         hr(),
+        p(strong(em('Effect sizes have been hard limited to -3.0 and +3.0 for increased readability.'))),
         fluidRow(
           column(12, plotOutput(outputId = 'effectSizePlot',
                                 height = '800px'))
