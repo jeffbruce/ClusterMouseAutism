@@ -253,6 +253,7 @@ shinyServer(
           effectSizeData = data.frame(strain = isolate(input$strains), 
                                       effectSize = mousedata[isolate(input$strains), input$selectBoxStrainRegion],
                                       row.names = NULL)
+          effectSizeData$effectSize = setEffectSizeLimits(effectSizeData$effectSize, lowerLimit=-3, upperLimit=3)
           effectSizePlot = (ggplot(data = effectSizeData, 
                                    aes(x = stats:::reorder.default(strain, effectSize), 
                                        y = effectSize))
