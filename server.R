@@ -104,7 +104,7 @@ shinyServer(
         
 #         mousedatamat[mousedatamat < -3] = -3
 #         mousedatamat[mousedatamat > 3] = 3
-        
+#         
 #         heatmap = heatmap.2(x=mousedatamat,
 #                             #Rowv=as.dendrogram(hr),
 #                             #Colv=as.dendrogram(hc),
@@ -127,8 +127,8 @@ shinyServer(
         mousedatamat[mousedatamat > 3] = 3
                      
         heatmap = heatmap.2(x=mousedatamat,
-                            Rowv=as.dendrogram(hr),
-                            Colv=as.dendrogram(hc),
+                            #Rowv=as.dendrogram(hr),
+                            #Colv=as.dendrogram(hc),
                             distfun=jdfs,
                             #hclustfun=hclust.avg,
                             col=bluered, 
@@ -317,8 +317,8 @@ shinyServer(
         mousedatamat[mousedatamat > 3] = 3
         
         heatmap = heatmap.2(x=mousedatamat,
-                            Rowv=as.dendrogram(hr),
-                            Colv=as.dendrogram(hc),
+                            #Rowv=as.dendrogram(hr),
+                            #Colv=as.dendrogram(hc),
                             distfun=jdfs,
                             #hclustfun=hclust.avg,
                             col=bluered, 
