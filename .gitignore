@@ -6,7 +6,7 @@
 .Rproj*
 
 # locked files
-*.~lock
+*.~lock*
 
 # unnecessary folders
 /shinyapps

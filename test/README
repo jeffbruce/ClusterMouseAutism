@@ -1,0 +1,15 @@
+﻿This folder contains files and suggestions related to testing the ClusterMouseAutism Shiny app.
+
+Recommended tests include:
+
+1) Filtering the heatmap separately by the 3 groups of strains identified in the study and the regions that were most affected for each individual group to verify that the data match what is stated in the paper.
+
+2) Order the axis labels on the heatmap in the app to be the same order as Figure 3 in the paper, so the heatmaps can be compared side by side.
+
+3) Repeat the following procedure:
+- bootstrap the effect sizes
+- find the median effect size for each strain * region combination
+- plot heatmap and compare to original paper
+- observe that the ordering of the strain dendrogram is quite stable, whereas the ordering of the region dendrogram jumps around quite a bit
+
+4) Give option of plotting relative volumes as opposed to just absolute volumes
