@@ -212,16 +212,16 @@ cohensd <- function(g1, g2)
 
 
 # structureeffects --------------------------------------------------------
-# Calculates the effect size between the first group (ind1) and the second group (ind2)
-# for each brain region.
-structureeffects <- function(ind1, ind2, datatable) 
+# Calculates the effect size between the first group (ind1) and 
+# the second group (ind2) for each brain region.
+structureeffects <- function(ind1, ind2, combined_vols_data) 
 {
-  effects <- vector(length=ncol(datatable))
-  for (i in 1:ncol(datatable)) {
-    effects[i] <- cohensd(datatable[ind1, i],
-                          datatable[ind2, i])
+  effects <- vector(length=ncol(combined_vols_data))
+  for (i in 1:ncol(combined_vols_data)) {
+    effects[i] <- cohensd(combined_vols_data[ind1, i],
+                          combined_vols_data[ind2, i])
   }
-  names(effects) <- colnames(datatable)
+  names(effects) <- colnames(combined_vols_data)
   return(effects)
 }
 
@@ -230,11 +230,16 @@ structureeffects <- function(ind1, ind2, datatable)
 # Calls structureeffects on either a bootstrapped or real sample.
 structureeffectsfromdatadefs <- function(datadefs, i, boot=F) 
 {
-  # Get data and appropriate labels from combined_vols and gf files.
-  dt <- get(datadefs$data[i])
-  gterm <- get(datadefs$term[i], get(datadefs$gf[i]))
+  # Gets data from appropriate combined_vols file.
+  combined_vols_data <- get(datadefs$data[i])
   
-  # Extract the indices corresponding to WT and KO.
+  # Gets data from appropriate gf file.
+  gf_data <- get(datadefs$gf[i])
+  
+  # Returns a factor (vector) of genotype labels for that strain.
+  gterm <- get(datadefs$term[i], gf_data)
+  
+  # Extract indices corresponding to WT and KO
   ind1 <- grep(datadefs$G1[i], gterm)
   ind2 <- grep(datadefs$G2[i], gterm)
   
@@ -244,7 +249,27 @@ structureeffectsfromdatadefs <- function(datadefs, i, boot=F)
     ind2 <- sample(ind2, replace=T)
   }
   
-  return(structureeffects(ind1, ind2, dt))
+  return(structureeffects(ind1, ind2, combined_vols_data))
+}
+
+
+# alleffects --------------------------------------------------------------
+# Loops through all mouse models and computes the effect size for each.
+alleffects <- function(datadefs, boot=F) 
+{
+  neffects <- nrow(datadefs)
+  
+  out <- structureeffectsfromdatadefs(datadefs, 1, boot)
+  for (i in 2:neffects) {
+    out <- rbind(out, structureeffectsfromdatadefs(datadefs, i, boot))
+  }
+  
+  rownames(out) <- datadefs$name
+  
+  # comment out this line if it's returning incorrect column names 
+  colnames(out) <- GetColNames()
+  
+  return(out)
 }
 
 
@@ -309,26 +334,6 @@ SummaryData = function(individualData)
   summaryData$volume = NULL
   
   return(summaryData)
-}
-
-  
-# alleffects --------------------------------------------------------------
-# Loops through all mouse models and computes the effect size for each.
-alleffects <- function(datadefs, boot=F) 
-{
-  neffects <- nrow(datadefs)
-  
-  out <- structureeffectsfromdatadefs(datadefs, 1, boot)
-  for (i in 2:neffects) {
-    out <- rbind(out, structureeffectsfromdatadefs(datadefs, i, boot))
-  }
-  
-  rownames(out) <- datadefs$name
-  
-  # comment out this line if it's returning incorrect column names 
-  colnames(out) <- GetColNames()
-  
-  return(out)
 }
 
 

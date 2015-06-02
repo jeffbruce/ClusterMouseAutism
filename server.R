@@ -1,7 +1,6 @@
 # server.R
 
-# Shared data/libraries are declared in global.R 
-# instead of here because ui.R needs access.
+# Shared data/libraries are declared in global.R instead of here because ui.R needs access to them.
 
 # Utility Functions --------------------------------------------------------
 
@@ -42,18 +41,17 @@ setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
 }
 
 shinyServer(
-  function(input, output) {
+  function(input, output, session) {
     
-    # this code is run for each user, every time they refresh their browser
-  
+    # Code here runs for each user, every time they refresh their browser.
 
-# Page 1 Widgets ----------------------------------------------------------
+# Tab 1 Widgets ----------------------------------------------------------
 
     
     
-# Page 2 Widgets ---------------------------------------------------------
+# Tab 2 Widgets ---------------------------------------------------------
 
-    # Page 2 dynamic control - select all brain regions
+    # dynamic control - select all brain regions
     output$selectRegions = renderUI({
       if (input$selectAllRegions == TRUE) {
         checkboxGroupInput(inputId = 'regions', 
@@ -68,7 +66,7 @@ shinyServer(
       }    
     })
     
-    # Page 2 dynamic control - select all mouse strains
+    # dynamic control - select all mouse strains
     output$selectStrains = renderUI({
       if (input$selectAllStrains == TRUE) {
         checkboxGroupInput(inputId = 'strains', 
@@ -83,11 +81,11 @@ shinyServer(
       }    
     })
     
-    # Page 2 plot - heatmap for reclustering
+    # heatmap for reclustering
     output$heatmap1 = renderPlot({
       input$recalculate
 
-      # ensures that the plot renders when the app is initially loaded
+      # ensure plot renders when the app is initially loaded
       if (is.null(isolate(input$strains))) {
         validate(need(input$strains, FALSE))
       }
@@ -102,33 +100,15 @@ shinyServer(
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
         
-#         mousedatamat[mousedatamat < -3] = -3
-#         mousedatamat[mousedatamat > 3] = 3
-#         
-#         heatmap = heatmap.2(x=mousedatamat,
-#                             #Rowv=as.dendrogram(hr),
-#                             #Colv=as.dendrogram(hc),
-#                             distfun=jdfs,
-#                             #hclustfun=hclust.avg,
-#                             col=bluered, 
-#                             margins=c(20,14),
-#                             trace='none', 
-#                             cexRow=1.5, 
-#                             cexCol=1.5, 
-#                             density.info='histogram', 
-#                             keysize=0.8, 
-#                             symkey=TRUE, 
-#                             symbreaks=TRUE)
-        
-        hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
-        hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
+#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
+#         hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
         
         mousedatamat[mousedatamat < -3] = -3
         mousedatamat[mousedatamat > 3] = 3
                      
         heatmap = heatmap.2(x=mousedatamat,
-                            #Rowv=as.dendrogram(hr),
-                            #Colv=as.dendrogram(hc),
+#                             Rowv=as.dendrogram(hr),
+#                             Colv=as.dendrogram(hc),
                             distfun=jdfs,
                             #hclustfun=hclust.avg,
                             col=bluered, 
@@ -147,9 +127,9 @@ shinyServer(
     }, height=800)
     
 
-# Page 3 Widgets ---------------------------------------------------------
+# Tab 3 Widgets ---------------------------------------------------------
 
-    # Page 3 dynamic control - select single strain/region for which to plot effect sizes
+    # dynamic control - select single strain/region for which to plot effect sizes
     output$selectBoxStrainRegion = renderUI({
       if (input$plotBy == 1) {
         selectInput(inputId = 'selectBoxStrainRegion',
@@ -166,7 +146,7 @@ shinyServer(
       }
     })
     
-    # Page 3 dynamic control - select several brain regions to plot
+    # dynamic control - type in several brain regions to plot
     output$selectInputRegions = renderUI({
       selectInput(inputId = 'selectInputRegions', 
                   label = h4('Regions to Plot:'), 
@@ -175,7 +155,7 @@ shinyServer(
                   multiple = TRUE)
     })
     
-    # Page 3 dynamic control - selecting several mouse strains to plot
+    # dynamic control - type in several mouse strains to plot
     output$selectInputStrains = renderUI({
       selectInput(inputId = 'selectInputStrains', 
                   label = h4('Strains to Plot:'), 
@@ -184,7 +164,7 @@ shinyServer(
                   multiple = TRUE)
     })
     
-    # Page 3 plot - box/violin/bar/dot
+    # box/violin/bar/dot means plot
     output$meansPlot = renderPlot({
       
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
@@ -214,11 +194,11 @@ shinyServer(
           sds = tapply(meansData$volume, meansData$genotype, sd)
           meansPlot = (meansPlot
                        + geom_point(position=position_jitterdodge(dodge=1.0))
-                       + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5)
-                       + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
+                       + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5))
+#                        + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
         
-        # Customize theme aspects of the plot
+        # customize theme aspects of the plot
         meansPlot = (meansPlot
                      + facet_wrap( ~ region, scales='free')
                      + labs(x='strain', y=bquote(Volume~(mm^{3})))
@@ -230,15 +210,14 @@ shinyServer(
                      + theme(strip.text = element_text(size=24))
                      + theme(legend.text = element_text(size=14)))
         
-        # Return the plot
         return(meansPlot)
       }
     }, height=800)
     
-    # Page 3 plot - effect size
+    # effect size plot
     output$effectSizePlot = renderPlot({
       
-      # Select region/strain data/labels depending on which option is picked
+      # handle option for plotting by region or strain
       if (!is.null(input$selectBoxStrainRegion)) {
         if (input$plotBy == 1) {
           effectSizeData = data.frame(region = isolate(input$regions), 
@@ -260,7 +239,7 @@ shinyServer(
                             + labs(x = '', y = 'Effect Size'))
         }
         
-        # Customize theme aspects of the plot
+        # customize theme aspects of the plot
         effectSizePlot = (effectSizePlot
                           + geom_bar(stat = 'identity', fill = 'thistle1', colour='black')
                           + geom_hline(yintercept=3)
@@ -273,13 +252,13 @@ shinyServer(
                           + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
                           + scale_y_continuous(breaks=seq(-3.5, 3.5, 0.5)))
         
-        # Return the plot
+        # return the plot
         return(effectSizePlot)
       }
     }, height=800)
 
 
-    # Page 3 plot - heatmap used as reference to generate individual or group plots
+    # heatmap used as reference to generate individual or group plots
     output$heatmap2 = renderPlot({
       input$recalculate
       
@@ -297,30 +276,18 @@ shinyServer(
       nc = dim(mousedatamat)[2]
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-#         heatmap = heatmap.2(x=mousedatamat, 
-#                             distfun=jdfs,
-#                             #hclustfun=hclust.avg,
-#                             col=bluered, 
-#                             margins=c(20,14),
-#                             trace='none', 
-#                             cexRow=1.5, 
-#                             cexCol=1.5, 
-#                             density.info='histogram', 
-#                             keysize=0.8, 
-#                             symkey=TRUE, 
-#                             symbreaks=TRUE)
         
-        hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
-        hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
+#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
+#         hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
         
         mousedatamat[mousedatamat < -3] = -3
         mousedatamat[mousedatamat > 3] = 3
         
         heatmap = heatmap.2(x=mousedatamat,
-                            #Rowv=as.dendrogram(hr),
-                            #Colv=as.dendrogram(hc),
+#                             Rowv=as.dendrogram(hr),
+#                             Colv=as.dendrogram(hc),
                             distfun=jdfs,
-                            #hclustfun=hclust.avg,
+#                             hclustfun=hclust.avg,
                             col=bluered, 
                             margins=c(20,14),
                             trace='none', 
