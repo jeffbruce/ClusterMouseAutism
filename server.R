@@ -43,7 +43,85 @@ setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
 shinyServer(
   function(input, output, session) {
     
-    # Code here runs for each user, every time they refresh their browser.
+# Code in shinyServer runs for each user, every time they refresh their browser.
+
+# Render Images ------------------------------------------------------
+    
+#     output$Figure1 <- renderImage({
+#       
+#       # Use session information to dynamically resize the images.
+#       # This is a reactive expression.
+#       width = session$clientData$output_Figure1_width
+#       
+#       filename = normalizePath(file.path('./www/images/Figure1_MolPsych.png'))
+#       
+#       list(src=filename,
+#            width=width,
+#            alt='Image not found.')
+#       
+#     }, deleteFile=FALSE)
+# 
+#     output$Figure2 <- renderImage({
+#       
+#       # Use session information to dynamically resize the images.
+#       # This is a reactive expression.
+#       width = session$clientData$output_Figure2_width
+#       
+#       filename = normalizePath(file.path('./www/images/Figure2_21May14.png'))
+#       
+#       list(src=filename,
+#            width=width,
+#            alt='Image not found.')
+#       
+#     }, deleteFile=FALSE)
+
+    output$Figure3 <- renderImage({
+      
+      # Use session information to dynamically resize the images.
+      # This is a reactive expression.
+      width = session$clientData$output_Figure3_width
+      
+      filename = normalizePath(file.path('./www/images/Figure3_MolPsych.png'))
+      
+      list(src=filename,
+           width=width,
+           alt='Image not found.')
+      
+    }, deleteFile=FALSE)
+    
+#     output$Figure4 <- renderImage({
+#       
+#       # Use session information to dynamically resize the images.
+#       # This is a reactive expression.
+#       width = session$clientData$output_Figure4_width
+#       
+#       filename = normalizePath(file.path('./www/images/Figure4_MolPsych.png'))
+#       
+#       list(src=filename,
+#            width=width,
+#            alt='Image not found.')
+#       
+#     }, deleteFile=FALSE)
+#     
+#     output$Figure5 <- renderImage({
+#       
+#       # Use session information to dynamically resize the images.
+#       # This is a reactive expression.
+#       width = session$clientData$output_Figure5_width
+#       
+#       filename = normalizePath(file.path('./www/images/Figure5_29May14.png'))
+#       
+#       list(src=filename,
+#            width=width,
+#            alt='Image not found.')
+#       
+#     }, deleteFile=FALSE)
+    
+
+# Shared Widget Code ------------------------------------------------------
+
+
+
 
 # Tab 1 Widgets ----------------------------------------------------------
 
@@ -99,18 +177,10 @@ shinyServer(
       nc = dim(mousedatamat)[2]
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-        
-#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
-#         hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
-        
-        mousedatamat[mousedatamat < -3] = -3
-        mousedatamat[mousedatamat > 3] = 3
-                     
+
         heatmap = heatmap.2(x=mousedatamat,
-#                             Rowv=as.dendrogram(hr),
-#                             Colv=as.dendrogram(hc),
                             distfun=jdfs,
-                            #hclustfun=hclust.avg,
+                            breaks=seq(-3, 3, by=0.4),
                             col=bluered, 
                             margins=c(20,14),
                             trace='none', 
@@ -277,18 +347,26 @@ shinyServer(
       
       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
         
-#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method="pearson")), method="complete")
-#         hc <- hclust(as.dist(1-cor(mousedatamat, method="pearson")), method="complete")
-        
-        mousedatamat[mousedatamat < -3] = -3
-        mousedatamat[mousedatamat > 3] = 3
-        
+        # failed efforts at trying to replace the dendrogram
+#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method='pearson')), method='complete')
+#         hc <- hclust(as.dist(1-cor(mousedatamat, method='pearson')), method='complete')
+#         testheatmap <- heatmap.2(mousedatamat, distfun=jdfs)
+#         rowInd = testheatmap$rowInd
+#         colInd = testheatmap$colInd
+#         mousedatamat = mousedatamat[rev(testheatmap$rowInd), testheatmap$colInd]        
+#         mousedatamat[mousedatamat < -3] = -3
+#         mousedatamat[mousedatamat > 3] = 3
+
         heatmap = heatmap.2(x=mousedatamat,
+#                             Rowv and Colv attempts at replacing dendrogram                             
 #                             Rowv=as.dendrogram(hr),
 #                             Colv=as.dendrogram(hc),
+#                             Rowv=rowInd,
+#                             Colv=colInd,
                             distfun=jdfs,
 #                             hclustfun=hclust.avg,
-                            col=bluered, 
+                            breaks=seq(-3, 3, by=0.4),
+                            col=bluered,
                             margins=c(20,14),
                             trace='none', 
                             cexRow=1.5, 

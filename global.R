@@ -1,4 +1,6 @@
-# define data here so it can be used in ui.R
+# global.R
+
+# Data is loaded here so it can be used in ui.R.
 
 require(gplots)
 require(ggplot2)

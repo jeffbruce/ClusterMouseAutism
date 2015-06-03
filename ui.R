@@ -1,11 +1,12 @@
 # ui.R
-# this file is run once -- it generates HTML which 
-# is cached and sent to each browser that connects
+
+# This file is run once.  It generates HTML whichis cached and sent to each browser that connects.
 
 shinyUI(
   navbarPage('Clustering Autism in the Mouse',
     
-    ### TAB PANEL
+             
+# TAB PANEL ---------------------------------------------------------------
              
     tabPanel('Overview',
       
@@ -17,25 +18,25 @@ shinyUI(
       
       p('By making the data open and public, our aim is to give researchers and interested parties the tools to help generate and test their own hypotheses using these data to help tease apart the complex heterogeneity and etiology at play in autism spectrum disorder.'),
       
-      p('Shown below is a heatmap displaying results from the hierarchical clustering analysis performed in the original research paper, which clustered 26 mouse models of autism along with 62 different brain regions using the median bootstrapped effect sizes for each combination of mouse model and brain region.  In the other tabs, you can perform your own clustering and plot means and effect sizes, allowing you to visualize the data in finer detail right down to the individual data points.  For more information about the methods and the main takeaways from the research paper, check out the ', em('Research Paper'), 'tab.'),
+      p('Shown below is a heatmap displaying results from the hierarchical clustering analysis performed in the original research paper, which clustered 26 mouse models of autism along with 62 different brain regions using the median bootstrapped effect sizes of relative volume for each combination of mouse model and brain region.  In the other tabs, you can perform your own clustering and plot means and effect sizes, allowing you to visualize the data in finer detail right down to the individual data points.  For more information about the methods and the main takeaways from the research paper, check out the ', tags$mark('Research Paper'), 'tab.'),
       
       hr(),
       
-#       imageOutput('Figure3')
-      
-      img(src='/images/Figure3_MolPsych.png', align='center')
+      imageOutput('Figure3')
+#       img(src='/images/Figure3_MolPsych.png', align='center')
       
     ),
-    
-    ### TAB PANEL
-    
+
+
+# TAB PANEL ---------------------------------------------------------------
+
     tabPanel('Filter and Recluster',
   
       titlePanel('Filter and Recluster'),
       
       hr(),
       
-      p('Select a subset of mouse strains and brain regions that you are interested in investigating further, and then click Recalculate to see which mouse strains and brain regions cluster together.'),
+      p('Select a subset of mouse strains and brain regions that you are interested in investigating further, and then click the ',  tags$mark('Recalculate'), ' button to see which mouse strains and brain regions cluster together.'),
       
       p('Note that the heatmap displayed here will be slightly different than Figure 3 depicted in the original paper, because Figure 3 uses the median bootstrapped effect sizes whereas this figure uses the original data without any statistical bootstrapping.  Unfortunately, the bootstrapping procedure is too computationally intensive to present in the context of this web app.'),
 
@@ -63,15 +64,16 @@ shinyUI(
       )
     ),
     
-    ### TAB PANEL
-    
+
+# TAB PANEL ---------------------------------------------------------------
+
     tabPanel('Plot Means and Effect Sizes',
       
       titlePanel('Plot Means and Effect Sizes'),
              
       hr(),
       
-      p('Using the data you filtered and reclustered in the ', em('Filter and Recluster'), ' tab, here you can zone in on particular mouse strains and brain regions of interest to plot means and effect sizes, using your preferred plot type.'),
+      p('Using the data you filtered and reclustered in the ', tags$mark('Filter and Recluster'), ' tab, here you can zone in on particular mouse strains and brain regions of interest to plot means and effect sizes, using your preferred plot type.'),
       
       hr(),
              
@@ -132,8 +134,9 @@ shinyUI(
       )
     ),
     
-    ### TAB PANEL
-    
+
+# TAB PANEL ---------------------------------------------------------------
+
     tabPanel('Research Paper',
              
              titlePanel('Research Paper'),
@@ -152,25 +155,60 @@ shinyUI(
              
              h3('Results'),
              
-             img(src='/images/figure1.png', align='center'),
+             br(),
              
-             p('Head circumference or brain size is a somewhat controversial measure used in human autism, so the total brain size of the 26 mouse models were investigated in this study.  In the figure above, the left panel illustrates that there is no uniform trend between autism and total brain size.  Moreover, the variability in relative brain volume differences for select brain regions shows that total brain volume isn\'t the only factor driving the heterogeneity between models.'),
+#              imageOutput('Figure1'),
+             img(src='/images/figure1original.png', align='center'),
              
-             img(src='/images/figure2.png', align='center'),
+             br(),
+             br(),
+             br(),
+
+             p('Head circumference or brain size is a somewhat controversial measure used in human autism, so to address this the total brain size of the 26 mouse models were investigated in this study.  In the figure above, ', strong('(A)'), 'the left panel ', ' illustrates that there is no uniform trend between autism and total brain size.  Moreover, ', strong('(B)'), ' the variability in relative brain volume differences for select brain regions shows that total brain volume isn\'t the only factor driving the heterogeneity between models.'),
              
-             p('The purpose of the above figure is to highlight which specific brain regions differ the most between wildtype mice and their autistic counterparts.  Median absolute effect sizes were taken across all mouse models for each brain region, and the top panel shows that the most affected regions were parieto-temporal lobe, cerebellar cortex, frontal lobe, hypothalamus, and striatum.  The largest absolute voxelwise differences included decreases in CA1, decreases in the dentate of the hippocampus, and increases in the dorsal raphe nuclei.'),
+             br(),
+
+#              imageOutput('Figure2'),
+             img(src='/images/figure2original.png', align='center'),
              
-             img(src='/images/figure3.png', align='center'),
+             br(),
+             br(),
+             br(),
+
+             p('The purpose of the above figure is to highlight which specific brain regions differed the most between wildtype mice and their autistic counterparts.  Median absolute effect sizes were taken across all mouse models for each brain region, and ', strong('(A)'), ' the top panel shows that the most affected regions were parieto-temporal lobe, cerebellar cortex, frontal lobe, hypothalamus, and striatum. ', strong('(B)'), 'The largest absolute voxelwise differences included decreases in CA1, decreases in the dentate of the hippocampus, and increases in the dorsal raphe nuclei.'),
              
-             p('The above figure presents a hierarchical clustering analysis of the mouse models and brain regions investigated in the study.  Median bootstrapped effect sizes of relative volume were calculated for every combination of mouse model and brain region.  Red represents an increase in volume relative to control and blue represents a decrease.  The closer together that models are found on the heatmap, the more similar autistic neuroanatomical phenotype they have, and likewise the closer together that regions are found on the heatmap, the more likely they are similarly affected by the genetic mutations investigated in the study.  More specifically, the length of the dendrograms on the axes beside the heatmap represent the correlation between regions (X axis) and models (Y axis).  A highly positive correlation corresponds to a short dendrogram branch, and a highly negative correlation corresponds to a very long dendrogram branch.'),
+             br(),
+
+#              imageOutput('Figure3'),
+             img(src='/images/figure3original.png', align='center'),
+            
+             br(),
+             br(),
+             br(),
+
+             p('The above figure presents a hierarchical clustering analysis of the mouse models and brain regions investigated in the study.  Median bootstrapped effect sizes of relative volume were calculated for every combination of mouse model and brain region.  Red represents an increase in volume relative to control and blue represents a decrease.  The closer together that models are found on the heatmap, the more similar the autistic neuroanatomical phenotype they have.  Likewise, the closer together that regions are found on the heatmap, the more likely they are similarly affected by the genetic mutations investigated in the study.  More specifically, the length of the dendrograms on the axes to the left and the top of the heatmap represent the correlation between regions (X axis) and models (Y axis).  More positive correlations correspond to shorter dendrogram branches, and more negative correlations correspond to longer dendrogram branches.'),
              
-             img(src='/images/figure4.png', align='center'),
+             br(),
+
+#              imageOutput('Figure4'),
+             img(src='/images/figure4original.png', align='center'),
              
-             p('From the dendrogram in Figure 3 from the paper, there appear to be 3 major clusters of implicated brain regions in the mouse models of autism selected for the study.  In the top panel above, you can see the 3 large clusters of regions that were identified in the paper using the bootstrapped samples.  Connected regions were taken to be those which were connected greater than 50% of the time in the bootstrap simulations, and included only regions which were greater than 0.7mm', tags$sup('3'),', or had relevance to another structure (such as anterior commissure—pars posterior).  The first cluster (pink) includes regions heavily involved in social perception and autonomic regulation and are some of the most sexually dimorphic regions in the brain, the second cluster (yellow) are mostly white-matter regions, and the third cluster (green) consisted of 6 cerebellar regions.'),
+             br(),
+             br(),
+             br(),
+
+             p('From the dendrogram in Figure 3 from the paper, 3 major clusters of implicated brain regions emerged in the mouse models of autism selected for the study.  In the top panel above, you can see the 3 large clusters of regions that were identified in the paper using the bootstrapped samples.  Connected regions were taken to be those which were connected greater than 50% of the time in the bootstrap simulations, and included only regions which were greater than 0.7mm', tags$sup('3'),', or had relevance to another structure (such as anterior commissure—pars posterior).  The first cluster (pink) includes regions heavily involved in social perception and autonomic regulation and are some of the most sexually dimorphic regions in the brain, the second cluster (yellow) are mostly white-matter regions, and the third cluster (green) consisted of 6 cerebellar regions.'),
              
-             img(src='/images/figure5.png', align='center'),
+             br(),
+
+#              imageOutput('Figure5'),
+             img(src='/images/figure5original.png', align='center'),
              
-             p('The 26 mouse models were clustered and 3 large groups emerged, differing in direction of volume changes and localization of neuroanatomical phenotypes.  In the left panel above, it is plainly seen that some models were much more strongly connected than others, some of the strongest connections being between Nrxn1α, En2 and Fmr1 in group 1, Nlgn3 KI, BTBR and Slc6A4KI (129) in group 2, and Mecp2, XO and BALB/C, as well as Gtf2i (+/-) and 16p11 in group 3.  In the right panel, regions which were most affected for each group are highlighted.  In particular, group 1 had mainly increases in large white-matter regions, including corpus callosum, fimbria, fornix, increases in frontal and parieto-temporal lobes, and decreases in cerebellar cortex.  Group 2 had the opposite effect, with mostly decreases in white-matter structures such as cerebral peduncle, corpus callosum and internal capsule, as well as globus pallidus, hippocampus and striatum.  Group 3 had a mix of increases and decreases, where the frontal and parieto-temporal lobes were decreased in size and the cerebellum increased in size.  Voxelwise differences mostly followed the same trends as the regional differences.  Perhaps not surprisingly, all 3 groups had differences in the cerebellum (a characteristic commonly reported in autism), though the precise location and direction of these volume changes was inconsistent.'),
+             br(),
+             br(),
+             br(),
+
+             p('The 26 mouse models were clustered and again 3 large groups emerged, differing in direction of volume changes and localization of neuroanatomical phenotypes. ', strong('(A)'), ' In the left panel above it is plainly seen that some models were much more strongly connected than others, some of the strongest connections being between Nrxn1α, En2 and Fmr1 in group 1, Nlgn3 KI, BTBR and Slc6A4KI (129) in group 2, and Mecp2, XO and BALB/C, as well as Gtf2i (+/-) and 16p11 in group 3. ',  strong('(B)'), ' In the right panel, regions which were most affected for each group are highlighted.  In particular, group 1 had mainly increases in large white-matter regions, including corpus callosum, fimbria, fornix, increases in frontal and parieto-temporal lobes, and decreases in cerebellar cortex.  Group 2 had the opposite effect, with mostly decreases in white-matter structures such as cerebral peduncle, corpus callosum and internal capsule, as well as globus pallidus, hippocampus and striatum.  Group 3 had a mix of increases and decreases, where the frontal and parieto-temporal lobes were decreased in size and the cerebellum increased in size. ', strong('(C)'), ' Voxelwise differences mostly followed the same trends as the regional differences.  Perhaps not surprisingly, all 3 groups had differences in the cerebellum (a characteristic commonly reported in autism), though the precise location and direction of these volume changes was inconsistent.'),
              
              hr(),
              
