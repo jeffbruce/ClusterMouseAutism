@@ -46,34 +46,6 @@ shinyServer(
 # Code in shinyServer runs for each user, every time they refresh their browser.
 
 # Render Images ------------------------------------------------------
-    
-#     output$Figure1 <- renderImage({
-#       
-#       # Use session information to dynamically resize the images.
-#       # This is a reactive expression.
-#       width = session$clientData$output_Figure1_width
-#       
-#       filename = normalizePath(file.path('./www/images/Figure1_MolPsych.png'))
-#       
-#       list(src=filename,
-#            width=width,
-#            alt='Image not found.')
-#       
-#     }, deleteFile=FALSE)
-# 
-#     output$Figure2 <- renderImage({
-#       
-#       # Use session information to dynamically resize the images.
-#       # This is a reactive expression.
-#       width = session$clientData$output_Figure2_width
-#       
-#       filename = normalizePath(file.path('./www/images/Figure2_21May14.png'))
-#       
-#       list(src=filename,
-#            width=width,
-#            alt='Image not found.')
-#       
-#     }, deleteFile=FALSE)
 
     output$Figure3 <- renderImage({
       
@@ -89,38 +61,61 @@ shinyServer(
       
     }, deleteFile=FALSE)
     
-#     output$Figure4 <- renderImage({
-#       
-#       # Use session information to dynamically resize the images.
-#       # This is a reactive expression.
-#       width = session$clientData$output_Figure4_width
-#       
-#       filename = normalizePath(file.path('./www/images/Figure4_MolPsych.png'))
-#       
-#       list(src=filename,
-#            width=width,
-#            alt='Image not found.')
-#       
-#     }, deleteFile=FALSE)
-#     
-#     output$Figure5 <- renderImage({
-#       
-#       # Use session information to dynamically resize the images.
-#       # This is a reactive expression.
-#       width = session$clientData$output_Figure5_width
-#       
-#       filename = normalizePath(file.path('./www/images/Figure5_29May14.png'))
-#       
-#       list(src=filename,
-#            width=width,
-#            alt='Image not found.')
-#       
-#     }, deleteFile=FALSE)
-    
 
 # Shared Widget Code ------------------------------------------------------
 
-
+    makePlot = function() {
+      renderPlot({
+        input$recalculate
+        
+        # ensure plot renders when the app is initially loaded
+        if (is.null(isolate(input$strains))) {
+          validate(need(input$strains, FALSE))
+        }
+        if (is.null(isolate(input$regions))) {
+          validate(need(input$regions, FALSE))
+        }
+        
+        # isolate() prevents heatmap from regenerating every time a new strain/region is selected
+        mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
+        nr = dim(mousedatamat)[1]
+        nc = dim(mousedatamat)[2]
+        
+        if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
+      
+            # failed efforts at trying to replace the dendrogram
+            #         hr <- hclust(as.dist(1-cor(t(mousedatamat), method='pearson')), method='complete')
+            #         hc <- hclust(as.dist(1-cor(mousedatamat, method='pearson')), method='complete')
+            #         testheatmap <- heatmap.2(mousedatamat, distfun=jdfs)
+            #         rowInd = testheatmap$rowInd
+            #         colInd = testheatmap$colInd
+            #         mousedatamat = mousedatamat[rev(testheatmap$rowInd), testheatmap$colInd]        
+            #         mousedatamat[mousedatamat < -3] = -3
+            #         mousedatamat[mousedatamat > 3] = 3
+            
+            heatmap = heatmap.2(x=mousedatamat,
+                                # Rowv and Colv attempts at replacing dendrogram                             
+                                # Rowv=as.dendrogram(hr),
+                                # Colv=as.dendrogram(hc),
+                                # Rowv=rowInd,
+                                # Colv=colInd,
+                                distfun=jdfs,
+                                # hclustfun=hclust.avg,
+                                breaks=seq(-3, 3, by=0.4),
+                                col=bluered,
+                                margins=c(20,14),
+                                trace='none', 
+                                cexRow=1.5, 
+                                cexCol=1.5, 
+                                density.info='histogram', 
+                                keysize=0.8,
+                                key.title='Effect Size',
+                                key.xlab='Relative to Wildtype',
+                                symkey=TRUE, 
+                                symbreaks=TRUE)
+        }
+      }, height=800)
+    }
 
 
 # Tab 1 Widgets ----------------------------------------------------------
@@ -159,42 +154,44 @@ shinyServer(
       }    
     })
     
+    output$heatmap1 = makePlot()
     # heatmap for reclustering
-    output$heatmap1 = renderPlot({
-      input$recalculate
-
-      # ensure plot renders when the app is initially loaded
-      if (is.null(isolate(input$strains))) {
-        validate(need(input$strains, FALSE))
-      }
-      if (is.null(isolate(input$regions))) {
-        validate(need(input$regions, FALSE))
-      }
-      
-      # isolate() prevents heatmap from regenerating every time a new strain/region is selected
-      mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
-      nr = dim(mousedatamat)[1]
-      nc = dim(mousedatamat)[2]
-      
-      if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-
-        heatmap = heatmap.2(x=mousedatamat,
-                            distfun=jdfs,
-                            breaks=seq(-3, 3, by=0.4),
-                            col=bluered, 
-                            margins=c(20,14),
-                            trace='none', 
-                            cexRow=1.5, 
-                            cexCol=1.5, 
-                            density.info='histogram', 
-                            keysize=0.8,
-                            key.title='Effect Size',
-                            key.xlab='Relative to Wildtype',
-                            symkey=TRUE, 
-                            symbreaks=TRUE)
-      }
-      heatmap
-    }, height=800)
+#     output$heatmap1 = renderPlot({
+#       input$recalculate
+# 
+#       # ensure plot renders when the app is initially loaded
+#       if (is.null(isolate(input$strains))) {
+#         validate(need(input$strains, FALSE))
+#       }
+#       if (is.null(isolate(input$regions))) {
+#         validate(need(input$regions, FALSE))
+#       }
+#       
+#       # isolate() prevents heatmap from regenerating every time a new strain/region is selected
+#       mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
+#       nr = dim(mousedatamat)[1]
+#       nc = dim(mousedatamat)[2]
+#       
+#       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
+# 
+#         
+#         heatmap = heatmap.2(x=mousedatamat,
+#                             distfun=jdfs,
+#                             breaks=seq(-3, 3, by=0.4),
+#                             col=bluered, 
+#                             margins=c(20,14),
+#                             trace='none', 
+#                             cexRow=1.5, 
+#                             cexCol=1.5, 
+#                             density.info='histogram', 
+#                             keysize=0.8,
+#                             key.title='Effect Size',
+#                             key.xlab='Relative to Wildtype',
+#                             symkey=TRUE, 
+#                             symbreaks=TRUE)
+#       }
+#       heatmap
+#     }, height=800)
     
 
 # Tab 3 Widgets ---------------------------------------------------------
@@ -245,11 +242,14 @@ shinyServer(
         
         meansPlot = ggplot(data=meansData, aes(x=name, y=volume, fill=genotype, colour=genotype))
         
+        browser()
+        
         if (input$plotType == 1) {
           dodge = position_dodge(width=0.9)
           meansPlot = (meansPlot
                        + stat_summary(fun.y=mean, position=position_dodge(width=1), geom='bar')
                        + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1), geom='errorbar', color='black', size=0.5, width=0.5))
+#                        + scale_y_continuous(limits=c(min(meansData$volume), max(meansData$volume)))
         } else if (input$plotType == 2) {
           meansPlot = (meansPlot
                        + geom_point(position=position_jitterdodge(dodge.width=0.9))
@@ -267,6 +267,8 @@ shinyServer(
                        + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5))
 #                        + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
+
+browser()
         
         # customize theme aspects of the plot
         meansPlot = (meansPlot
@@ -328,56 +330,6 @@ shinyServer(
     }, height=800)
 
 
-    # heatmap used as reference to generate individual or group plots
-    output$heatmap2 = renderPlot({
-      input$recalculate
-      
-      # ensures that the plot renders when the app is initially loaded
-      if (is.null(isolate(input$strains))) {
-        validate(need(input$strains, FALSE))
-      }
-      if (is.null(isolate(input$regions))) {
-        validate(need(input$regions, FALSE))
-      }
-      
-      # isolate() prevents heatmap from regenerating every time a new strain/region is selected
-      mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
-      nr = dim(mousedatamat)[1]
-      nc = dim(mousedatamat)[2]
-      
-      if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-        
-        # failed efforts at trying to replace the dendrogram
-#         hr <- hclust(as.dist(1-cor(t(mousedatamat), method='pearson')), method='complete')
-#         hc <- hclust(as.dist(1-cor(mousedatamat, method='pearson')), method='complete')
-#         testheatmap <- heatmap.2(mousedatamat, distfun=jdfs)
-#         rowInd = testheatmap$rowInd
-#         colInd = testheatmap$colInd
-#         mousedatamat = mousedatamat[rev(testheatmap$rowInd), testheatmap$colInd]        
-#         mousedatamat[mousedatamat < -3] = -3
-#         mousedatamat[mousedatamat > 3] = 3
-
-        heatmap = heatmap.2(x=mousedatamat,
-#                             Rowv and Colv attempts at replacing dendrogram                             
-#                             Rowv=as.dendrogram(hr),
-#                             Colv=as.dendrogram(hc),
-#                             Rowv=rowInd,
-#                             Colv=colInd,
-                            distfun=jdfs,
-#                             hclustfun=hclust.avg,
-                            breaks=seq(-3, 3, by=0.4),
-                            col=bluered,
-                            margins=c(20,14),
-                            trace='none', 
-                            cexRow=1.5, 
-                            cexCol=1.5, 
-                            density.info='histogram', 
-                            keysize=0.8,
-                            key.title='Effect Size',
-                            key.xlab='Relative to Wildtype',
-                            symkey=TRUE, 
-                            symbreaks=TRUE)
-      }
-    }, height=800)
+    output$heatmap2 = makePlot()
   }
 )
