@@ -14,7 +14,7 @@ shinyUI(
       
       hr(),
       
-      p('This web app presents results from the research paper by Ellegood et al. (2014) published in Molecular Psychiatry, entitled: ', a(href='http://www.ncbi.nlm.nih.gov/pubmed/25199916', 'Clustering autism: using neuroanatomical differences in 26 mouse models to gain insight into the heterogeneity.')),
+      p('This web app presents results from the research paper by ',em('Ellegood et al.'), ' (2014) published in ', a(href='http://www.nature.com/mp/index.html', 'Molecular Psychiatry'), ' entitled: ', a(href='http://www.ncbi.nlm.nih.gov/pubmed/25199916', 'Clustering autism: using neuroanatomical differences in 26 mouse models to gain insight into the heterogeneity.')),
       
       p('By making the data open and public, our aim is to give researchers and interested parties the tools to help generate and test their own hypotheses using these data to help tease apart the complex heterogeneity and etiology at play in autism spectrum disorder.'),
       
