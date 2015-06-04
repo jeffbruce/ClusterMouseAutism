@@ -1,9 +1,17 @@
+# History files
+.Rhistory
+.Rapp.history
+
 # Non-source R files
-*.Rproj.user
-*.Rhistory
 *.RData
-.Rproj.user*
 .Rproj*
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
 
 # locked files
 *.~lock*
@@ -14,5 +22,4 @@
 /data/random
 
 # sensitive files
-RunClusterMouseAutism.R
-.Rproj.user
+run_cluster_mouse_autism.R
