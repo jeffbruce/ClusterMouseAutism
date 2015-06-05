@@ -38,7 +38,7 @@ shinyUI(
       
       p('Select a subset of mouse strains and brain regions that you are interested in investigating further, and then click the ',  tags$mark('Recalculate'), ' button to see which mouse strains and brain regions cluster together.'),
       
-      p('Note that the heatmap displayed here will be slightly different than Figure 3 depicted in the original paper, because Figure 3 uses the median bootstrapped effect sizes whereas this figure uses the original data without any statistical bootstrapping.  Unfortunately, the bootstrapping procedure is too computationally intensive to present in the context of this web app.'),
+      p('Note that the heatmap displayed here will be slightly different than Figure 3 depicted in the original paper, because Figure 3 uses the median bootstrapped effect sizes of relative volume whereas this figure uses the original data without any statistical bootstrapping.  Unfortunately, the bootstrapping procedure is too computationally intensive to present in the context of this web app.'),
 
       hr(),
       

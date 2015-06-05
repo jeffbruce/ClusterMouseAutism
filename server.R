@@ -155,43 +155,6 @@ shinyServer(
     })
     
     output$heatmap1 = makePlot()
-    # heatmap for reclustering
-#     output$heatmap1 = renderPlot({
-#       input$recalculate
-# 
-#       # ensure plot renders when the app is initially loaded
-#       if (is.null(isolate(input$strains))) {
-#         validate(need(input$strains, FALSE))
-#       }
-#       if (is.null(isolate(input$regions))) {
-#         validate(need(input$regions, FALSE))
-#       }
-#       
-#       # isolate() prevents heatmap from regenerating every time a new strain/region is selected
-#       mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
-#       nr = dim(mousedatamat)[1]
-#       nc = dim(mousedatamat)[2]
-#       
-#       if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-# 
-#         
-#         heatmap = heatmap.2(x=mousedatamat,
-#                             distfun=jdfs,
-#                             breaks=seq(-3, 3, by=0.4),
-#                             col=bluered, 
-#                             margins=c(20,14),
-#                             trace='none', 
-#                             cexRow=1.5, 
-#                             cexCol=1.5, 
-#                             density.info='histogram', 
-#                             keysize=0.8,
-#                             key.title='Effect Size',
-#                             key.xlab='Relative to Wildtype',
-#                             symkey=TRUE, 
-#                             symbreaks=TRUE)
-#       }
-#       heatmap
-#     }, height=800)
     
 
 # Tab 3 Widgets ---------------------------------------------------------
@@ -242,8 +205,6 @@ shinyServer(
         
         meansPlot = ggplot(data=meansData, aes(x=name, y=volume, fill=genotype, colour=genotype))
         
-        browser()
-        
         if (input$plotType == 1) {
           dodge = position_dodge(width=0.9)
           meansPlot = (meansPlot
@@ -292,6 +253,8 @@ browser()
       # handle option for plotting by region or strain
       if (!is.null(input$selectBoxStrainRegion)) {
         if (input$plotBy == 1) {
+          # validate call prevents red text from showing up when switching between plotting strain or region
+          validate(need(input$selectBoxStrainRegion %in% input$strains, FALSE))
           effectSizeData = data.frame(region = isolate(input$regions), 
                                       effectSize = mousedata[input$selectBoxStrainRegion, isolate(input$regions)],
                                       row.names = NULL)
@@ -301,6 +264,8 @@ browser()
                                        y = effectSize))
                             + labs(x = '', y = 'Effect Size'))
         } else if (input$plotBy == 2) {
+          # validate call prevents red text from showing up when switching between plotting strain or region
+          validate(need(input$selectBoxStrainRegion %in% input$regions, FALSE))
           effectSizeData = data.frame(strain = isolate(input$strains), 
                                       effectSize = mousedata[isolate(input$strains), input$selectBoxStrainRegion],
                                       row.names = NULL)
