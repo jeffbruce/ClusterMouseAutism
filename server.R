@@ -92,8 +92,6 @@ shinyServer(
             #         mousedatamat = mousedatamat[rev(testheatmap$rowInd), testheatmap$colInd]        
             #         mousedatamat[mousedatamat < -3] = -3
             #         mousedatamat[mousedatamat > 3] = 3
-            
-#             browser()
           
             heatmap = heatmap.2(x=mousedatamat,
                                 # Rowv and Colv attempts at replacing dendrogram                             
@@ -232,8 +230,6 @@ shinyServer(
                        + stat_summary(fun.data=mean_cl_normal, position=position_dodge(width=1.0), geom='errorbar', color='black', size=0.5, width=0.5))
 #                        + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
-
-# browser()
         
         # customize theme aspects of the plot
         meansPlot = (meansPlot
@@ -289,9 +285,10 @@ shinyServer(
                           + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
                           + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
                           + theme(axis.title.y = element_text(angle=90))
-                          + theme(axis.text.x = element_text(angle=90, color='#000000', face='bold', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
-                          + theme(axis.text.y = element_text(color='#000000', face='bold', family='Trebuchet MS', size=14))
-                          + scale_y_continuous(breaks=seq(-3.5, 3.5, 0.5)))
+                          + theme(axis.text.x = element_text(color='#000000', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
+                          + theme(axis.text.y = element_text(color='#000000', family='Trebuchet MS', size=14))
+                          + scale_y_continuous(breaks=seq(-3.5, 3.5, 0.5))
+                          + coord_flip())
         
         # return the plot
         return(effectSizePlot)
