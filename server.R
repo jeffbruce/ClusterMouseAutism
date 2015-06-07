@@ -47,19 +47,21 @@ shinyServer(
 
 # Render Images ------------------------------------------------------
 
-    output$Figure3 <- renderImage({
-      
-      # Use session information to dynamically resize the images.
-      # This is a reactive expression.
-      width = session$clientData$output_Figure3_width
-      
-      filename = normalizePath(file.path('./www/images/Figure3_MolPsych.png'))
-      
-      list(src=filename,
-           width=width,
-           alt='Image not found.')
-      
-    }, deleteFile=FALSE)
+#     output$Figure3 <- renderImage({
+#       
+#       # Use session information to dynamically resize the images.
+#       # This is a reactive expression.
+#       width = session$clientData$output_Figure3_width
+#       height = session$clientData$output_Figure3_height
+# 
+#       filename = normalizePath(file.path('./www/images/Figure3_MolPsych.png'))
+#       
+#       list(src=filename,
+#            width=width,
+#            height=height,
+#            alt='Image not found.')
+#       
+#     }, deleteFile=FALSE)
     
 
 # Shared Widget Code ------------------------------------------------------

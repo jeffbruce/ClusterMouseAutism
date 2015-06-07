@@ -1,11 +1,11 @@
 # run app locally in default browser
 
 # PACKAGE DEPENDENCIES
-# install.packages('shiny')
-# install.packages('gplots')
-# install.packages('ggplot2')
-# install.packages('data.table')
-# install.packages('Hmisc')
+install.packages('shiny')
+install.packages('gplots')
+install.packages('ggplot2')
+install.packages('data.table')
+install.packages('Hmisc')
 
 library(shiny)
 
@@ -13,6 +13,8 @@ library(shiny)
 setwd('//micehome//jbruce//Documents//Code//R//')
 # MAC
 setwd('/Users/jeffbruce/Projects/Development/')
+# WINDOWS
+setwd('C:/Users/STORMTROOPER/Projects/')
 #runApp(appDir='ClusterMouseAutism', launch.browser=TRUE, display.mode='showcase')
 runApp(appDir='ClusterMouseAutism', launch.browser=TRUE, display.mode='normal')
 

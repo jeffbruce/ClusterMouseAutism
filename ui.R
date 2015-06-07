@@ -21,9 +21,9 @@ shinyUI(
       p('Shown below is a heatmap displaying results from the hierarchical clustering analysis performed in the original research paper, which clustered 26 mouse models of autism along with 62 different brain regions using the median bootstrapped effect sizes of relative volume for each combination of mouse model and brain region.  In the other tabs, you can perform your own clustering and plot means and effect sizes, allowing you to visualize the data in finer detail right down to the individual data points.  For more information about the methods and the main takeaways from the research paper, check out the ', tags$mark('Research Paper'), 'tab.'),
       
       hr(),
-      
-      imageOutput('Figure3')
-#       img(src='/images/Figure3_MolPsych.png', align='center')
+
+#       imageOutput('Figure3')
+      img(src='/images/Figure3_MolPsych33.png', align='center')
       
     ),
 
