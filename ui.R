@@ -76,13 +76,6 @@ shinyUI(
       p('Using the data you filtered and reclustered in the ', tags$mark('Filter and Recluster'), ' tab, here you can zone in on particular mouse strains and brain regions of interest to plot means and effect sizes, using your preferred plot type.'),
       
       hr(),
-             
-      fluidRow(
-        column(12, plotOutput(outputId = 'heatmap2', 
-                              height = '800px'))
-      ),
-      
-      hr(),
       
       fluidRow(
         column(4, radioButtons(inputId = 'statisticType',
@@ -119,11 +112,11 @@ shinyUI(
           column(4, uiOutput('selectInputRegions')),
           column(4, radioButtons(inputId = 'plotType',
                                  label = h4('Plot Type:'),
-                                 choices = list('Bar' = 1, 
-                                                'Box' = 2, 
-                                                'Violin' = 3,
-                                                'Dot' = 4),
-                                 selected = 1))
+                                 choices = list('Box' = 2,
+                                                'Bar' = 1,
+                                                'Dot' = 4,
+                                                'Violin' = 3),
+                                 selected = 2))
         ),
         hr(),
         p(strong(em('Error bars are 95% confidence intervals centred about the mean.'))),
@@ -131,6 +124,13 @@ shinyUI(
           column(12, plotOutput(outputId = 'meansPlot',
                                 height = '800px'))
         )
+      ),
+      
+      hr(),
+      
+      fluidRow(
+        column(12, plotOutput(outputId = 'heatmap2', 
+                              height = '800px'))
       )
     ),
     

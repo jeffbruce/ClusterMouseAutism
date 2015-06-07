@@ -93,6 +93,8 @@ shinyServer(
             #         mousedatamat[mousedatamat < -3] = -3
             #         mousedatamat[mousedatamat > 3] = 3
             
+#             browser()
+          
             heatmap = heatmap.2(x=mousedatamat,
                                 # Rowv and Colv attempts at replacing dendrogram                             
                                 # Rowv=as.dendrogram(hr),
@@ -102,7 +104,9 @@ shinyServer(
                                 distfun=jdfs,
                                 # hclustfun=hclust.avg,
                                 breaks=seq(-3, 3, by=0.4),
+                                symbreaks=TRUE,
                                 col=bluered,
+#                                 col=colorRampPalette(c("blue", "white", "red"))(n = 15),
                                 margins=c(20,14),
                                 trace='none', 
                                 cexRow=1.5, 
@@ -111,8 +115,8 @@ shinyServer(
                                 keysize=0.8,
                                 key.title='Effect Size',
                                 key.xlab='Relative to Wildtype',
-                                symkey=TRUE, 
-                                symbreaks=TRUE)
+                                symkey=TRUE
+                                )
         }
       }, height=800)
     }
@@ -229,7 +233,7 @@ shinyServer(
 #                        + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
 
-browser()
+# browser()
         
         # customize theme aspects of the plot
         meansPlot = (meansPlot
