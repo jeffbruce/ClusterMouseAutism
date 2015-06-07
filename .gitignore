@@ -20,6 +20,3 @@ vignettes/*.pdf
 /shinyapps
 /data/extras
 /data/random
-
-# sensitive files
-run_cluster_mouse_autism.R
