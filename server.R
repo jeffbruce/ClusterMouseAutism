@@ -84,39 +84,27 @@ shinyServer(
         nc = dim(mousedatamat)[2]
         
         if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-      
-            # failed efforts at trying to replace the dendrogram
-            #         hr <- hclust(as.dist(1-cor(t(mousedatamat), method='pearson')), method='complete')
-            #         hc <- hclust(as.dist(1-cor(mousedatamat, method='pearson')), method='complete')
-            #         testheatmap <- heatmap.2(mousedatamat, distfun=jdfs)
-            #         rowInd = testheatmap$rowInd
-            #         colInd = testheatmap$colInd
-            #         mousedatamat = mousedatamat[rev(testheatmap$rowInd), testheatmap$colInd]        
-            #         mousedatamat[mousedatamat < -3] = -3
-            #         mousedatamat[mousedatamat > 3] = 3
           
-            heatmap = heatmap.2(x=mousedatamat,
-                                # Rowv and Colv attempts at replacing dendrogram                             
-                                # Rowv=as.dendrogram(hr),
-                                # Colv=as.dendrogram(hc),
-                                # Rowv=rowInd,
-                                # Colv=colInd,
-                                distfun=jdfs,
-                                # hclustfun=hclust.avg,
-                                breaks=seq(-3, 3, by=0.4),
-                                symbreaks=TRUE,
-                                col=bluered,
-#                                 col=colorRampPalette(c("blue", "white", "red"))(n = 15),
-                                margins=c(20,14),
-                                trace='none', 
-                                cexRow=1.5, 
-                                cexCol=1.5, 
-                                density.info='histogram', 
-                                keysize=0.8,
-                                key.title='Effect Size',
-                                key.xlab='Relative to Wildtype',
-                                symkey=TRUE
-                                )
+          # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
+          if (input$distanceFunction == '1 - correlation') {
+            heatmap = heatmap2_wrapper(x=mousedatamat,
+                                       distfun=jdfs,
+                                       hclustfun=function(x) hclust(x, method=input$clusteringMethod))
+          } else if (input$distanceFunction == 'euclidean') {
+            heatmap = heatmap2_wrapper(x=mousedatamat,
+                                       distfun=euclidean_dist,
+                                       hclustfun=function(x) hclust(x, method=input$clusteringMethod))
+          } else if (input$distanceFunction == 'manhattan') {
+            heatmap = heatmap2_wrapper(x=mousedatamat,
+                                       distfun=manhattan_dist,
+                                       hclustfun=function(x) hclust(x, method=input$clusteringMethod))
+          } else {
+            # invalid distance function specified
+            # give error message eventually
+            return
+          }
+          
+          heatmap
         }
       }, height=800)
     }

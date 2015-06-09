@@ -47,6 +47,22 @@ shinyUI(
       hr(),
       
       fluidRow(
+        column(4, radioButtons(inputId = 'distanceFunction',
+                               label = h4('Clustering Distance Function:'),
+                               choices = list('1 - correlation', 
+                                              'euclidean',
+                                              'manhattan'),
+                               selected = '1 - correlation')),
+        column(4, radioButtons(inputId = 'clusteringMethod',
+                               label = h4('Clustering Method:'),
+                               choices = list('complete',
+                                              'average',
+                                              'ward.D2')))
+      ),
+      
+      hr(),
+      
+      fluidRow(
         column(4, checkboxInput(inputId = 'selectAllStrains', 
                                 label = 'Select/Deselect All Strains', 
                                 value = TRUE)),

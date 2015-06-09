@@ -184,15 +184,48 @@ datadefs <- rbind(c(name="FMR1 (-/Y) (B6)",
 datadefs <- as.data.frame(datadefs, stringsAsFactors=FALSE)
 # Remove the GTF2i entries in datadefs; there are no corresponding data files.
 # datadefs = datadefs[c(-24,-25),]
-
-
-# hclust-avg --------------------------------------------------------------
-hclust.avg <- function(x) hclust(x, method="average")
  
 
-# jdfs --------------------------------------------------------------------
-# Distance function used for clustering.  Basically causes values to range between 0
-# (perfect positive correlation) and 2 (perfect negative correlation).
+# heatmap wrapper function ---------------------------------------------------------
+# This method is used to reduce code duplication in server.R.  
+heatmap2_wrapper = function(x, distfun, hclustfun) {
+  
+  # failed efforts at trying to replace the dendrogram
+  # hr <- hclust(as.dist(1-cor(t(mousedatamat), method='pearson')), method='complete')
+  # hc <- hclust(as.dist(1-cor(mousedatamat, method='pearson')), method='complete')
+  # testheatmap <- heatmap.2(mousedatamat, distfun=jdfs)
+  # rowInd = testheatmap$rowInd
+  # colInd = testheatmap$colInd
+  # mousedatamat = mousedatamat[rev(testheatmap$rowInd), testheatmap$colInd]        
+  # mousedatamat[mousedatamat < -3] = -3
+  # mousedatamat[mousedatamat > 3] = 3
+  
+  heatmap = heatmap.2(x=x,
+                      # Rowv and Colv attempts at replacing dendrogram                             
+                      # Rowv=as.dendrogram(hr),
+                      # Colv=as.dendrogram(hc),
+                      # Rowv=rowInd,
+                      # Colv=colInd,
+                      distfun=distfun,
+                      hclustfun=hclustfun,
+                      breaks=seq(-3, 3, by=0.4),
+                      symbreaks=TRUE,
+                      col=bluered,
+                      # col=colorRampPalette(c("blue", "white", "red"))(n = 15),
+                      margins=c(20,14),
+                      trace='none', 
+                      cexRow=1.5, 
+                      cexCol=1.5, 
+                      density.info='histogram', 
+                      keysize=0.8,
+                      key.title='Effect Size',
+                      key.xlab='Relative to Wildtype',
+                      symkey=TRUE)
+}
+
+
+# distance functions --------------------------------------------------------------------
+# Sort of suspicious that t() is always needed despite whether rows or columns are supplied.
 jdfs = function(x) 
 {
   as.dist(1-cor(t(x)))  
@@ -200,6 +233,14 @@ jdfs = function(x)
 
 jdfs_absolute = function(x) {
   abs(jdfs(x))
+}
+
+manhattan_dist = function(x) {
+  dist(x, method='manhattan')
+}
+
+euclidean_dist = function(x) {
+  dist(x, method='euclidean')
 }
 
 
