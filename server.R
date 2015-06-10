@@ -155,16 +155,16 @@ shinyServer(
     output$selectBoxStrainRegion = renderUI({
       if (input$plotBy == 1) {
         selectInput(inputId = 'selectBoxStrainRegion',
-                    label = h4('Select Strain to Plot By:'),
+                    label = h4('Select Strain(s) to Plot By:'),
                     choices = isolate(input$strains),
                     selected = 1,
-                    multiple = FALSE)
+                    multiple = TRUE)
       } else if (input$plotBy == 2) {
         selectInput(inputId = 'selectBoxStrainRegion',
-                    label = h4('Select Region to Plot By:'),
+                    label = h4('Select Region(s) to Plot By:'),
                     choices = isolate(input$regions),
                     selected = 1,
-                    multiple = FALSE)
+                    multiple = TRUE)
       }
     })
     
@@ -236,55 +236,133 @@ shinyServer(
         return(meansPlot)
       }
     }, height=800)
-    
+
     # effect size plot
     output$effectSizePlot = renderPlot({
-      
+
       # handle option for plotting by region or strain
       if (!is.null(input$selectBoxStrainRegion)) {
         if (input$plotBy == 1) {
           # validate call prevents red text from showing up when switching between plotting strain or region
           validate(need(input$selectBoxStrainRegion %in% input$strains, FALSE))
-          effectSizeData = data.frame(region = isolate(input$regions), 
-                                      effectSize = mousedata[input$selectBoxStrainRegion, isolate(input$regions)],
-                                      row.names = NULL)
+          effectSizeData = melt(mousedata[input$selectBoxStrainRegion, isolate(input$regions)])
+
+          # data that are one dimension must be handled differently from multidimensional data
+          if (min(dim(effectSizeData)) == 1) {
+            one_dimension = TRUE
+          } else {
+            one_dimension = FALSE
+          }
+
+          # set appropriate colnames
+          if (one_dimension) {
+            colnames(effectSizeData) = 'effectSize'
+            effectSizeData$region = isolate(input$regions)
+          } else {
+            colnames(effectSizeData) = c('strain', 'region', 'effectSize')  
+          }
+
+          # limit the effect size data to a custom max and min
           effectSizeData$effectSize = setEffectSizeLimits(effectSizeData$effectSize, lowerLimit=-3, upperLimit=3)
-          effectSizePlot = (ggplot(data = effectSizeData, 
-                                   aes(x = stats:::reorder.default(region, effectSize), 
-                                       y = effectSize))
-                            + labs(x = '', y = 'Effect Size'))
+          
+          if (one_dimension) {
+            effectSizePlot = (ggplot(data = effectSizeData, 
+                                     aes(x = stats:::reorder.default(region, effectSize), 
+                                         y = effectSize))
+                              + labs(x = '', y = 'Effect Size'))
+          } else {      
+            # create separate factor to enable plotting by sorted region
+            singleStrainData = subset(effectSizeData, strain==isolate(input$selectBoxStrainRegion)[1])
+            newRegionOrder = order(singleStrainData$effectSize)
+            effectSizeData$region = factor(effectSizeData$region, levels=singleStrainData$region[newRegionOrder])
+
+
+            effectSizePlot = (ggplot(data = effectSizeData, 
+                                     aes(x = region, 
+                                         y = effectSize,
+                                         fill = strain,
+                                         colour = strain
+                                         ))
+                              + labs(x = '', y = 'Effect Size'))
+          }
         } else if (input$plotBy == 2) {
           # validate call prevents red text from showing up when switching between plotting strain or region
           validate(need(input$selectBoxStrainRegion %in% input$regions, FALSE))
-          effectSizeData = data.frame(strain = isolate(input$strains), 
-                                      effectSize = mousedata[isolate(input$strains), input$selectBoxStrainRegion],
-                                      row.names = NULL)
+          effectSizeData = melt(mousedata[isolate(input$strains), input$selectBoxStrainRegion])
+          
+          # data that are one dimension must be handled differently from multidimensional data
+          if (min(dim(effectSizeData)) == 1) {
+            one_dimension = TRUE
+          } else {
+            one_dimension = FALSE
+          }
+          
+          # set appropriate colnames
+          if (one_dimension) {
+            colnames(effectSizeData) = 'effectSize'
+            effectSizeData$strain = isolate(input$strains)
+          } else {
+            colnames(effectSizeData) = c('strain', 'region', 'effectSize')  
+          }
+          
+          # limit the effect size data to a custom max and min
           effectSizeData$effectSize = setEffectSizeLimits(effectSizeData$effectSize, lowerLimit=-3, upperLimit=3)
-          effectSizePlot = (ggplot(data = effectSizeData, 
-                                   aes(x = stats:::reorder.default(strain, effectSize), 
-                                       y = effectSize))
-                            + labs(x = '', y = 'Effect Size'))
+          
+          if (one_dimension) {
+            effectSizePlot = (ggplot(data = effectSizeData, 
+                                     aes(x = stats:::reorder.default(strain, effectSize), 
+                                         y = effectSize))
+                              + labs(x = '', y = 'Effect Size'))
+          } else {      
+            # create separate factor to enable plotting by sorted region
+            singleRegionData = subset(effectSizeData, region==isolate(input$selectBoxStrainRegion)[1])
+            newStrainOrder = order(singleRegionData$effectSize)
+            effectSizeData$strain = factor(effectSizeData$strain, levels=singleRegionData$strain[newStrainOrder])
+            
+            effectSizePlot = (ggplot(data = effectSizeData, 
+                                     aes(x = strain, 
+                                         y = effectSize,
+                                         fill = region,
+                                         colour = region
+                                     ))
+                              + labs(x = '', y = 'Effect Size'))
+          }
         }
         
+        # plot different thing if it's a 1D plot vs. multidimensional plot
         # customize theme aspects of the plot
-        effectSizePlot = (effectSizePlot
-                          + geom_bar(stat = 'identity', fill = 'thistle1', colour='black')
-                          + geom_hline(yintercept=3)
-                          + geom_hline(yintercept=-3)
-                          + ggtitle(input$selectBoxStrainRegion)
-                          + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
-                          + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
-                          + theme(axis.title.y = element_text(angle=90))
-                          + theme(axis.text.x = element_text(color='#000000', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
-                          + theme(axis.text.y = element_text(color='#000000', family='Trebuchet MS', size=14))
-                          + scale_y_continuous(breaks=seq(-3.5, 3.5, 0.5))
-                          + coord_flip())
+        if (one_dimension) {
+          effectSizePlot = (effectSizePlot
+                            # + geom_point() -- use for dotplot
+                            + geom_bar(stat = 'identity', fill = 'thistle1', colour='black')
+                            + geom_hline(yintercept=c(-3,3))
+                            + geom_hline(yintercept=0, linetype='dotted')
+                            + ggtitle(input$selectBoxStrainRegion)
+                            + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
+                            + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
+                            + theme(axis.title.y = element_text(angle=90))
+                            + theme(axis.text.x = element_text(color='#000000', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
+                            + theme(axis.text.y = element_text(color='#000000', family='Trebuchet MS', size=14))
+                            + scale_y_continuous(breaks=seq(-3.5, 3.5, 0.5))
+                            + coord_flip())
+        } else {
+          effectSizePlot = (effectSizePlot
+                            # + geom_bar(stat='identity', position='dodge', colour='black')
+                            + geom_point(position='dodge')
+                            + geom_hline(yintercept=c(-3,3))
+                            + geom_hline(yintercept=0, linetype='dotted')
+                            + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
+                            + theme(axis.title.y = element_text(angle=90))
+                            + theme(axis.text.x = element_text(color='#000000', family='Trebuchet MS', hjust=1, vjust=0.5, size=14))
+                            + theme(axis.text.y = element_text(color='#000000', family='Trebuchet MS', size=14))
+                            + scale_y_continuous(breaks=seq(-3.5, 3.5, 0.5))
+                            + coord_flip())
+        }
         
         # return the plot
         return(effectSizePlot)
       }
     }, height=800)
-
 
     output$heatmap2 = makePlot()
   }
