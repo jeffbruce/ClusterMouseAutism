@@ -20,3 +20,4 @@ vignettes/*.pdf
 /shinyapps
 /data/extras
 /data/random
+.Rproj.user

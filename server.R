@@ -69,6 +69,7 @@ shinyServer(
     makePlot = function() {
       renderPlot({
         input$recalculate
+        input$applyFunction
         
         # ensure plot renders when the app is initially loaded
         if (is.null(isolate(input$strains))) {
@@ -85,30 +86,42 @@ shinyServer(
         
         if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
           
+          # create appropriate clustering label
+          if (input$clusteringMethod == 'Complete') {
+            clustering_method = 'complete'
+          } else if (input$clusteringMethod == 'Average') {
+            clustering_method = 'average'
+          } else {  # Ward's
+            clustering_method = 'ward.D2'
+          }
+          
+#           browser()
+          
           # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
-          if (input$distanceFunction == '1 - correlation') {
+          if (tolower(input$distanceFunction) == '1 - correlation') {
             heatmap = heatmap2_wrapper(x=mousedatamat,
                                        distfun=jdfs,
-                                       hclustfun=function(x) hclust(x, method=input$clusteringMethod))
-          } else if (input$distanceFunction == 'euclidean') {
+                                       hclustfun=function(x) hclust(x, method=clustering_method))
+          } else if (tolower(input$distanceFunction) == 'euclidean') {
             heatmap = heatmap2_wrapper(x=mousedatamat,
                                        distfun=euclidean_dist,
-                                       hclustfun=function(x) hclust(x, method=input$clusteringMethod))
-          } else if (input$distanceFunction == 'manhattan') {
+                                       hclustfun=function(x) hclust(x, method=clustering_method))
+          } else if (tolower(input$distanceFunction) == 'manhattan') {
             heatmap = heatmap2_wrapper(x=mousedatamat,
                                        distfun=manhattan_dist,
-                                       hclustfun=function(x) hclust(x, method=input$clusteringMethod))
+                                       hclustfun=function(x) hclust(x, method=clustering_method))
           } else {
-            # invalid distance function specified
-            # give error message eventually
-            return
+#             custom =
+#             # handle invalid distance function (return with error message)
+#             heatmap = heatmap2_wrapper(x=mousedatamat,
+#                                        distfun=isolate(input$customDistanceFunction),
+#                                        hclustfun=function(x) hclust(x, method=clustering_method))
           }
           
           heatmap
         }
       }, height=800)
-    }
-
+    } 
 
 # Tab 1 Widgets ----------------------------------------------------------
 
@@ -224,7 +237,8 @@ shinyServer(
         # customize theme aspects of the plot
         meansPlot = (meansPlot
                      + facet_wrap( ~ region, scales='free')
-                     + labs(x='strain', y=bquote(Volume~(mm^{3})))
+                     + labs(x='strain', y='Relative Volume (%)')
+#                      + labs(x='strain', y=bquote(Volume~(mm^{3})))
                      + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
                      + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
                      + theme(axis.title.y = element_text(angle=90))

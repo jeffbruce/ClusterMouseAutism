@@ -51,33 +51,45 @@ shinyUI(
 
       hr(),
       
-      fluidRow(column(12, plotOutput(outputId = 'heatmap1', height = "800px"))),
+      fluidRow(column(12, plotOutput(outputId='heatmap1', height='800px'))),
       
       hr(),
       
       fluidRow(
-        column(4, radioButtons(inputId = 'distanceFunction',
-                               label = h4('Clustering Distance Function:'),
-                               choices = list('1 - correlation', 
-                                              'euclidean',
-                                              'manhattan'),
-                               selected = '1 - correlation')),
-        column(4, radioButtons(inputId = 'clusteringMethod',
-                               label = h4('Clustering Method:'),
-                               choices = list('complete',
-                                              'average',
-                                              'ward.D2')))
+        column(4, radioButtons(inputId='distanceFunction',
+                               label=h4('Clustering Distance Function:'),
+                               choices=list('1 - Correlation', 
+                                            'Euclidean',
+                                            'Manhattan'),
+#                                             'custom'),
+                               selected = '1 - Correlation')),
+        column(4, radioButtons(inputId='clusteringMethod',
+                               label=h4('Clustering Method:'),
+                               choices=list('Complete',
+                                            'Average',
+                                            'Ward\'s')))
       ),
       
       hr(),
       
+#       conditionalPanel(
+#         condition="input.distanceFunction=='custom'",
+#         fluidRow(
+#           column(4, textInput(inputId='customDistanceFunction',
+#                               label='Click Apply Function when done editing.',
+#                               value='function(x) { as.dist(1-cor(t(x))) }')),
+#           column(4, column(4, actionButton('applyFunction', 'Apply Function')))
+#         ),
+#         hr()
+#       ),
+      
       fluidRow(
-        column(4, checkboxInput(inputId = 'selectAllStrains', 
-                                label = 'Select/Deselect All Strains', 
-                                value = TRUE)),
-        column(4, checkboxInput(inputId = 'selectAllRegions', 
-                                label = 'Select/Deselect All Regions', 
-                                value = TRUE))
+        column(4, checkboxInput(inputId='selectAllStrains', 
+                                label='Select/Deselect All Strains', 
+                                value=TRUE)),
+        column(4, checkboxInput(inputId='selectAllRegions', 
+                                label='Select/Deselect All Regions', 
+                                value=TRUE))
       ),
       
       hr(),
@@ -103,59 +115,59 @@ shinyUI(
       hr(),
       
       fluidRow(
-        column(4, radioButtons(inputId = 'statisticType',
-                               label = h4('Statistic to Plot:'),
-                               choices = list('Effect Sizes' = 1, 
-                                              'Means' = 2),
-                               selected = 1))
+        column(4, radioButtons(inputId='statisticType',
+                               label=h4('Statistic to Plot:'),
+                               choices=list('Effect Sizes'=1, 
+                                            'Means'=2),
+                               selected=1))
       ),
       
       hr(),
       
       conditionalPanel(
-        condition = "input.statisticType == '1'",
+        condition="input.statisticType=='1'",
         fluidRow(
-          column(4, radioButtons(inputId = 'plotBy',
-                                 label = h4('Plot By:'),
-                                 choices = list('Strain' = 1, 
-                                                'Region' = 2),
-                                 selected = 1)),
+          column(4, radioButtons(inputId='plotBy',
+                                 label=h4('Plot By:'),
+                                 choices=list('Strain'=1, 
+                                              'Region'=2),
+                                 selected=1)),
           column(4, uiOutput('selectBoxStrainRegion'))
         ),
         hr(),
         p(strong(em('Effect sizes have been capped at -3.0 and +3.0 for increased readability.'))),
         fluidRow(
-          column(12, plotOutput(outputId = 'effectSizePlot',
-                                height = '800px'))
+          column(12, plotOutput(outputId='effectSizePlot',
+                                height='800px'))
         )
       ),
       
       conditionalPanel(
-        condition = "input.statisticType == '2'",
+        condition="input.statisticType=='2'",
         fluidRow(
           column(4, uiOutput('selectInputStrains')),
           column(4, uiOutput('selectInputRegions')),
-          column(4, radioButtons(inputId = 'plotType',
-                                 label = h4('Plot Type:'),
-                                 choices = list('Box' = 2,
-                                                'Bar' = 1,
-                                                'Dot' = 4,
-                                                'Violin' = 3),
-                                 selected = 2))
+          column(4, radioButtons(inputId='plotType',
+                                 label=h4('Plot Type:'),
+                                 choices=list('Box'=2,
+                                              'Bar'=1,
+                                              'Dot'=4,
+                                              'Violin'=3),
+                                 selected=2))
         ),
         hr(),
         p(strong(em('Error bars are 95% confidence intervals centred about the mean.'))),
         fluidRow(
-          column(12, plotOutput(outputId = 'meansPlot',
-                                height = '800px'))
+          column(12, plotOutput(outputId='meansPlot',
+                                height='800px'))
         )
       ),
       
       hr(),
       
       fluidRow(
-        column(12, plotOutput(outputId = 'heatmap2', 
-                              height = '800px'))
+        column(12, plotOutput(outputId='heatmap2', 
+                              height='800px'))
       )
     ),
     
