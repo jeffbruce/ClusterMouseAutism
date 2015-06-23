@@ -61,7 +61,7 @@ shinyUI(
                                choices=list('1 - Correlation', 
                                             'Euclidean',
                                             'Manhattan'),
-#                                             'custom'),
+#                                             'Custom'),
                                selected = '1 - Correlation')),
         column(4, radioButtons(inputId='clusteringMethod',
                                label=h4('Clustering Method:'),
@@ -73,7 +73,7 @@ shinyUI(
       hr(),
       
 #       conditionalPanel(
-#         condition="input.distanceFunction=='custom'",
+#         condition="input.distanceFunction=='Custom'",
 #         fluidRow(
 #           column(4, textInput(inputId='customDistanceFunction',
 #                               label='Click Apply Function when done editing.',

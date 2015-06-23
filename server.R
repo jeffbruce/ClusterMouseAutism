@@ -110,13 +110,26 @@ shinyServer(
             heatmap = heatmap2_wrapper(x=mousedatamat,
                                        distfun=manhattan_dist,
                                        hclustfun=function(x) hclust(x, method=clustering_method))
-          } else {
-#             custom =
+          } 
+
+#             else {  # tolower(input$distanceFunction) == 'custom'
+#             custom = source(textConnection(isolate(input$customDistanceFunction)))$value
 #             # handle invalid distance function (return with error message)
+#             # probably needs a try catch followed by a validate call or something
+#             
+#             custom = tryCatch({
+#               source(textConnection(isolate(input$customDistanceFunction)))$value
+#             }, warning = function(w) {
+#               validate(need(1==2, 'Invalid custom distance function.'))
+#             }, error = function(e) {
+#               validate(need(1==2, 'Invalid custom distance function.'))
+#             }, finally = {
+#             })
+# 
 #             heatmap = heatmap2_wrapper(x=mousedatamat,
-#                                        distfun=isolate(input$customDistanceFunction),
+#                                        distfun=custom,
 #                                        hclustfun=function(x) hclust(x, method=clustering_method))
-          }
+#           }
           
           heatmap
         }
