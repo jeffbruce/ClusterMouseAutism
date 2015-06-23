@@ -1,3 +1,6 @@
+# Data Specification ---------------------------------------
+
+# Only defined for relative volumes but "relative" is replaced with "absolute" when actually loading the data, but only for the combined_vols files, not the gf files.
 datadefs <- rbind(c(name="FMR1 (-/Y) (B6)", 
                     gf="gf_FMR1_relative", 
                     data="combined_vols_FMR1_relative",
@@ -96,13 +99,13 @@ datadefs <- rbind(c(name="FMR1 (-/Y) (B6)",
                     G1="WT", 
                     G2="Het", 
                     group="NRXN"),
-#                   c(name="SLC6A4 Ala56 (B6)", 
-#                     gf="gf_SERT_KI_Male_relative", 
-#                     data="combined_vols_SERT_KI_Male_relative",
-#                     term="Genotype", 
-#                     G1="WT", 
-#                     G2="KI", 
-#                     group="SERT"),
+  #                   c(name="SLC6A4 Ala56 (B6)", 
+  #                     gf="gf_SERT_KI_Male_relative", 
+  #                     data="combined_vols_SERT_KI_Male_relative",
+  #                     term="Genotype", 
+  #                     G1="WT", 
+  #                     G2="KI", 
+  #                     group="SERT"),
                   c(name="SLC6A4 Ala56 (B6)", 
                     gf="gf_SERT_KI_relative", 
                     data="combined_vols_SERT_KI_relative",
@@ -110,13 +113,13 @@ datadefs <- rbind(c(name="FMR1 (-/Y) (B6)",
                     G1="WT", 
                     G2="KI", 
                     group="SERT"),
-#                   c(name="SLC6A4 Ala56 (129)", 
-#                     gf="gf_SERT_KI_129_relative_Male", 
-#                     data="combined_vols_SERT_KI_129_Male_relative",
-#                     term="Genotype", 
-#                     G1="WT", 
-#                     G2="KI", 
-#                     group="SERT"),
+  #                   c(name="SLC6A4 Ala56 (129)", 
+  #                     gf="gf_SERT_KI_129_relative_Male", 
+  #                     data="combined_vols_SERT_KI_129_Male_relative",
+  #                     term="Genotype", 
+  #                     G1="WT", 
+  #                     G2="KI", 
+  #                     group="SERT"),
                   c(name="SLC6A4 Ala56 (129)", 
                     gf="gf_SERT_KI_129_relative", 
                     data="combined_vols_SERT_KI_129_relative",
@@ -124,13 +127,13 @@ datadefs <- rbind(c(name="FMR1 (-/Y) (B6)",
                     G1="WT", 
                     G2="KI", 
                     group="SERT"),
-#                   c(name="SLC6A4 KO (-/-)", 
-#                     gf="gf_SERT_KO_Male_relative", 
-#                     data="combined_vols_SERT_KO_Male_relative",
-#                     term="Genotype", 
-#                     G1="WT", 
-#                     G2="KO", 
-#                     group="SERT"),
+  #                   c(name="SLC6A4 KO (-/-)", 
+  #                     gf="gf_SERT_KO_Male_relative", 
+  #                     data="combined_vols_SERT_KO_Male_relative",
+  #                     term="Genotype", 
+  #                     G1="WT", 
+  #                     G2="KO", 
+  #                     group="SERT"),
                   c(name="SLC6A4 KO (-/-)", 
                     gf="gf_SERT_KO_relative", 
                     data="combined_vols_SERT_KO_relative",
@@ -203,13 +206,49 @@ datadefs <- rbind(c(name="FMR1 (-/Y) (B6)",
                     group="ITGB3"))
 
 datadefs <- as.data.frame(datadefs, stringsAsFactors=FALSE)
-# Remove the GTF2i entries in datadefs; there are no corresponding data files.
-# datadefs = datadefs[c(-24,-25),]
- 
 
-# heatmap wrapper function ---------------------------------------------------------
-# This method is used to reduce code duplication in server.R.  
-heatmap2_wrapper = function(x, distfun, hclustfun) {
+
+# Loading Data ------------------------------------------------------------
+
+LoadData = function() {
+  # Summary:
+  #   Loads the gf files, and both the relative and absolute combined vols data files.
+  
+  dataFiles = datadefs$data
+  gfFiles = datadefs$gf
+  
+  # load gf files
+  for (file in gfFiles) {
+    gfFile = paste(getwd(), "/data/", file, ".txt", sep="")
+    assign(x=file, value=read.table(file=gfFile, header=TRUE, sep=" "), envir=parent.frame())
+  }
+  
+  # load relative volume files
+  for (file in dataFiles) {
+    dataFile = paste(getwd(), "/data/", file, ".txt", sep="")
+    assign(x=file, value=read.table(file=dataFile, header=TRUE, sep=" "), envir=parent.frame())
+  }
+  
+  # load absolute volume files
+  for (file in dataFiles) {
+    absoluteFile = gsub('relative', 'absolute', file)
+    dataFile = paste(getwd(), "/data/", absoluteFile, ".txt", sep="")
+    assign(x=absoluteFile, value=read.table(file=dataFile, header=TRUE, sep=" "), envir=parent.frame())
+  }
+}
+
+
+# Heatmap Wrapper Function ---------------------------------------------------------
+
+Heatmap2Wrapper = function(x, distfun, hclustfun) {
+  # Summary:
+  #   This method is used to reduce code duplication in server.R.
+  # Args: 
+  #   x: A matrix of effect sizes with mouse model rows and brain region columns.
+  #   distfun: A function used to compute distance, also defined in helpers.R.
+  #   hclustfun: A function used to cluster the data (e.g. average, complete).
+  # Returns:
+  #   A heatmap.2 object of mouse model rows and brain region columns.
   
   # failed efforts at trying to replace the dendrogram
   # hr <- hclust(as.dist(1-cor(t(mousedatamat), method='pearson')), method='complete')
@@ -245,115 +284,125 @@ heatmap2_wrapper = function(x, distfun, hclustfun) {
 }
 
 
-# distance functions --------------------------------------------------------------------
+# Distance Functions --------------------------------------------------------------------
 # Sort of suspicious that t() is always needed despite whether rows or columns are supplied.
-jdfs = function(x) 
-{
+
+Jdfs = function(x) {
   as.dist(1-cor(t(x)))  
 }
 
-jdfs_absolute = function(x) {
-  abs(jdfs(x))
+JdfsAbsolute = function(x) {
+  abs(Jdfs(x))
 }
 
-manhattan_dist = function(x) {
+ManhattanDist = function(x) {
   dist(x, method='manhattan')
 }
 
-euclidean_dist = function(x) {
+EuclideanDist = function(x) {
   dist(x, method='euclidean')
 }
 
 
-# cohensd -----------------------------------------------------------------
-# Effect size.
-cohensd <- function(g1, g2) 
-{
-  return( (mean(g2) - mean(g1)) / sd(g1) )
+# Effect Size Functions ---------------------------------------------------
+
+CohensD <- function(g1, g2) {
+  ans = (mean(g2) - mean(g1)) / sd(g1)
+  return(ans)
 }
 
-
-# structureeffects --------------------------------------------------------
-# Calculates the effect size between the first group (ind1) and 
-# the second group (ind2) for each brain region.
-structureeffects <- function(ind1, ind2, combined_vols_data) 
-{
-  effects <- vector(length=ncol(combined_vols_data))
-  for (i in 1:ncol(combined_vols_data)) {
-    effects[i] <- cohensd(combined_vols_data[ind1, i],
-                          combined_vols_data[ind2, i])
-  }
-  names(effects) <- colnames(combined_vols_data)
-  return(effects)
-}
-
-
-# structureeffectsfromdatadefs --------------------------------------------
-# Calls structureeffects on either a bootstrapped or real sample.
-structureeffectsfromdatadefs <- function(datadefs, i, boot=F) 
-{
-  # Gets data from appropriate combined_vols file.
-  combined_vols_data <- get(datadefs$data[i])
+CalculateSingleStrainEffectSizes <- function(datadefs, volumeType, i, boot=F) {
+  # Summary:
+  #   Calculates effect sizes for a single strain between wildtype group and knockout group for each brain region.
+  # Args:
+  #   datadefs: A specification of the data files and the labels used to represent different strains.
+  #   volumeType: One of 'relative' or 'absolute'.
+  #   i: The i-th mouse strain to calculate effect sizes for.
+  # Returns:
+  #   A vector of effect sizes for a single mouse strain.
   
-  # Gets data from appropriate gf file.
-  gf_data <- get(datadefs$gf[i])
+  # Get data from combined_vols data file for a single strain.
+  if (volumeType == 'absolute') {
+    combinedVolsData <- get(gsub(pattern='relative', replacement='absolute', datadefs$data[i]))
+  } else {  # relative
+    combinedVolsData <- get(datadefs$data[i])
+  }
+  
+  # Gets wildtype and knockout indices to use to index the combined vols files. 
+  gfData <- get(datadefs$gf[i])
   
   # Returns a factor (vector) of genotype labels for that strain.
-  gterm <- get(datadefs$term[i], gf_data)
+  gterm <- get('Genotype', gfData)
   
-  # Extract indices corresponding to WT and KO
-  ind1 <- grep(datadefs$G1[i], gterm)
-  ind2 <- grep(datadefs$G2[i], gterm)
+  # Extract indices corresponding to wildtype and knockout.
+  wtIndices <- grep(datadefs$G1[i], gterm)
+  koIndices <- grep(datadefs$G2[i], gterm)
   
   # Create repeated samples.
   if (boot == T) {
-    ind1 <- sample(ind1, replace=T)
-    ind2 <- sample(ind2, replace=T)
+    wtIndices <- sample(ind1, replace=T)
+    koIndices <- sample(ind2, replace=T)
   }
   
-  return(structureeffects(ind1, ind2, combined_vols_data))
+  effectSizes <- vector(length=ncol(combinedVolsData))
+  for (i in 1:ncol(combinedVolsData)) {
+    effectSizes[i] <- CohensD(combinedVolsData[wtIndices, i],
+                              combinedVolsData[koIndices, i])
+  }
+  names(effectSizes) <- colnames(combinedVolsData)
+  
+  return(effectSizes)
 }
 
 
-# alleffects --------------------------------------------------------------
-# Loops through all mouse models and computes the effect size for each.
-alleffects <- function(datadefs, boot=F) 
-{
+CalculateEffectSizes <- function(datadefs, volumeType, boot=F) {
+  # Summary:
+  #   Calculates effect size for every combination of mouse strain and brain region.
+  # Args:
+  #   datadefs: A specification of the data files and the labels used to represent different strains.
+  #   volumeType: One of 'relative' or 'absolute'.
+  # Returns:
+  #   A matrix of effect sizes for every combination of mouse strain and brain region.
+  
   neffects <- nrow(datadefs)
   
-  out <- structureeffectsfromdatadefs(datadefs, 1, boot)
+  effectSizeMatrix <- CalculateSingleStrainEffectSizes(datadefs, volumeType, 1, boot)
   for (i in 2:neffects) {
-    out <- rbind(out, structureeffectsfromdatadefs(datadefs, i, boot))
+    effectSizeMatrix <- rbind(effectSizeMatrix, CalculateSingleStrainEffectSizes(datadefs, volumeType, i, boot))
   }
   
-  rownames(out) <- datadefs$name
+  rownames(effectSizeMatrix) <- datadefs$name
+  colnames(effectSizeMatrix) <- GetColNames()  # could potentially return incorrect names if data files aren't labelled appropriately
   
-  # comment out this line if it's returning incorrect column names 
-  colnames(out) <- GetColNames()
-  
-  return(out)
+  return(effectSizeMatrix)
 }
 
 
-# IndividualData -------------------------------------------------------------
-# Creates a data table containing volume data for every brain region, for
-# every individual mouse, in long format.
-IndividualData <- function(datadefs)
-{
-#   browser()
+IndividualData <- function(datadefs, volumeType) {
+  # Summary:
+  #   Creates a data table containing volume data for every brain region, for every individual mouse, in long format.
+  # Args:
+  #   datadefs: A specification of the data files and the labels used to represent different strains.
+  #   volumeType: One of 'relative' or 'absolute'.
+  # Returns:
+  #   A data table containing volume data for every brain region, for every individual mouse, in long format.
   
   individualData = data.table(matrix(ncol = 2 + length(GetColNames())))
   individualData = individualData[-1, ]  # remove NAs from initialization
   setnames(individualData, c('name', 'genotype', GetColNames()))
   
-  for (i in 1:nrow(datadefs))
-  {
-    # Get data associated with a row of the data frame
-    row = datadefs[i,]
-    tempData = get(row$data)
+  for (i in 1:nrow(datadefs)) {
+    
+    # Get data for a single strain as a data.table.
+    row = datadefs[i, ]
+    if (volumeType == 'absolute') {
+      tempData = get(gsub(pattern='relative', replace='absolute', row$data))
+    } else {  # volumeType == 'relative'
+      tempData = get(row$data)
+    }
     tempData = as.data.table(tempData)
      
-    # Set proper column names
+    # Set proper column names.
     setnames(tempData, GetColNames())
     tempData$name = row$name
     tempData$genotype = NA
@@ -370,11 +419,11 @@ IndividualData <- function(datadefs)
     tempData$genotype[koIndices] = row$G2
     tempData = subset(tempData, (genotype == row$G1 | genotype == row$G2))
     
-    # Append data to total dataset
+    # Append data to total dataset.
     individualData = rbind(individualData, tempData)
   }
   
-  # Make long format and set appropriate column names
+  # Make long format and set appropriate column names.
   individualData = reshape2:::melt(individualData, id=c('name','genotype'))
   setnames(individualData, c('name','genotype','region','volume'))
   individualData$genotype = as.factor(individualData$genotype)
@@ -385,27 +434,28 @@ IndividualData <- function(datadefs)
 }
 
 
-# SummaryData -------------------------------------------------------------
-# Computes means and standard deviations for each strain * genotype * region
-SummaryData = function(individualData)
-{
-  summaryData = aggregate( .~name:genotype:region, individualData, FUN = function(x) c(mn=mean(x), stdev=sd(x)))
-  
-  # 'volume' is a matrix inside of a data frame.
-  # Need to extract the mean and sd data inside of the 'volume' matrix.
-  summaryData$mean = summaryData$volume[,1]
-  summaryData$sd = summaryData$volume[,2]
-  summaryData$volume = NULL
-  
-  return(summaryData)
-}
+# SummaryData = function(individualData) {
+#   # Computes means and standard deviations for each strain * genotype * region
+#   
+#   summaryData = aggregate( .~name:genotype:region, individualData, FUN = function(x) c(mn=mean(x), stdev=sd(x)))
+#   
+#   # 'volume' is a matrix inside of a data frame.
+#   # Need to extract the mean and sd data inside of the 'volume' matrix.
+#   summaryData$mean = summaryData$volume[,1]
+#   summaryData$sd = summaryData$volume[,2]
+#   summaryData$volume = NULL
+#   
+#   return(summaryData)
+# }
 
 
-# bootalleffects ----------------------------------------------------------
-# Get effect sizes for each genotype and structure with repeated sampling with
-# replacement.  This function takes > 1 minute to run in its current implementation.
-bootalleffects <- function(datadefs, n=1000) 
-{
+# Bootstrapping and Clustering Functions ----------------------------------
+
+
+bootalleffects <- function(datadefs, n=1000) {
+  # Get effect sizes for each genotype and structure with repeated sampling with
+  # replacement.  This function takes > 1 minute to run in its current implementation.
+  
   a = array(0, dim=c(n, nrow(datadefs), 62))
   
   for (i in 1:n) {
@@ -416,11 +466,10 @@ bootalleffects <- function(datadefs, n=1000)
 }
 
 
-# bootallconfints ---------------------------------------------------------
-# Takes the output of bootalleffects and returns an array of confidence
-# intervals and medians.
-bootallconfints <-function(bootarray, datadefs, hierarchy=FALSE) 
-{
+bootallconfints <-function(bootarray, datadefs, hierarchy=FALSE) {
+  # Takes the output of bootalleffects and returns an array of confidence
+  # intervals and medians.
+  
   # compute the confidence intervals by combining apply with the quantile func
   s <- apply(bootarray, c(2,3), quantile, c(0.025, 0.5, 0.975))
   # get all the effects - but just for column and row names purposes
@@ -447,10 +496,9 @@ bootallconfints <-function(bootarray, datadefs, hierarchy=FALSE)
 }
 
 
-# bootalldist -------------------------------------------------------------
-# Compute the distance function on bootstrapped effects.
-bootalldist <- function(bootarray, distfun) 
-{
+bootalldist <- function(bootarray, distfun) {
+  # Compute the distance function on bootstrapped effects.
+  
   ngroups <- dim(bootarray)[2]
   nboot <- dim(bootarray)[1]
   out <- array(0, dim=c(nboot, ngroups, ngroups))
@@ -463,9 +511,7 @@ bootalldist <- function(bootarray, distfun)
 }
 
 
-# bootalldistregion -------------------------------------------------------
-bootalldistregion<- function(bootarray, distfun) 
-{
+bootalldistregion <- function(bootarray, distfun) {
   ngroups <- dim(bootarray)[3]
   nboot <- dim(bootarray)[1]
   out <- array(0, dim=c(nboot, ngroups, ngroups))
@@ -476,9 +522,7 @@ bootalldistregion<- function(bootarray, distfun)
 }
 
 
-# bootdistcint ------------------------------------------------------------
-bootdistcint <- function(bootdistarray, datadefs) 
-{
+bootdistcint <- function(bootdistarray, datadefs) {
   s <- apply(bootdistarray, c(2,3), quantile, c(0.05, 0.5, 0.9))
   m1 <- melt(s[1,,])
   m2 <- melt(s[2,,])
@@ -492,10 +536,9 @@ bootdistcint <- function(bootdistarray, datadefs)
 }
 
 
-# clustmember -------------------------------------------------------------
-# How often are cluster memberships shared?
-clustmember <- function(bootdistarray, cutsize=2, datadefs=datadefs) 
-{
+clustmember <- function(bootdistarray, cutsize=2, datadefs=datadefs) {
+  # How often are cluster memberships shared?
+  
   out <- array(0, dim=dim(bootdistarray))
   
   for (i in 1:dim(bootdistarray)[1]) {
@@ -515,10 +558,9 @@ clustmember <- function(bootdistarray, cutsize=2, datadefs=datadefs)
 }
 
 
-# plotconfints ------------------------------------------------------------
-# Plot the confidence intervals.
-plotconfints <- function(cints, ymin=-4, ymax=4) 
-{
+plotconfints <- function(cints, ymin=-4, ymax=4) {
+  # Plot the confidence intervals.
+  
   p1 <- ggplot(data=cints, mapping=aes(x=X2, y=median, ymin=c05, ymax=c95,
                           colour=abs(median)))
   p1 <- p1 + geom_pointrange()
@@ -541,13 +583,13 @@ plotconfints <- function(cints, ymin=-4, ymax=4)
 }
 
 
-# GetColNames ----------------------------------------------------------
-# called by alleffects when creating the effect size data
-# this function will need to be modified when a new atlas is used
-# or when data files with differently ordered columns are used
-GetColNames <- function() 
-{
-  # manually supply brain region labels
+# Proper Column Names ----------------------------------------------------------
+
+
+GetColNames <- function() {
+  # Summary:
+  #   Returns properly formatted region names in the same order as those found in the combined_vols data files.
+
   goodColNames = c('Amygdala',
                    'Anterior Commissure - Anterior',
                    'Anterior Commissure - Posterior',
@@ -609,7 +651,7 @@ GetColNames <- function()
                    'Superior Olivary Complex',
                    'Thalamus',
                    'Third Ventricle',
-                   'Ventral Tegmental Decussation'
-  )
+                   'Ventral Tegmental Decussation')
+  
   return(goodColNames)
 }

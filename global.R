@@ -12,11 +12,17 @@ require(reshape2)
 require(shiny)
 require(stats)
 
-# Real data:
+# Data and helper functions.
 source('helpers.R')
-source('loaddata.R')
-mousedata = alleffects(datadefs)
-# mousedata[mousedata < -3] = -3
-# mousedata[mousedata > 3] = 3
-individualData = IndividualData(datadefs)
-summaryData = SummaryData(individualData)
+
+LoadData()
+
+absoluteMousedata = CalculateEffectSizes(datadefs, 'absolute')
+relativeMousedata = CalculateEffectSizes(datadefs, 'relative')
+
+absoluteIndividualData = IndividualData(datadefs, 'absolute')
+relativeIndividualData = IndividualData(datadefs, 'relative')
+
+# SummaryData function is not currently being used
+# absoluteSummaryData = SummaryData(absoluteIndividualData, 'absolute')
+# relativeSummaryData = SummaryData(relativeIndividualData, 'relative')

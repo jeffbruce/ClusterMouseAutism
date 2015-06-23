@@ -55,6 +55,10 @@ shinyUI(
       
       hr(),
       
+      h2('Plotting Options'),
+      
+      hr(),
+      
       fluidRow(
         column(4, radioButtons(inputId='distanceFunction',
                                label=h4('Clustering Distance Function:'),
@@ -67,7 +71,11 @@ shinyUI(
                                label=h4('Clustering Method:'),
                                choices=list('Complete',
                                             'Average',
-                                            'Ward\'s')))
+                                            'Ward\'s'))),
+        column(4, radioButtons(inputId='volumeType',
+                               label=h4('Relative or Absolute Volumes:'),
+                               choices=list('Relative',
+                                            'Absolute')))
       ),
       
       hr(),
@@ -83,6 +91,10 @@ shinyUI(
 #         hr()
 #       ),
       
+      h2('Filtering Options'),
+
+      hr(),
+
       fluidRow(
         column(4, checkboxInput(inputId='selectAllStrains', 
                                 label='Select/Deselect All Strains', 
@@ -91,8 +103,6 @@ shinyUI(
                                 label='Select/Deselect All Regions', 
                                 value=TRUE))
       ),
-      
-      hr(),
       
       fluidRow(
         column(4, uiOutput('selectStrains')),

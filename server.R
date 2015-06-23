@@ -69,7 +69,7 @@ shinyServer(
     makePlot = function() {
       renderPlot({
         input$recalculate
-        input$applyFunction
+#         input$applyFunction
         
         # ensure plot renders when the app is initially loaded
         if (is.null(isolate(input$strains))) {
@@ -80,6 +80,7 @@ shinyServer(
         }
         
         # isolate() prevents heatmap from regenerating every time a new strain/region is selected
+        mousedata = get(paste(tolower(input$volumeType), 'Mousedata', sep=''))
         mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
         nr = dim(mousedatamat)[1]
         nc = dim(mousedatamat)[2]
@@ -94,21 +95,19 @@ shinyServer(
           } else {  # Ward's
             clustering_method = 'ward.D2'
           }
-          
-#           browser()
-          
+                    
           # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
           if (tolower(input$distanceFunction) == '1 - correlation') {
-            heatmap = heatmap2_wrapper(x=mousedatamat,
-                                       distfun=jdfs,
+            heatmap = Heatmap2Wrapper(x=mousedatamat,
+                                       distfun=Jdfs,
                                        hclustfun=function(x) hclust(x, method=clustering_method))
           } else if (tolower(input$distanceFunction) == 'euclidean') {
-            heatmap = heatmap2_wrapper(x=mousedatamat,
-                                       distfun=euclidean_dist,
+            heatmap = Heatmap2Wrapper(x=mousedatamat,
+                                       distfun=EuclideanDist,
                                        hclustfun=function(x) hclust(x, method=clustering_method))
           } else if (tolower(input$distanceFunction) == 'manhattan') {
-            heatmap = heatmap2_wrapper(x=mousedatamat,
-                                       distfun=manhattan_dist,
+            heatmap = Heatmap2Wrapper(x=mousedatamat,
+                                       distfun=ManhattanDist,
                                        hclustfun=function(x) hclust(x, method=clustering_method))
           } 
 
@@ -126,7 +125,7 @@ shinyServer(
 #             }, finally = {
 #             })
 # 
-#             heatmap = heatmap2_wrapper(x=mousedatamat,
+#             heatmap = Heatmap2Wrapper(x=mousedatamat,
 #                                        distfun=custom,
 #                                        hclustfun=function(x) hclust(x, method=clustering_method))
 #           }
@@ -147,12 +146,12 @@ shinyServer(
       if (input$selectAllRegions == TRUE) {
         checkboxGroupInput(inputId = 'regions', 
                            label = h3('Brain Regions'), 
-                           choices = sort(colnames(mousedata)),
-                           selected = colnames(mousedata))
+                           choices = sort(colnames(relativeMousedata)),
+                           selected = colnames(relativeMousedata))
       } else {
         checkboxGroupInput(inputId = 'regions', 
                            label = h3('Brain Regions'), 
-                           choices = sort(colnames(mousedata)),
+                           choices = sort(colnames(relativeMousedata)),
                            selected = vector(mode="character", length=0))
       }    
     })
@@ -162,12 +161,12 @@ shinyServer(
       if (input$selectAllStrains == TRUE) {
         checkboxGroupInput(inputId = 'strains', 
                            label = h3('Mouse Strains'), 
-                           choices = sort(rownames(mousedata)),
-                           selected = rownames(mousedata))
+                           choices = sort(rownames(relativeMousedata)),
+                           selected = rownames(relativeMousedata))
       } else {
         checkboxGroupInput(inputId = 'strains', 
                            label = h3('Mouse Strains'), 
-                           choices = sort(rownames(mousedata)),
+                           choices = sort(rownames(relativeMousedata)),
                            selected = vector(mode="character", length=0))
       }    
     })
@@ -217,7 +216,7 @@ shinyServer(
       
       if (!is.null(input$selectInputStrains) & !is.null(input$selectInputRegions)) {
         
-        meansData = individualData
+        meansData = get(paste(tolower(input$volumeType), 'IndividualData', sep=''))
         meansData = meansData[meansData$name %in% input$selectInputStrains,]
         meansData = meansData[meansData$region %in% input$selectInputRegions,]
         
@@ -247,11 +246,15 @@ shinyServer(
 #                        + stat_summary(fun.y=mean, position=position_dodge(width=1.0), shape=1, col='red', geom='point'))
         }
         
+        if (tolower(input$volumeType) == 'absolute') {  # absolute volumes
+          meansPlot = meansPlot + labs(x='strain', y=bquote(Volume~(mm^{3})))
+        } else {  # relative volumes
+          meansPlot = meansPlot + labs(x='strain', y='Relative Volume (%)')
+        }
+
         # customize theme aspects of the plot
         meansPlot = (meansPlot
                      + facet_wrap( ~ region, scales='free')
-                     + labs(x='strain', y='Relative Volume (%)')
-#                      + labs(x='strain', y=bquote(Volume~(mm^{3})))
                      + theme(plot.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=32))
                      + theme(axis.title = element_text(color='#000000', face='bold', family='Trebuchet MS', size=24))
                      + theme(axis.title.y = element_text(angle=90))
@@ -267,6 +270,8 @@ shinyServer(
     # effect size plot
     output$effectSizePlot = renderPlot({
 
+      mousedata = get(paste(tolower(input$volumeType), 'Mousedata', sep=''))
+      
       # handle option for plotting by region or strain
       if (!is.null(input$selectBoxStrainRegion)) {
         if (input$plotBy == 1) {
