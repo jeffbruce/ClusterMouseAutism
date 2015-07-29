@@ -1,14 +1,21 @@
 # ui.R
 
-# This file is run once.  It generates HTML whichis cached and sent to each browser that connects.
+# This file is run once.  It generates HTML which is cached and sent to each browser that connects.
 
 shinyUI(
-  navbarPage('Clustering Autism in the Mouse',
-    
+  navbarPage(title='Menu', 
+             position='fixed-top', 
+             inverse=TRUE,
+             collapsible=TRUE,
+             windowTitle='Clustering Autism in the Mouse',
              
 # TAB PANEL ---------------------------------------------------------------
              
     tabPanel('Overview',
+      
+      br(),
+      br(),
+      br(),
       
       a(name='Overview'),
       titlePanel('Overview'),
@@ -40,6 +47,10 @@ shinyUI(
 # TAB PANEL ---------------------------------------------------------------
 
     tabPanel('Filter and Recluster',
+             
+      br(),
+      br(),
+      br(),
   
       titlePanel('Filter and Recluster'),
       
@@ -55,10 +66,52 @@ shinyUI(
       
       hr(),
       
-      h2('Plotting Options'),
+      h2('Legend Options'),
+            
+      fluidRow(
+        column(4, checkboxGroupInput(inputId = 'regionMetadata', 
+                                     label = h3('Region Metadata'), 
+                                     choices = names(limitedRegionMetadata),
+                                     selected = names(limitedRegionMetadata))),
+        column(4, checkboxGroupInput(inputId = 'strainMetadata', 
+                                     label = h3('Strain Metadata'), 
+                                     choices = names(limitedStrainMetadata),
+                                     selected = names(limitedStrainMetadata)))
+      ),
       
+      h2('Metadata Groups'),
+      
+      fluidRow(
+        column(2, checkboxGroupInput(inputId = 'matterMetadata', 
+                                     label = h4(names(limitedRegionMetadata)[1]), 
+                                     choices = unique(limitedRegionMetadata[, 1]),
+                                     selected = unique(limitedRegionMetadata[, 1]))),
+        column(2, checkboxGroupInput(inputId = 'regionClusterMetadata', 
+                                     label = h4(names(limitedRegionMetadata)[2]), 
+                                     choices = unique(limitedRegionMetadata[, 2]),
+                                     selected = unique(limitedRegionMetadata[, 2]))),
+        column(2, checkboxGroupInput(inputId = 'ageMetadata', 
+                                     label = h4(names(limitedStrainMetadata)[1]), 
+                                     choices = unique(limitedStrainMetadata[, 1]),
+                                     selected = unique(limitedStrainMetadata[, 1]))),
+        column(2, checkboxGroupInput(inputId = 'sexMetadata', 
+                                     label = h4(names(limitedStrainMetadata)[2]), 
+                                     choices = unique(limitedStrainMetadata[, 2]),
+                                     selected = unique(limitedStrainMetadata[, 2]))),
+        column(2, checkboxGroupInput(inputId = 'strainClusterMetadata', 
+                                     label = h4(names(limitedStrainMetadata)[3]), 
+                                     choices = unique(limitedStrainMetadata[, 3]),
+                                     selected = unique(limitedStrainMetadata[, 3]))),
+        column(2, checkboxGroupInput(inputId = 'backgroundMetadata', 
+                                     label = h4(names(limitedStrainMetadata)[4]), 
+                                     choices = unique(limitedStrainMetadata[, 4]),
+                                     selected = unique(limitedStrainMetadata[, 4])))
+      ),
+
       hr(),
-      
+
+      h2('Clustering Options'),
+            
       fluidRow(
         column(4, radioButtons(inputId='distanceFunction',
                                label=h4('Clustering Distance Function:'),
@@ -93,8 +146,6 @@ shinyUI(
       
       h2('Filtering Options'),
 
-      hr(),
-
       fluidRow(
         column(4, checkboxInput(inputId='selectAllStrains', 
                                 label='Select/Deselect All Strains', 
@@ -116,6 +167,10 @@ shinyUI(
 
     tabPanel('Plot Means and Effect Sizes',
       
+      br(),
+      br(),
+      br(),
+             
       titlePanel('Plot Means and Effect Sizes'),
              
       hr(),
@@ -185,6 +240,10 @@ shinyUI(
 # TAB PANEL ---------------------------------------------------------------
 
     tabPanel('Research Paper',
+             
+             br(),
+             br(),
+             br(),
              
              a(name='Research Paper'),
              titlePanel('Research Paper'),

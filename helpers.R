@@ -235,8 +235,14 @@ LoadData = function() {
     dataFile = paste(getwd(), "/data/", absoluteFile, ".txt", sep="")
     assign(x=absoluteFile, value=read.table(file=dataFile, header=TRUE, sep=" "), envir=parent.frame())
   }
+    
+  # load metadata
+  # first row of these .csv files contains a header, the second row contains 0 if the column should not be used as metadata in the Shiny app, and 1 if the column should be used as metadata
+  assign(x='regionMetadata', value=read.csv(file.path(getwd(), 'data/region_metadata.csv'), stringsAsFactors=FALSE), envir=parent.frame())
+  assign(x='limitedRegionMetadata', value=regionMetadata[, -1], envir=parent.frame())
+  assign(x='strainMetadata', value=read.csv(file.path(getwd(), 'data/strain_metadata.csv'), stringsAsFactors=FALSE), envir=parent.frame())
+  assign(x='limitedStrainMetadata', value=strainMetadata[, -1], envir=parent.frame())
 }
-
 
 # Heatmap Wrapper Function ---------------------------------------------------------
 
@@ -281,6 +287,58 @@ Heatmap2Wrapper = function(x, distfun, hclustfun) {
                       key.title='Effect Size',
                       key.xlab='Relative to Wildtype',
                       symkey=TRUE)
+}
+
+Heatmap3Wrapper = function(x, distfun, hclustfun, clab, rlab) {
+  # Summary:
+  #   This method is used to reduce code duplication in server.R.
+  # Args: 
+  #   x: A matrix of effect sizes with mouse model rows and brain region columns.
+  #   distfun: A function used to compute distance, also defined in helpers.R.
+  #   hclustfun: A function used to cluster the data (e.g. average, complete).
+  # Returns:
+  #   A heatmap.3 object of mouse model rows and brain region columns.
+  
+  legendColors = ExtendLegendColors(clab, rlab)
+  legendLabels = ExtendLegendLabels(limitedRegionMetadata, limitedStrainMetadata)
+  
+  heatmap.3(x=x, 
+            hclustfun=hclustfun, 
+            distfun=distfun, 
+            dendrogram='both', 
+            margins=c(30,14), 
+            ColSideColors=clab, 
+            RowSideColors=rlab,
+            col=bluered,
+            breaks=seq(-3, 3, by=0.4),
+            symbreaks=FALSE,
+            key=TRUE,
+            keysize=0.7,
+            symkey=FALSE, 
+            density.info='histogram', 
+            trace='none', 
+            cexRow=1.5, 
+            cexCol=1.5,
+            #           cex.key.xlab=0.5,
+            #           cex.key.ylab=0.5,
+            #           cex.key.main=0.5,
+            ColSideColorsSize=2, 
+            RowSideColorsSize=2,
+            KeyValueName='Smaller        Larger',
+            KeyTitle='Effect Size')
+  legend(
+         x=0, 
+         y=0,
+#          'bottomleft',
+         legend=legendLabels, 
+         fill=legendColors, 
+         border=FALSE, 
+         bty='n', 
+         y.intersp=1, 
+         cex=1,
+         ncol=6,
+         xpd=TRUE  # enables legend outside plot area
+  )
 }
 
 
@@ -589,6 +647,7 @@ plotconfints <- function(cints, ymin=-4, ymax=4) {
 GetColNames <- function() {
   # Summary:
   #   Returns properly formatted region names in the same order as those found in the combined_vols data files.
+  #   *IMPORTANT* All columns for the combined_vols files must be in the same order!  TODO - add a quality control check for this.
 
   goodColNames = c('Amygdala',
                    'Anterior Commissure - Anterior',

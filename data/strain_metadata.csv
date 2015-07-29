@@ -1,0 +1,27 @@
+Strain,Age,Sex,Cluster,Background
+FMR1 (-/Y) (B6),P0-P39,Male,1,B6
+FMR1 (-/y) (FVB),P40-P79,Male,1,FVB
+Mecp2 (-/y),P40-P79,Male,3,B6
+NL3 R451C,P80+,Male,2,B6/129
+En2 (-/-),P40-P79,Male,1,B6
+16p11.2 (dp/+),P80+,Mixed,3,B6/129
+16p11.2 (df/dp),P80+,Mixed,3,B6/129
+16p11.2 (df/+),P80+,Mixed,3,B6/129
+15q11-13 (patDp/+),P40-P79,Male,2,B6
+CNTNAP2 (-/-),P80+,Male,3,B6
+BTBR (B6),P40-P79,Male,2,B6
+BTBR (FVB),P40-P79,Male,2,FVB
+NRXN1a (-/-),P80+,Male,1,B6/129
+NRXN1a (-/+),P80+,Male,1,B6/129
+SLC6A4 Ala56 (B6),P40-P79,Male,3,B6
+SLC6A4 Ala56 (129),P40-P79,Male,2,129
+SLC6A4 KO (-/-),P40-P79,Male,3,B6
+SHANK3 (-/-),P80+,Male,1,B6/129
+SHANK3 (-/+),P80+,Male,1,B6/129
+AndR (12Q),P40-P79,Male,2,B6
+AndR (48Q),P40-P79,Male,2,B6
+BALB/CJ (B6),P80+,Male,3,B6
+XO,P80+,Female,3,Other
+GTF2i (dp/dp),P80+,Male,2,CD1
+GTF2i (+/-),P80+,Male,3,CD1
+ITGB3 (-/-),P40-P79,Male,2,B6/129

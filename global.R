@@ -14,6 +14,8 @@ require(stats)
 
 # Data and helper functions.
 source('helpers.R')
+source('plotting_helpers.R')
+source('obi_griffith_heatmap3.R')
 
 LoadData()
 

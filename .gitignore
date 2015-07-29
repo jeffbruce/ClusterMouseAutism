@@ -21,3 +21,7 @@ vignettes/*.pdf
 /data/extras
 /data/random
 .Rproj.user
+
+# test files
+testing_heatmap_functions.R
+paper_heatmap_labels.R

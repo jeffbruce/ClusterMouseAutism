@@ -1,0 +1,63 @@
+Region,Matter,Cluster
+Amygdala,Cerebral grey,1
+Anterior Commissure - Anterior,Cerebral white,1
+Anterior Commissure - Posterior,Cerebral white,3
+Arbor Vita of Cerebellum,Cerebellum,3
+Basal Forebrain,Cerebral grey,3
+Bed Nucleus of Stria Terminalis,Cerebral grey,1
+Cerebellar Cortex,Cerebellum,3
+Cerebellar Peduncle - Inferior,Cerebellum,3
+Cerebellar Peduncle - Middle,Cerebellum,3
+Cerebellar Peduncle - Superior,Cerebellum,3
+Cerebral Aqueduct,Ventricles,3
+Entorhinal Cortex,Cerebral grey,2
+Frontal Lobe,Cerebral grey,2
+Occipital Lobe,Cerebral grey,2
+Parieto-Temporal Lobe,Cerebral grey,2
+Cerebral Peduncle,Cerebral white,2
+Inferior Colliculus,Brainstem,3
+Superior Colliculus,Brainstem,1
+Corpus Callosum,Cerebral white,2
+Cortico-Spinal Tract,Brainstem,3
+Cuneate Nucleus,Brainstem,3
+Dentate Gyrus,Cerebral grey,2
+Cranial Nerve 7,Brainstem,3
+Fasciculus Retroflexus,Cerebral white,1
+Fimbria,Cerebral white,2
+Fornix,Cerebral white,1
+Fourth Ventricle,Ventricles,3
+Fundus of Striatum,Cerebral grey,3
+Globus Pallidus,Cerebral grey,2
+Habenular Commissure,Cerebral white,3
+Hippocampus,Cerebral grey,1
+Hypothalamus,Cerebral grey,1
+Inferior Olivary Complex,Brainstem,3
+Internal Capsule,Cerebral white,2
+Interpeduncular Nucleus,Brainstem,3
+Lateral Olfactory Tract,Olfactory,1
+Lateral Septum,Olfactory,1
+Lateral Ventricle,Ventricles,2
+Mammillary Bodies,Cerebral grey,3
+Mammilothalamic Tract,Cerebral white,2
+Medial Longitudinal Fasciculus,Brainstem,3
+Medial Septum,Cerebral grey,3
+Medulla,Brainstem,3
+Midbrain,Brainstem,3
+Nucleus Accumbens,Cerebral grey,2
+Olfactory Bulbs,Olfactory,1
+Olfactory Tubercle,Olfactory,3
+Optic Tract,Cerebral white,1
+Periaqueductal Grey,Brainstem,1
+Pons,Brainstem,3
+Pontine Nucleus,Brainstem,3
+Posterior Commissure,Cerebral white,1
+Pre-Para Subiculum,Cerebral grey,2
+Stratum Granulosum,Cerebral grey,2
+Stria Medullaris,Cerebral white,2
+Stria Terminalis,Cerebral white,2
+Striatum,Cerebral white,2
+Rhinocele,Olfactory,1
+Superior Olivary Complex,Brainstem,3
+Thalamus,Cerebral grey,2
+Third Ventricle,Ventricles,1
+Ventral Tegmental Decussation,Brainstem,1

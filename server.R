@@ -97,38 +97,43 @@ shinyServer(
           }
                     
           # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
+          # TODO - use 1 call instead of nested ifs, with a dictionary mapping labels to functions
           if (tolower(input$distanceFunction) == '1 - correlation') {
             heatmap = Heatmap2Wrapper(x=mousedatamat,
-                                       distfun=Jdfs,
-                                       hclustfun=function(x) hclust(x, method=clustering_method))
+                                      distfun=Jdfs,
+                                      hclustfun=function(x) hclust(x, method=clustering_method))
           } else if (tolower(input$distanceFunction) == 'euclidean') {
             heatmap = Heatmap2Wrapper(x=mousedatamat,
-                                       distfun=EuclideanDist,
-                                       hclustfun=function(x) hclust(x, method=clustering_method))
+                                      distfun=EuclideanDist,
+                                      hclustfun=function(x) hclust(x, method=clustering_method))
           } else if (tolower(input$distanceFunction) == 'manhattan') {
             heatmap = Heatmap2Wrapper(x=mousedatamat,
-                                       distfun=ManhattanDist,
-                                       hclustfun=function(x) hclust(x, method=clustering_method))
+                                      distfun=ManhattanDist,
+                                      hclustfun=function(x) hclust(x, method=clustering_method))
           } 
+          
+          ## STATIC HEATMAP 3
+                    
+          regionMetadataColumns = names(limitedRegionMetadata)
+          strainMetadataColumns = names(limitedStrainMetadata)
+          
+          strainMetadataSubset = strainMetadata[strainMetadata$Strain %in% isolate(input$strains), ]
+          regionMetadataSubset = regionMetadata[regionMetadata$Region %in% isolate(input$regions), ]
+                    
+          # Create single color labels from white to the darkest version of the color.
+          clab=cbind(GenerateColors(regionMetadataSubset, regionMetadataColumns[1], 'snow', 'maroon4'), GenerateColors(regionMetadataSubset, regionMetadataColumns[2], 'snow', 'pink4'))
+          rlab=t(cbind(GenerateColors(strainMetadataSubset, strainMetadataColumns[1], 'snow', 'springgreen4'), GenerateColors(strainMetadataSubset, strainMetadataColumns[2], 'snow', 'green4'), GenerateColors(strainMetadataSubset, strainMetadataColumns[3], 'snow', 'olivedrab4'), GenerateColors(strainMetadataSubset, strainMetadataColumns[4], 'snow', 'palegreen4')))
 
-#             else {  # tolower(input$distanceFunction) == 'custom'
-#             custom = source(textConnection(isolate(input$customDistanceFunction)))$value
-#             # handle invalid distance function (return with error message)
-#             # probably needs a try catch followed by a validate call or something
-#             
-#             custom = tryCatch({
-#               source(textConnection(isolate(input$customDistanceFunction)))$value
-#             }, warning = function(w) {
-#               validate(need(1==2, 'Invalid custom distance function.'))
-#             }, error = function(e) {
-#               validate(need(1==2, 'Invalid custom distance function.'))
-#             }, finally = {
-#             })
-# 
-#             heatmap = Heatmap2Wrapper(x=mousedatamat,
-#                                        distfun=custom,
-#                                        hclustfun=function(x) hclust(x, method=clustering_method))
-#           }
+          colnames(clab) = regionMetadataColumns
+          rownames(rlab) = strainMetadataColumns
+          
+          heatmap = Heatmap3Wrapper(x=mousedatamat,
+                                    distfun=Jdfs,
+                                    hclustfun=function(x) hclust(x, method=clustering_method),
+                                    clab, 
+                                    rlab)
+          
+          ## END STATIC HEATMAP 3 
           
           heatmap
         }
@@ -141,21 +146,23 @@ shinyServer(
     
 # Tab 2 Widgets ---------------------------------------------------------
 
-    # dynamic control - select all brain regions
-    output$selectRegions = renderUI({
-      if (input$selectAllRegions == TRUE) {
-        checkboxGroupInput(inputId = 'regions', 
-                           label = h3('Brain Regions'), 
-                           choices = sort(colnames(relativeMousedata)),
-                           selected = colnames(relativeMousedata))
-      } else {
-        checkboxGroupInput(inputId = 'regions', 
-                           label = h3('Brain Regions'), 
-                           choices = sort(colnames(relativeMousedata)),
-                           selected = vector(mode="character", length=0))
-      }    
-    })
-    
+#     output$heatmapLegend = renderImage({
+#       legend()
+#       strainSidebars = isolate(input$strainMetadata)
+#       regionSidebars = isolate(input$regionMetadata)
+#       
+#       ncols = length(strainSidebars) + length(regionSidebars)
+#       fluidRow(
+#         for (i in 1:ncols) {
+#           GenerateLegendColumn(ncols)
+#         }
+#         column(4, textInput(inputId='stuff1', 
+#                                 label='Select/Deselect All Strains')),
+#         column(4, textInput(inputId='stuff2', 
+#                                 label='Select/Deselect All Regions'))
+#       )
+#     })
+
     # dynamic control - select all mouse strains
     output$selectStrains = renderUI({
       if (input$selectAllStrains == TRUE) {
@@ -167,6 +174,21 @@ shinyServer(
         checkboxGroupInput(inputId = 'strains', 
                            label = h3('Mouse Strains'), 
                            choices = sort(rownames(relativeMousedata)),
+                           selected = vector(mode="character", length=0))
+      }    
+    })
+
+    # dynamic control - select all brain regions
+    output$selectRegions = renderUI({
+      if (input$selectAllRegions == TRUE) {
+        checkboxGroupInput(inputId = 'regions', 
+                           label = h3('Brain Regions'), 
+                           choices = sort(colnames(relativeMousedata)),
+                           selected = colnames(relativeMousedata))
+      } else {
+        checkboxGroupInput(inputId = 'regions', 
+                           label = h3('Brain Regions'), 
+                           choices = sort(colnames(relativeMousedata)),
                            selected = vector(mode="character", length=0))
       }    
     })
