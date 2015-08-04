@@ -11,7 +11,7 @@ shinyUI(
              
 # TAB PANEL ---------------------------------------------------------------
              
-    tabPanel('Overview',
+    tabPanel(strong('Overview'),
       
       br(),
       br(),
@@ -46,126 +46,131 @@ shinyUI(
 
 # TAB PANEL ---------------------------------------------------------------
 
-    tabPanel('Filter and Recluster',
+    tabPanel(strong('Filter and Recluster'),
              
-      br(),
-      br(),
-      br(),
+      fluidPage(
+
+        br(),
+        br(),
+        br(),
+    
+        titlePanel('Filter and Recluster'),
+        
+        hr(),
+        
+        p('Select a subset of mouse strains and brain regions that you are interested in investigating further, and then click the ',  tags$mark('Recalculate'), ' button to see which mouse strains and brain regions cluster together.'),
+        
+        p('Note that the heatmap displayed here will be slightly different than Figure 3 depicted in the original paper, because Figure 3 uses the median bootstrapped effect sizes of relative volume whereas this figure uses the original data without any statistical bootstrapping.  Unfortunately, the bootstrapping procedure is too computationally intensive to present in the context of this web app.'),
+
+        hr(),
+
+        sidebarPanel(
+
+          checkboxGroupInput(inputId='sidebarOptions', 
+                             label=h3('Show:'),
+                             choices=c('Legend Options', 'Clustering Options', 'Filtering Options'),
+                             selected='Filtering Options'),
+          
+          hr(),
+          
+          conditionalPanel(condition="input.sidebarOptions.indexOf('Legend Options') != -1",
+                           
+                           h2('Legend Options'),
+                           
+                           # Metadata column options do not need to be dynamic.
+                           fluidRow(
+                             column(6, checkboxGroupInput(inputId = 'regionMetadata', 
+                                                          label = h3('Region Metadata'), 
+                                                          choices = names(limitedRegionMetadata),
+                                                          selected = names(limitedRegionMetadata))),
+                             column(6, checkboxGroupInput(inputId = 'strainMetadata', 
+                                                          label = h3('Strain Metadata'), 
+                                                          choices = names(limitedStrainMetadata),
+                                                          selected = names(limitedStrainMetadata)))
+                           ),
+                           
+                           # Metadata column LEVELS, however, ARE dynamic.
+                           # Checking on/off a level should affect the following dynamic UI elements: selectStrain and selectRegion.
+                           
+                           h2('Strain Metadata'),
+                           
+                           fluidRow(
+                             uiOutput('strainMetadataLevels')
+                           ),
+                           
+                           h2('Region Metadata'),
+                           
+                           fluidRow(
+                             uiOutput('regionMetadataLevels')
+                           ),
+                           
+                           hr()    
+          ),
+          
+          conditionalPanel(condition="input.sidebarOptions.indexOf('Clustering Options') != -1",
+          
+            h2('Clustering Options'),
+                  
+            fluidRow(
+              column(4, radioButtons(inputId='distanceFunction',
+                                     label=h4('Clustering Distance Function:'),
+                                     choices=list('1 - Correlation', 
+                                                  'Euclidean',
+                                                  'Manhattan'),
+                                     selected = '1 - Correlation')),
+              column(4, radioButtons(inputId='clusteringMethod',
+                                     label=h4('Clustering Method:'),
+                                     choices=list('Complete',
+                                                  'Average',
+                                                  'Ward\'s'))),
+              column(4, radioButtons(inputId='volumeType',
+                                     label=h4('Relative or Absolute Volumes:'),
+                                     choices=list('Relative',
+                                                  'Absolute')))
+            ),
+          
+            hr()
+            
+          ),
+          
+          conditionalPanel(condition="input.sidebarOptions.indexOf('Filtering Options') != -1",
+          
+            h2('Filtering Options'),
   
-      titlePanel('Filter and Recluster'),
-      
-      hr(),
-      
-      p('Select a subset of mouse strains and brain regions that you are interested in investigating further, and then click the ',  tags$mark('Recalculate'), ' button to see which mouse strains and brain regions cluster together.'),
-      
-      p('Note that the heatmap displayed here will be slightly different than Figure 3 depicted in the original paper, because Figure 3 uses the median bootstrapped effect sizes of relative volume whereas this figure uses the original data without any statistical bootstrapping.  Unfortunately, the bootstrapping procedure is too computationally intensive to present in the context of this web app.'),
-
-      hr(),
-      
-      fluidRow(column(12, plotOutput(outputId='heatmap1', height='800px'))),
-      
-      hr(),
-      
-      h2('Legend Options'),
+            fluidRow(
+              column(4, checkboxInput(inputId='selectAllStrains', 
+                                      label='Select/Deselect All Strains', 
+                                      value=TRUE)),
+              column(4, checkboxInput(inputId='selectAllRegions', 
+                                      label='Select/Deselect All Regions', 
+                                      value=TRUE))
+            ),
+          
+            fluidRow(
+              column(4, uiOutput('selectStrains')),
+              column(4, uiOutput('selectRegions'))
+            )
             
-      fluidRow(
-        column(4, checkboxGroupInput(inputId = 'regionMetadata', 
-                                     label = h3('Region Metadata'), 
-                                     choices = names(limitedRegionMetadata),
-                                     selected = names(limitedRegionMetadata))),
-        column(4, checkboxGroupInput(inputId = 'strainMetadata', 
-                                     label = h3('Strain Metadata'), 
-                                     choices = names(limitedStrainMetadata),
-                                     selected = names(limitedStrainMetadata)))
-      ),
-      
-      h2('Metadata Groups'),
-      
-      fluidRow(
-        column(2, checkboxGroupInput(inputId = 'matterMetadata', 
-                                     label = h4(names(limitedRegionMetadata)[1]), 
-                                     choices = unique(limitedRegionMetadata[, 1]),
-                                     selected = unique(limitedRegionMetadata[, 1]))),
-        column(2, checkboxGroupInput(inputId = 'regionClusterMetadata', 
-                                     label = h4(names(limitedRegionMetadata)[2]), 
-                                     choices = unique(limitedRegionMetadata[, 2]),
-                                     selected = unique(limitedRegionMetadata[, 2]))),
-        column(2, checkboxGroupInput(inputId = 'ageMetadata', 
-                                     label = h4(names(limitedStrainMetadata)[1]), 
-                                     choices = unique(limitedStrainMetadata[, 1]),
-                                     selected = unique(limitedStrainMetadata[, 1]))),
-        column(2, checkboxGroupInput(inputId = 'sexMetadata', 
-                                     label = h4(names(limitedStrainMetadata)[2]), 
-                                     choices = unique(limitedStrainMetadata[, 2]),
-                                     selected = unique(limitedStrainMetadata[, 2]))),
-        column(2, checkboxGroupInput(inputId = 'strainClusterMetadata', 
-                                     label = h4(names(limitedStrainMetadata)[3]), 
-                                     choices = unique(limitedStrainMetadata[, 3]),
-                                     selected = unique(limitedStrainMetadata[, 3]))),
-        column(2, checkboxGroupInput(inputId = 'backgroundMetadata', 
-                                     label = h4(names(limitedStrainMetadata)[4]), 
-                                     choices = unique(limitedStrainMetadata[, 4]),
-                                     selected = unique(limitedStrainMetadata[, 4])))
-      ),
+          )
 
-      hr(),
+        ),
 
-      h2('Clustering Options'),
-            
-      fluidRow(
-        column(4, radioButtons(inputId='distanceFunction',
-                               label=h4('Clustering Distance Function:'),
-                               choices=list('1 - Correlation', 
-                                            'Euclidean',
-                                            'Manhattan'),
-#                                             'Custom'),
-                               selected = '1 - Correlation')),
-        column(4, radioButtons(inputId='clusteringMethod',
-                               label=h4('Clustering Method:'),
-                               choices=list('Complete',
-                                            'Average',
-                                            'Ward\'s'))),
-        column(4, radioButtons(inputId='volumeType',
-                               label=h4('Relative or Absolute Volumes:'),
-                               choices=list('Relative',
-                                            'Absolute')))
-      ),
-      
-      hr(),
-      
-#       conditionalPanel(
-#         condition="input.distanceFunction=='Custom'",
-#         fluidRow(
-#           column(4, textInput(inputId='customDistanceFunction',
-#                               label='Click Apply Function when done editing.',
-#                               value='function(x) { as.dist(1-cor(t(x))) }')),
-#           column(4, column(4, actionButton('applyFunction', 'Apply Function')))
-#         ),
-#         hr()
-#       ),
-      
-      h2('Filtering Options'),
+        mainPanel(
 
-      fluidRow(
-        column(4, checkboxInput(inputId='selectAllStrains', 
-                                label='Select/Deselect All Strains', 
-                                value=TRUE)),
-        column(4, checkboxInput(inputId='selectAllRegions', 
-                                label='Select/Deselect All Regions', 
-                                value=TRUE))
-      ),
+          fluidRow(column(12, plotOutput(outputId='heatmap1', height='800px'))),
+
+          hr(),
+
+          actionButton('recalculate', 'Recalculate')
+        )
       
-      fluidRow(
-        column(4, uiOutput('selectStrains')),
-        column(4, uiOutput('selectRegions')),
-        column(4, actionButton('recalculate', 'Recalculate'))
       )
     ),
     
 
 # TAB PANEL ---------------------------------------------------------------
 
-    tabPanel('Plot Means and Effect Sizes',
+    tabPanel(strong('Plot Means and Effect Sizes'),
       
       br(),
       br(),
@@ -239,7 +244,7 @@ shinyUI(
 
 # TAB PANEL ---------------------------------------------------------------
 
-    tabPanel('Research Paper',
+    tabPanel(strong('Research Paper'),
              
              br(),
              br(),

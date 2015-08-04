@@ -40,6 +40,10 @@ setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
   return(effectSizes)
 }
 
+# Dictionary lookups for clustering options to reduce number of if statements in the heatmap function.
+distanceFunctionDictionary = list('1 - correlation'=Jdfs, 'euclidean'=EuclideanDist, 'manhattan'=ManhattanDist)
+clusteringMethodDictionary = list('complete'='complete', 'average'='average', 'ward\'s'='ward.D2')
+
 shinyServer(
   function(input, output, session) {
     
@@ -69,7 +73,6 @@ shinyServer(
     makePlot = function() {
       renderPlot({
         input$recalculate
-#         input$applyFunction
         
         # ensure plot renders when the app is initially loaded
         if (is.null(isolate(input$strains))) {
@@ -87,50 +90,32 @@ shinyServer(
         
         if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
           
-          # create appropriate clustering label
-          if (input$clusteringMethod == 'Complete') {
-            clustering_method = 'complete'
-          } else if (input$clusteringMethod == 'Average') {
-            clustering_method = 'average'
-          } else {  # Ward's
-            clustering_method = 'ward.D2'
-          }
-                    
-          # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
-          # TODO - use 1 call instead of nested ifs, with a dictionary mapping labels to functions
-          if (tolower(input$distanceFunction) == '1 - correlation') {
-            heatmap = Heatmap2Wrapper(x=mousedatamat,
-                                      distfun=Jdfs,
-                                      hclustfun=function(x) hclust(x, method=clustering_method))
-          } else if (tolower(input$distanceFunction) == 'euclidean') {
-            heatmap = Heatmap2Wrapper(x=mousedatamat,
-                                      distfun=EuclideanDist,
-                                      hclustfun=function(x) hclust(x, method=clustering_method))
-          } else if (tolower(input$distanceFunction) == 'manhattan') {
-            heatmap = Heatmap2Wrapper(x=mousedatamat,
-                                      distfun=ManhattanDist,
-                                      hclustfun=function(x) hclust(x, method=clustering_method))
-          } 
-          
           ## STATIC HEATMAP 3
                     
-          regionMetadataColumns = names(limitedRegionMetadata)
-          strainMetadataColumns = names(limitedStrainMetadata)
+          regionMetadataColumns = input$regionMetadata
+          strainMetadataColumns = input$strainMetadata
           
-          strainMetadataSubset = strainMetadata[strainMetadata$Strain %in% isolate(input$strains), ]
           regionMetadataSubset = regionMetadata[regionMetadata$Region %in% isolate(input$regions), ]
-                    
-          # Create single color labels from white to the darkest version of the color.
-          clab=cbind(GenerateColors(regionMetadataSubset, regionMetadataColumns[1], 'snow', 'maroon4'), GenerateColors(regionMetadataSubset, regionMetadataColumns[2], 'snow', 'pink4'))
-          rlab=t(cbind(GenerateColors(strainMetadataSubset, strainMetadataColumns[1], 'snow', 'springgreen4'), GenerateColors(strainMetadataSubset, strainMetadataColumns[2], 'snow', 'green4'), GenerateColors(strainMetadataSubset, strainMetadataColumns[3], 'snow', 'olivedrab4'), GenerateColors(strainMetadataSubset, strainMetadataColumns[4], 'snow', 'palegreen4')))
+          strainMetadataSubset = strainMetadata[strainMetadata$Strain %in% isolate(input$strains), ]
+          
+          # Create color labels from white ('snow') to the darkest version of that color.
+          clab=NULL
+          for (i in 1:length(regionMetadataColumns)) {
+            clab=cbind(clab, GenerateColors(regionMetadataSubset, regionMetadataColumns[i], 'snow', rowSidebarColorScheme[i]))
+          }
+          rlab=NULL
+          for (i in 1:length(strainMetadataColumns)) {
+            rlab=rbind(rlab, GenerateColors(strainMetadataSubset, strainMetadataColumns[i], 'snow', columnSidebarColorScheme[i]))
+          }
 
           colnames(clab) = regionMetadataColumns
           rownames(rlab) = strainMetadataColumns
           
+          # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
           heatmap = Heatmap3Wrapper(x=mousedatamat,
-                                    distfun=Jdfs,
-                                    hclustfun=function(x) hclust(x, method=clustering_method),
-                                    clab, 
+                                    distfun=distanceFunctionDictionary[[tolower(input$distanceFunction)]],
+                                    hclustfun=function(x) hclust(x, method=clusteringMethodDictionary[[tolower(input$clusteringMethod)]]),
+                                    clab,
                                     rlab)
           
           ## END STATIC HEATMAP 3 
@@ -146,22 +131,33 @@ shinyServer(
     
 # Tab 2 Widgets ---------------------------------------------------------
 
-#     output$heatmapLegend = renderImage({
-#       legend()
-#       strainSidebars = isolate(input$strainMetadata)
-#       regionSidebars = isolate(input$regionMetadata)
-#       
-#       ncols = length(strainSidebars) + length(regionSidebars)
-#       fluidRow(
-#         for (i in 1:ncols) {
-#           GenerateLegendColumn(ncols)
-#         }
-#         column(4, textInput(inputId='stuff1', 
-#                                 label='Select/Deselect All Strains')),
-#         column(4, textInput(inputId='stuff2', 
-#                                 label='Select/Deselect All Regions'))
-#       )
-#     })
+    # dynamic control - select levels of mouse strain metadata to plot
+    output$strainMetadataLevels = renderUI({
+      activeStrainMetadataColumns = input$strainMetadata
+      numActiveStrainMetadataColumns = length(activeStrainMetadataColumns)
+      
+#       selectedStrainMetadata = input$strainMetadata
+      lapply(1:numActiveStrainMetadataColumns, function(i) {
+        column(12/numActiveStrainMetadataColumns, checkboxGroupInput(inputId = paste0('strain', activeStrainMetadataColumns[i]),
+                                                                     label = h4(activeStrainMetadataColumns[i]),
+                                                                     choices = unique(limitedStrainMetadata[, activeStrainMetadataColumns[i]]),
+                                                                     selected = unique(limitedStrainMetadata[, activeStrainMetadataColumns[i]])))
+      })
+    })
+
+    # dynamic control - select levels of brain region metadata to plot
+    output$regionMetadataLevels = renderUI({
+      activeRegionMetadataColumns = input$regionMetadata
+      numActiveRegionMetadataColumns = length(activeRegionMetadataColumns)
+      
+      #       selectedStrainMetadata = input$strainMetadata
+      lapply(1:numActiveRegionMetadataColumns, function(i) {
+        column(12/ncol(limitedRegionMetadata), checkboxGroupInput(inputId = paste0('strain', activeRegionMetadataColumns[i]),
+                                                                  label = h4(activeRegionMetadataColumns[i]),
+                                                                  choices = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]]),
+                                                                  selected = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]])))
+      })
+    })
 
     # dynamic control - select all mouse strains
     output$selectStrains = renderUI({

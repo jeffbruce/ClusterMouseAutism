@@ -242,6 +242,10 @@ LoadData = function() {
   assign(x='limitedRegionMetadata', value=regionMetadata[, -1], envir=parent.frame())
   assign(x='strainMetadata', value=read.csv(file.path(getwd(), 'data/strain_metadata.csv'), stringsAsFactors=FALSE), envir=parent.frame())
   assign(x='limitedStrainMetadata', value=strainMetadata[, -1], envir=parent.frame())
+  
+  # TODO - needs to be moved to plotting_helpers.R 
+  assign(x='rowSidebarColorScheme', c('pink4', 'deeppink4', 'plum4', 'mediumpurple4', 'purple4'), envir=parent.frame())
+  assign(x='columnSidebarColorScheme', c('darkseagreen4', 'springgreen4', 'olivedrab4', 'green4', 'yellow4'), envir=parent.frame())
 }
 
 # Heatmap Wrapper Function ---------------------------------------------------------
@@ -298,9 +302,14 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, clab, rlab) {
   #   hclustfun: A function used to cluster the data (e.g. average, complete).
   # Returns:
   #   A heatmap.3 object of mouse model rows and brain region columns.
-  
+    
+  selectedRegionMetadata = as.data.frame(limitedRegionMetadata[, colnames(clab)])
+  selectedStrainMetadata = as.data.frame(limitedStrainMetadata[, rownames(rlab)])
+    
   legendColors = ExtendLegendColors(clab, rlab)
-  legendLabels = ExtendLegendLabels(limitedRegionMetadata, limitedStrainMetadata)
+  legendLabels = ExtendLegendLabels(selectedRegionMetadata, selectedStrainMetadata)
+  
+  numLegendColumns = length(names(selectedRegionMetadata)) + length(names(selectedStrainMetadata))
   
   heatmap.3(x=x, 
             hclustfun=hclustfun, 
@@ -336,7 +345,7 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, clab, rlab) {
          bty='n', 
          y.intersp=1, 
          cex=1,
-         ncol=6,
+         ncol=numLegendColumns,
          xpd=TRUE  # enables legend outside plot area
   )
 }

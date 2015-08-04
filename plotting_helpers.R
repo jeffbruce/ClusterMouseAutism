@@ -1,4 +1,8 @@
-maxMetadataLevels = 6
+# The maximum amount of metadata sidebars (could have 5 row sidebars AND 5 column sidebars).
+maxMetadataSidebars = 5
+
+# assign(x='rowSidebarColorScheme', c('pink4', 'deeppink4', 'plum4', 'mediumpurple4', 'purple4'), envir=parent.frame())
+# assign(x='columnSidebarColorScheme', c('darkseagreen4', 'springgreen4', 'olivedrab4', 'green4', 'yellow4'), envir=parent.frame())
 
 GenerateColors <- function(dataFrame, column, color1, color2) {
   # Summary:
@@ -65,33 +69,42 @@ ExtendLegendColors <- function(clab, rlab) {
   colors
 }
 
-ExtendLegendLabels <- function(limitedRegionMetadata, limitedStrainMetadata) {
+ExtendLegendLabels <- function(selectedRegionMetadata, selectedStrainMetadata) {
   # Summary:
   #   Creates a vector of labels to use to draw a legend for a heatmap with several metadata annotation sidebars.
   # Args:
-  #   limitedRegionMetadata: A data.frame containing metadata for the brain regions.
-  #   limitedStrainMetadata: A data.frame containing metadata for the mouse strains.
+  #   selectedRegionMetadata: A data.frame containing metadata for the brain regions.
+  #   selectedStrainMetadata: A data.frame containing metadata for the mouse strains.
   # Returns:
   #   labels: A vector of strings containing labels to use for a heatmap legend.
   
-  numMetadataColumns = dim(limitedRegionMetadata)[2]
-  numMetadataRows = dim(limitedStrainMetadata)[2]
+  numMetadataColumns = dim(selectedRegionMetadata)[2]
+  numMetadataRows = dim(selectedStrainMetadata)[2]
+
+  # Determine the height of the legend (maximum levels for a single metadata column).
+  maxMetadataLevels = 0
+  for (j in 1:numMetadataColumns) {
+    maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedRegionMetadata[, j])))
+  }
+  for (j in 1:numMetadataRows) {
+    maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedStrainMetadata[, j])))
+  }
   
   labels = vector(mode='character')
   
-  columnNames = colnames(limitedRegionMetadata)
+  columnNames = colnames(selectedRegionMetadata)
   for (j in 1:numMetadataColumns) {
-    tempLabels = unique(limitedRegionMetadata[, j])
-    while (length(tempLabels) < 6) {
+    tempLabels = unique(selectedRegionMetadata[, j])
+    while (length(tempLabels) < maxMetadataLevels) {
       tempLabels = c('', tempLabels)
     }
     labels = c(labels, tempLabels)
   }
   
-  columnNames = colnames(limitedStrainMetadata)
+  columnNames = colnames(selectedStrainMetadata)
   for (j in 1:numMetadataRows) {
-    tempLabels = unique(limitedStrainMetadata[, j])
-    while (length(tempLabels) < 6) {
+    tempLabels = unique(selectedStrainMetadata[, j])
+    while (length(tempLabels) < maxMetadataLevels) {
       tempLabels = c('', tempLabels)
     }
     labels = c(labels, tempLabels)
