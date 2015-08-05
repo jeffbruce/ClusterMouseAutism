@@ -49,6 +49,10 @@ shinyServer(
     
 # Code in shinyServer runs for each user, every time they refresh their browser.
 
+    # Allows user to select all regions/strains at once while also permitting user selection of subgroups of regions/strains.
+    selectAllStrainsOld = TRUE
+    selectAllRegionsOld = TRUE
+    
 # Render Images ------------------------------------------------------
 
 #     output$Figure3 <- renderImage({
@@ -89,9 +93,7 @@ shinyServer(
         nc = dim(mousedatamat)[2]
         
         if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-          
-          ## STATIC HEATMAP 3
-                    
+                              
           regionMetadataColumns = input$regionMetadata
           strainMetadataColumns = input$strainMetadata
           
@@ -136,7 +138,6 @@ shinyServer(
       activeStrainMetadataColumns = input$strainMetadata
       numActiveStrainMetadataColumns = length(activeStrainMetadataColumns)
       
-#       selectedStrainMetadata = input$strainMetadata
       lapply(1:numActiveStrainMetadataColumns, function(i) {
         column(12/numActiveStrainMetadataColumns, checkboxGroupInput(inputId = paste0('strain', activeStrainMetadataColumns[i]),
                                                                      label = h4(activeStrainMetadataColumns[i]),
@@ -150,43 +151,79 @@ shinyServer(
       activeRegionMetadataColumns = input$regionMetadata
       numActiveRegionMetadataColumns = length(activeRegionMetadataColumns)
       
-      #       selectedStrainMetadata = input$strainMetadata
       lapply(1:numActiveRegionMetadataColumns, function(i) {
-        column(12/ncol(limitedRegionMetadata), checkboxGroupInput(inputId = paste0('strain', activeRegionMetadataColumns[i]),
+        column(12/ncol(limitedRegionMetadata), checkboxGroupInput(inputId = paste0('region', activeRegionMetadataColumns[i]),
                                                                   label = h4(activeRegionMetadataColumns[i]),
                                                                   choices = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]]),
                                                                   selected = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]])))
       })
     })
 
-    # dynamic control - select all mouse strains
+    # dynamic control - select mouse strains to show on heatmap
     output$selectStrains = renderUI({
-      if (input$selectAllStrains == TRUE) {
-        checkboxGroupInput(inputId = 'strains', 
-                           label = h3('Mouse Strains'), 
-                           choices = sort(rownames(relativeMousedata)),
-                           selected = rownames(relativeMousedata))
+      
+      # enable quick selection of all or no strains
+      if (selectAllStrainsOld != input$selectAllStrains) {
+        selectAllStrainsOld <<- input$selectAllStrains
+        if (input$selectAllStrains == TRUE) {
+          checkboxGroupInput(inputId = 'strains', 
+                             label = h3('Mouse Strains'), 
+                             choices = sort(rownames(relativeMousedata)),
+                             selected = rownames(relativeMousedata))
+        } else {
+          checkboxGroupInput(inputId = 'strains', 
+                             label = h3('Mouse Strains'), 
+                             choices = sort(rownames(relativeMousedata)),
+                             selected = vector(mode="character", length=0))
+        }
       } else {
+        
+        strainMetadataColumns = names(limitedStrainMetadata)
+        
+        strainSubset = strainMetadata
+        for (column in strainMetadataColumns) {
+          levels = eval(expr=parse(text=paste0('input$strain', column)), envir=environment())
+          strainSubset = subset(strainSubset, eval(expr=parse(text=paste0('strainSubset$', column)), envir=environment()) %in% levels)
+        }
+        
         checkboxGroupInput(inputId = 'strains', 
                            label = h3('Mouse Strains'), 
                            choices = sort(rownames(relativeMousedata)),
-                           selected = vector(mode="character", length=0))
-      }    
+                           selected = strainSubset$Strain)
+      }
     })
 
-    # dynamic control - select all brain regions
+    # dynamic control - select brain regions to show on heatmap
     output$selectRegions = renderUI({
-      if (input$selectAllRegions == TRUE) {
-        checkboxGroupInput(inputId = 'regions', 
-                           label = h3('Brain Regions'), 
-                           choices = sort(colnames(relativeMousedata)),
-                           selected = colnames(relativeMousedata))
+      
+      # enable quick selection of all or no regions
+      if (selectAllRegionsOld != input$selectAllRegions) {
+        selectAllRegionsOld <<- input$selectAllRegions
+        if (input$selectAllRegions == TRUE) {
+          checkboxGroupInput(inputId = 'regions', 
+                             label = h3('Brain Regions'), 
+                             choices = sort(colnames(relativeMousedata)),
+                             selected = colnames(relativeMousedata))
+        } else {
+          checkboxGroupInput(inputId = 'regions', 
+                             label = h3('Brain Regions'), 
+                             choices = sort(colnames(relativeMousedata)),
+                             selected = vector(mode="character", length=0))
+        }
       } else {
+        regionMetadataColumns = names(limitedRegionMetadata)
+        
+        regionSubset = regionMetadata
+        for (column in regionMetadataColumns) {
+          levels = eval(expr=parse(text=paste0('input$region', column)), envir=environment())
+          regionSubset = subset(regionSubset, eval(expr=parse(text=paste0('regionSubset$', column)), envir=environment()) %in% levels)
+        }
+        
         checkboxGroupInput(inputId = 'regions', 
                            label = h3('Brain Regions'), 
                            choices = sort(colnames(relativeMousedata)),
-                           selected = vector(mode="character", length=0))
-      }    
+                           selected = regionSubset$Region)
+      }
     })
     
     output$heatmap1 = makePlot()

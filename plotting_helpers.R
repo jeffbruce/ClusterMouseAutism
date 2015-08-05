@@ -6,15 +6,15 @@ maxMetadataSidebars = 5
 
 GenerateColors <- function(dataFrame, column, color1, color2) {
   # Summary:
-  #   Given a data frame, a column in that data frame, and two colors, generate a color map with number of colors equal to the number of levels for the column, then map the colors to the different levels for that column for each row in the dataset.
+  #   Given a data frame, a column in that data frame, and two colors, generate a color map with number of colors equal to the number of _filtered_ levels for the column, then map the colors to the different levels for that column for each row in the dataset.
   # Args:
   #   dataFrame: A data frame containing containing columns to generate colors for.
   #   column: A string representing a column name.
   #   color1: A string representing a color in R.
   #   color2: A string representing a color in R.
   # Returns:
-  #   columnColors: A vector containing color names.  Always returns 6 colors.
-  
+  #   columnColors: A vector containing color names.
+    
   if (column %in% names(dataFrame)) {
     columnData <- dataFrame[, column] 
     columnLevels <- unique(columnData)
@@ -28,7 +28,7 @@ GenerateColors <- function(dataFrame, column, color1, color2) {
   
   i <- 1
   for (level in columnLevels) {
-    indices  <-  which(columnData == level)
+    indices <- which(columnData == level)
     columnColors[indices] = col[i]
     i <- i + 1
   }
@@ -92,7 +92,6 @@ ExtendLegendLabels <- function(selectedRegionMetadata, selectedStrainMetadata) {
   
   labels = vector(mode='character')
   
-  columnNames = colnames(selectedRegionMetadata)
   for (j in 1:numMetadataColumns) {
     tempLabels = unique(selectedRegionMetadata[, j])
     while (length(tempLabels) < maxMetadataLevels) {
@@ -101,7 +100,6 @@ ExtendLegendLabels <- function(selectedRegionMetadata, selectedStrainMetadata) {
     labels = c(labels, tempLabels)
   }
   
-  columnNames = colnames(selectedStrainMetadata)
   for (j in 1:numMetadataRows) {
     tempLabels = unique(selectedStrainMetadata[, j])
     while (length(tempLabels) < maxMetadataLevels) {

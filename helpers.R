@@ -295,16 +295,18 @@ Heatmap2Wrapper = function(x, distfun, hclustfun) {
 
 Heatmap3Wrapper = function(x, distfun, hclustfun, clab, rlab) {
   # Summary:
-  #   This method is used to reduce code duplication in server.R.
+  #   Used to reduce code duplication in server.R.
   # Args: 
   #   x: A matrix of effect sizes with mouse model rows and brain region columns.
   #   distfun: A function used to compute distance, also defined in helpers.R.
   #   hclustfun: A function used to cluster the data (e.g. average, complete).
   # Returns:
   #   A heatmap.3 object of mouse model rows and brain region columns.
-    
-  selectedRegionMetadata = as.data.frame(limitedRegionMetadata[, colnames(clab)])
-  selectedStrainMetadata = as.data.frame(limitedStrainMetadata[, rownames(rlab)])
+      
+  regionMetadataSubset = subset(regionMetadata, regionMetadata$Region %in% colnames(x))
+  strainMetadataSubset = subset(strainMetadata, strainMetadata$Strain %in% rownames(x))
+  selectedRegionMetadata = as.data.frame(regionMetadataSubset[, colnames(clab)], stringsAsFactors=FALSE)
+  selectedStrainMetadata = as.data.frame(strainMetadataSubset[, rownames(rlab)], stringsAsFactors=FALSE)
     
   legendColors = ExtendLegendColors(clab, rlab)
   legendLabels = ExtendLegendLabels(selectedRegionMetadata, selectedStrainMetadata)

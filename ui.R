@@ -69,7 +69,7 @@ shinyUI(
           checkboxGroupInput(inputId='sidebarOptions', 
                              label=h3('Show:'),
                              choices=c('Legend Options', 'Clustering Options', 'Filtering Options'),
-                             selected='Filtering Options'),
+                             selected=c('Legend Options', 'Clustering Options', 'Filtering Options')),
           
           hr(),
           
@@ -79,26 +79,31 @@ shinyUI(
                            
                            # Metadata column options do not need to be dynamic.
                            fluidRow(
-                             column(6, checkboxGroupInput(inputId = 'regionMetadata', 
-                                                          label = h3('Region Metadata'), 
-                                                          choices = names(limitedRegionMetadata),
-                                                          selected = names(limitedRegionMetadata))),
                              column(6, checkboxGroupInput(inputId = 'strainMetadata', 
                                                           label = h3('Strain Metadata'), 
                                                           choices = names(limitedStrainMetadata),
                                                           selected = names(limitedStrainMetadata)))
                            ),
                            
-                           # Metadata column LEVELS, however, ARE dynamic.
-                           # Checking on/off a level should affect the following dynamic UI elements: selectStrain and selectRegion.
-                           
-                           h2('Strain Metadata'),
+#                            h3('Strain Metadata Levels'),
                            
                            fluidRow(
                              uiOutput('strainMetadataLevels')
                            ),
                            
-                           h2('Region Metadata'),
+                           fluidRow(
+                             column(6, checkboxGroupInput(inputId = 'regionMetadata', 
+                                                          label = h3('Region Metadata'), 
+                                                          choices = names(limitedRegionMetadata),
+                                                          selected = names(limitedRegionMetadata)))
+                           ),
+                           
+                           # Metadata column LEVELS, however, ARE dynamic.
+                           # Checking on/off a level should affect the following dynamic UI elements: selectStrain and selectRegion.
+                           
+
+                           
+#                            h3('Region Metadata Levels'),
                            
                            fluidRow(
                              uiOutput('regionMetadataLevels')
@@ -138,17 +143,17 @@ shinyUI(
             h2('Filtering Options'),
   
             fluidRow(
-              column(4, checkboxInput(inputId='selectAllStrains', 
+              column(6, checkboxInput(inputId='selectAllStrains', 
                                       label='Select/Deselect All Strains', 
                                       value=TRUE)),
-              column(4, checkboxInput(inputId='selectAllRegions', 
+              column(6, checkboxInput(inputId='selectAllRegions', 
                                       label='Select/Deselect All Regions', 
                                       value=TRUE))
             ),
           
             fluidRow(
-              column(4, uiOutput('selectStrains')),
-              column(4, uiOutput('selectRegions'))
+              column(6, uiOutput('selectStrains')),
+              column(6, uiOutput('selectRegions'))
             )
             
           )
