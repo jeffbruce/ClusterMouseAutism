@@ -86,39 +86,41 @@ shinyServer(
           validate(need(input$regions, FALSE))
         }
         
-        # isolate() prevents heatmap from regenerating every time a new strain/region is selected
         mousedata = get(paste(tolower(input$volumeType), 'Mousedata', sep=''))
         mousedatamat = as.matrix(mousedata[isolate(input$strains), isolate(input$regions)])
         nr = dim(mousedatamat)[1]
         nc = dim(mousedatamat)[2]
         
         if (dim(mousedatamat)[1] > 1 & dim(mousedatamat)[2] > 1) {
-                              
-          regionMetadataColumns = input$regionMetadata
+          
+          # Create colors to annotate mouse strain metadata.
           strainMetadataColumns = input$strainMetadata
-          
-          regionMetadataSubset = regionMetadata[regionMetadata$Region %in% isolate(input$regions), ]
-          strainMetadataSubset = strainMetadata[strainMetadata$Strain %in% isolate(input$strains), ]
-          
-          # Create color labels from white ('snow') to the darkest version of that color.
-          clab=NULL
-          for (i in 1:length(regionMetadataColumns)) {
-            clab=cbind(clab, GenerateColors(regionMetadataSubset, regionMetadataColumns[i], 'snow', rowSidebarColorScheme[i]))
-          }
           rlab=NULL
-          for (i in 1:length(strainMetadataColumns)) {
-            rlab=rbind(rlab, GenerateColors(strainMetadataSubset, strainMetadataColumns[i], 'snow', columnSidebarColorScheme[i]))
+          if (!is.null(strainMetadataColumns)) {
+            strainMetadataSubset = strainMetadata[strainMetadata$Strain %in% isolate(input$strains), ]
+            for (i in 1:length(strainMetadataColumns)) {
+              rlab=rbind(rlab, GenerateColors(strainMetadataSubset, strainMetadataColumns[i], 'snow', columnSidebarColorScheme[i]))
+            }
+            rownames(rlab) = strainMetadataColumns
+          }
+          
+          # Create colors to annotate brain region metadata.
+          regionMetadataColumns = input$regionMetadata
+          clab=NULL
+          if (!is.null(regionMetadataColumns)) {
+            regionMetadataSubset = regionMetadata[regionMetadata$Region %in% isolate(input$regions), ]
+            for (i in 1:length(regionMetadataColumns)) {
+              clab=cbind(clab, GenerateColors(regionMetadataSubset, regionMetadataColumns[i], 'snow', rowSidebarColorScheme[i]))
+            }
+            colnames(clab) = regionMetadataColumns
           }
 
-          colnames(clab) = regionMetadataColumns
-          rownames(rlab) = strainMetadataColumns
-          
           # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
           heatmap = Heatmap3Wrapper(x=mousedatamat,
                                     distfun=distanceFunctionDictionary[[tolower(input$distanceFunction)]],
                                     hclustfun=function(x) hclust(x, method=clusteringMethodDictionary[[tolower(input$clusteringMethod)]]),
-                                    clab,
-                                    rlab)
+                                    rlab,
+                                    clab)
           
           ## END STATIC HEATMAP 3 
           
@@ -138,12 +140,14 @@ shinyServer(
       activeStrainMetadataColumns = input$strainMetadata
       numActiveStrainMetadataColumns = length(activeStrainMetadataColumns)
       
-      lapply(1:numActiveStrainMetadataColumns, function(i) {
-        column(12/numActiveStrainMetadataColumns, checkboxGroupInput(inputId = paste0('strain', activeStrainMetadataColumns[i]),
-                                                                     label = h4(activeStrainMetadataColumns[i]),
-                                                                     choices = unique(limitedStrainMetadata[, activeStrainMetadataColumns[i]]),
-                                                                     selected = unique(limitedStrainMetadata[, activeStrainMetadataColumns[i]])))
-      })
+      if (numActiveStrainMetadataColumns != 0) {
+        lapply(1:numActiveStrainMetadataColumns, function(i) {
+          column(12/numActiveStrainMetadataColumns, checkboxGroupInput(inputId = paste0('strain', activeStrainMetadataColumns[i]),
+                                                                       label = h4(activeStrainMetadataColumns[i]),
+                                                                       choices = unique(limitedStrainMetadata[, activeStrainMetadataColumns[i]]),
+                                                                       selected = unique(limitedStrainMetadata[, activeStrainMetadataColumns[i]])))
+        })
+      }
     })
 
     # dynamic control - select levels of brain region metadata to plot
@@ -151,12 +155,14 @@ shinyServer(
       activeRegionMetadataColumns = input$regionMetadata
       numActiveRegionMetadataColumns = length(activeRegionMetadataColumns)
       
-      lapply(1:numActiveRegionMetadataColumns, function(i) {
-        column(12/ncol(limitedRegionMetadata), checkboxGroupInput(inputId = paste0('region', activeRegionMetadataColumns[i]),
-                                                                  label = h4(activeRegionMetadataColumns[i]),
-                                                                  choices = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]]),
-                                                                  selected = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]])))
-      })
+      if (numActiveRegionMetadataColumns != 0) {
+        lapply(1:numActiveRegionMetadataColumns, function(i) {
+          column(12/numActiveRegionMetadataColumns, checkboxGroupInput(inputId = paste0('region', activeRegionMetadataColumns[i]),
+                                                                       label = h4(activeRegionMetadataColumns[i]),
+                                                                       choices = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]]),
+                                                                       selected = unique(limitedRegionMetadata[, activeRegionMetadataColumns[i]])))
+        })
+      }
     })
 
     # dynamic control - select mouse strains to show on heatmap

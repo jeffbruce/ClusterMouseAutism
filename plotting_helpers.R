@@ -50,20 +50,24 @@ ExtendLegendColors <- function(clab, rlab) {
   
   colors = vector(mode='character')
   
-  for (j in 1:numMetadataColumns) {
-    tempColors = unique(clab[, j])
-    while (length(tempColors) < maxMetadataLevels) {
-      tempColors = c('white', tempColors)
+  if (!is.null(numMetadataColumns)) {
+    for (j in 1:numMetadataColumns) {
+      tempColors = unique(clab[, j])
+      while (length(tempColors) < maxMetadataLevels) {
+        tempColors = c('white', tempColors)
+      }
+      colors = c(colors, tempColors)
     }
-    colors = c(colors, tempColors)
   }
   
-  for (i in 1:numMetadataRows) {
-    tempColors = unique(rlab[i, ])
-    while (length(tempColors) < maxMetadataLevels) {
-      tempColors = c('white', tempColors)
+  if (!is.null(numMetadataRows)) {
+    for (i in 1:numMetadataRows) {
+      tempColors = unique(rlab[i, ])
+      while (length(tempColors) < maxMetadataLevels) {
+        tempColors = c('white', tempColors)
+      }
+      colors = c(colors, tempColors)
     }
-    colors = c(colors, tempColors)
   }
   
   colors
@@ -77,35 +81,43 @@ ExtendLegendLabels <- function(selectedRegionMetadata, selectedStrainMetadata) {
   #   selectedStrainMetadata: A data.frame containing metadata for the mouse strains.
   # Returns:
   #   labels: A vector of strings containing labels to use for a heatmap legend.
-  
+    
   numMetadataColumns = dim(selectedRegionMetadata)[2]
   numMetadataRows = dim(selectedStrainMetadata)[2]
 
   # Determine the height of the legend (maximum levels for a single metadata column).
   maxMetadataLevels = 0
-  for (j in 1:numMetadataColumns) {
-    maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedRegionMetadata[, j])))
+  if (!is.null(numMetadataColumns)) {
+    for (j in 1:numMetadataColumns) {
+      maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedRegionMetadata[, j])))
+    }
   }
-  for (j in 1:numMetadataRows) {
-    maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedStrainMetadata[, j])))
+  if (!is.null(numMetadataRows)) {
+    for (j in 1:numMetadataRows) {
+      maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedStrainMetadata[, j])))
+    }
   }
   
   labels = vector(mode='character')
   
-  for (j in 1:numMetadataColumns) {
-    tempLabels = unique(selectedRegionMetadata[, j])
-    while (length(tempLabels) < maxMetadataLevels) {
-      tempLabels = c('', tempLabels)
+  if (!is.null(numMetadataColumns)) {
+    for (j in 1:numMetadataColumns) {
+      tempLabels = unique(selectedRegionMetadata[, j])
+      while (length(tempLabels) < maxMetadataLevels) {
+        tempLabels = c('', tempLabels)
+      }
+      labels = c(labels, tempLabels)
     }
-    labels = c(labels, tempLabels)
   }
-  
-  for (j in 1:numMetadataRows) {
-    tempLabels = unique(selectedStrainMetadata[, j])
-    while (length(tempLabels) < maxMetadataLevels) {
-      tempLabels = c('', tempLabels)
+
+  if (!is.null(numMetadataRows)) {
+    for (j in 1:numMetadataRows) {
+      tempLabels = unique(selectedStrainMetadata[, j])
+      while (length(tempLabels) < maxMetadataLevels) {
+        tempLabels = c('', tempLabels)
+      }
+      labels = c(labels, tempLabels)
     }
-    labels = c(labels, tempLabels)
   }
   
   labels

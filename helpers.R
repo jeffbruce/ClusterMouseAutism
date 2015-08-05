@@ -293,20 +293,31 @@ Heatmap2Wrapper = function(x, distfun, hclustfun) {
                       symkey=TRUE)
 }
 
-Heatmap3Wrapper = function(x, distfun, hclustfun, clab, rlab) {
+Heatmap3Wrapper = function(x, distfun, hclustfun, rlab, clab) {
   # Summary:
   #   Used to reduce code duplication in server.R.
   # Args: 
   #   x: A matrix of effect sizes with mouse model rows and brain region columns.
   #   distfun: A function used to compute distance, also defined in helpers.R.
   #   hclustfun: A function used to cluster the data (e.g. average, complete).
+  #   rlab: A matrix of color labels for each strain metadata column.
+  #   clab: A matrix of color labels for each region metadata row.
   # Returns:
   #   A heatmap.3 object of mouse model rows and brain region columns.
       
-  regionMetadataSubset = subset(regionMetadata, regionMetadata$Region %in% colnames(x))
   strainMetadataSubset = subset(strainMetadata, strainMetadata$Strain %in% rownames(x))
-  selectedRegionMetadata = as.data.frame(regionMetadataSubset[, colnames(clab)], stringsAsFactors=FALSE)
-  selectedStrainMetadata = as.data.frame(strainMetadataSubset[, rownames(rlab)], stringsAsFactors=FALSE)
+  if (!is.null(rlab)) {
+    selectedStrainMetadata = as.data.frame(strainMetadataSubset[, rownames(rlab)], stringsAsFactors=FALSE)
+  } else {
+    selectedStrainMetadata = NULL
+  }
+  
+  regionMetadataSubset = subset(regionMetadata, regionMetadata$Region %in% colnames(x))
+  if (!is.null(clab)) {
+    selectedRegionMetadata = as.data.frame(regionMetadataSubset[, colnames(clab)], stringsAsFactors=FALSE)
+  } else {
+    selectedRegionMetadata = NULL
+  }
     
   legendColors = ExtendLegendColors(clab, rlab)
   legendLabels = ExtendLegendLabels(selectedRegionMetadata, selectedStrainMetadata)
@@ -336,20 +347,23 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, clab, rlab) {
             ColSideColorsSize=2, 
             RowSideColorsSize=2,
             KeyValueName='Smaller        Larger',
-            KeyTitle='Effect Size')
-  legend(
-         x=0, 
-         y=0,
-#          'bottomleft',
-         legend=legendLabels, 
-         fill=legendColors, 
-         border=FALSE, 
-         bty='n', 
-         y.intersp=1, 
-         cex=1,
-         ncol=numLegendColumns,
-         xpd=TRUE  # enables legend outside plot area
-  )
+            KeyTitle='Effect Size'
+            )
+  if (numLegendColumns != 0) {
+    legend(
+      x=0, 
+      y=0,
+      #          'bottomleft',
+      legend=legendLabels, 
+      fill=legendColors, 
+      border=FALSE, 
+      bty='n', 
+      y.intersp=1, 
+      cex=1,
+      ncol=numLegendColumns,
+      xpd=TRUE  # enables legend outside plot area
+    )
+  }
 }
 
 

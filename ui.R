@@ -85,8 +85,6 @@ shinyUI(
                                                           selected = names(limitedStrainMetadata)))
                            ),
                            
-#                            h3('Strain Metadata Levels'),
-                           
                            fluidRow(
                              uiOutput('strainMetadataLevels')
                            ),
@@ -97,13 +95,6 @@ shinyUI(
                                                           choices = names(limitedRegionMetadata),
                                                           selected = names(limitedRegionMetadata)))
                            ),
-                           
-                           # Metadata column LEVELS, however, ARE dynamic.
-                           # Checking on/off a level should affect the following dynamic UI elements: selectStrain and selectRegion.
-                           
-
-                           
-#                            h3('Region Metadata Levels'),
                            
                            fluidRow(
                              uiOutput('regionMetadataLevels')

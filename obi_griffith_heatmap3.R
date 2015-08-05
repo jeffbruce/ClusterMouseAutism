@@ -232,7 +232,7 @@ heatmap.3 <- function(x,
   if (missing(lmat) || is.null(lmat)) {
     lmat <- rbind(4:3, 2:1)
     
-    if (!missing(ColSideColors)) {
+    if (!missing(ColSideColors) && !is.null(ColSideColors)) {
       #if (!is.matrix(ColSideColors))
       #stop("'ColSideColors' must be a matrix")
       if (!is.character(ColSideColors) || nrow(ColSideColors) != nc)
@@ -242,7 +242,7 @@ heatmap.3 <- function(x,
       lhei=c(lhei[1], side.height.fraction*ColSideColorsSize/2, lhei[2])
     }
     
-    if (!missing(RowSideColors)) {
+    if (!missing(RowSideColors) && !is.null(RowSideColors)) {
       #if (!is.matrix(RowSideColors))
       #stop("'RowSideColors' must be a matrix")
       if (!is.character(RowSideColors) || ncol(RowSideColors) != nr)
@@ -263,7 +263,7 @@ heatmap.3 <- function(x,
   
   layout(lmat, widths = lwid, heights = lhei, respect = FALSE)
   
-  if (!missing(RowSideColors)) {
+  if (!missing(RowSideColors) && !is.null(RowSideColors)) {
     if (!is.matrix(RowSideColors)){
       par(mar = c(margins[1], 0, 0, 0.5))
       image(rbind(1:nr), col = RowSideColors[rowInd], axes = FALSE)
@@ -286,7 +286,7 @@ heatmap.3 <- function(x,
     }
   }
   
-  if (!missing(ColSideColors)) {
+  if (!missing(ColSideColors) && !is.null(ColSideColors)) {
     
     if (!is.matrix(ColSideColors)){
       par(mar = c(0.5, 0, 0, margins[2]))
