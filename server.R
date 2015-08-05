@@ -169,20 +169,20 @@ shinyServer(
     output$selectStrains = renderUI({
       
       # enable quick selection of all or no strains
-      if (selectAllStrainsOld != input$selectAllStrains) {
-        selectAllStrainsOld <<- input$selectAllStrains
-        if (input$selectAllStrains == TRUE) {
-          checkboxGroupInput(inputId = 'strains', 
-                             label = h3('Mouse Strains'), 
-                             choices = sort(rownames(relativeMousedata)),
-                             selected = rownames(relativeMousedata))
-        } else {
-          checkboxGroupInput(inputId = 'strains', 
-                             label = h3('Mouse Strains'), 
-                             choices = sort(rownames(relativeMousedata)),
-                             selected = vector(mode="character", length=0))
-        }
-      } else {
+#       if (selectAllStrainsOld != input$selectAllStrains) {
+#         selectAllStrainsOld <<- input$selectAllStrains
+#         if (input$selectAllStrains == TRUE) {
+#           checkboxGroupInput(inputId = 'strains', 
+#                              label = h3('Mouse Strains'), 
+#                              choices = sort(rownames(relativeMousedata)),
+#                              selected = rownames(relativeMousedata))
+#         } else {
+#           checkboxGroupInput(inputId = 'strains', 
+#                              label = h3('Mouse Strains'), 
+#                              choices = sort(rownames(relativeMousedata)),
+#                              selected = vector(mode="character", length=0))
+#         }
+#       } else {
         
         strainMetadataColumns = names(limitedStrainMetadata)
         
@@ -196,27 +196,27 @@ shinyServer(
                            label = h3('Mouse Strains'), 
                            choices = sort(rownames(relativeMousedata)),
                            selected = strainSubset$Strain)
-      }
+#       }
     })
 
     # dynamic control - select brain regions to show on heatmap
     output$selectRegions = renderUI({
       
       # enable quick selection of all or no regions
-      if (selectAllRegionsOld != input$selectAllRegions) {
-        selectAllRegionsOld <<- input$selectAllRegions
-        if (input$selectAllRegions == TRUE) {
-          checkboxGroupInput(inputId = 'regions', 
-                             label = h3('Brain Regions'), 
-                             choices = sort(colnames(relativeMousedata)),
-                             selected = colnames(relativeMousedata))
-        } else {
-          checkboxGroupInput(inputId = 'regions', 
-                             label = h3('Brain Regions'), 
-                             choices = sort(colnames(relativeMousedata)),
-                             selected = vector(mode="character", length=0))
-        }
-      } else {
+#       if (selectAllRegionsOld != input$selectAllRegions) {
+#         selectAllRegionsOld <<- input$selectAllRegions
+#         if (input$selectAllRegions == TRUE) {
+#           checkboxGroupInput(inputId = 'regions', 
+#                              label = h3('Brain Regions'), 
+#                              choices = sort(colnames(relativeMousedata)),
+#                              selected = colnames(relativeMousedata))
+#         } else {
+#           checkboxGroupInput(inputId = 'regions', 
+#                              label = h3('Brain Regions'), 
+#                              choices = sort(colnames(relativeMousedata)),
+#                              selected = vector(mode="character", length=0))
+#         }
+#       } else {
         regionMetadataColumns = names(limitedRegionMetadata)
         
         regionSubset = regionMetadata
@@ -229,7 +229,7 @@ shinyServer(
                            label = h3('Brain Regions'), 
                            choices = sort(colnames(relativeMousedata)),
                            selected = regionSubset$Region)
-      }
+#       }
     })
     
     output$heatmap1 = makePlot()

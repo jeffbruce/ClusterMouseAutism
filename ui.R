@@ -133,14 +133,14 @@ shinyUI(
           
             h2('Filtering Options'),
   
-            fluidRow(
-              column(6, checkboxInput(inputId='selectAllStrains', 
-                                      label='Select/Deselect All Strains', 
-                                      value=TRUE)),
-              column(6, checkboxInput(inputId='selectAllRegions', 
-                                      label='Select/Deselect All Regions', 
-                                      value=TRUE))
-            ),
+#             fluidRow(
+#               column(6, checkboxInput(inputId='selectAllStrains', 
+#                                       label='Select/Deselect All Strains', 
+#                                       value=TRUE)),
+#               column(6, checkboxInput(inputId='selectAllRegions', 
+#                                       label='Select/Deselect All Regions', 
+#                                       value=TRUE))
+#             ),
           
             fluidRow(
               column(6, uiOutput('selectStrains')),
