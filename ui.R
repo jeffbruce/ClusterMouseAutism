@@ -111,6 +111,7 @@ shinyUI(
               column(4, radioButtons(inputId='distanceFunction',
                                      label=h4('Clustering Distance Function:'),
                                      choices=list('1 - Correlation', 
+                                                  '1 - Abs(Correlation)',
                                                   'Euclidean',
                                                   'Manhattan'),
                                      selected = '1 - Correlation')),

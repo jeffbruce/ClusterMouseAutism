@@ -375,7 +375,7 @@ Jdfs = function(x) {
 }
 
 JdfsAbsolute = function(x) {
-  abs(Jdfs(x))
+  1 - as.dist(abs(cor(t(x))))
 }
 
 ManhattanDist = function(x) {

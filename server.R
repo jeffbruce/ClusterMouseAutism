@@ -41,7 +41,7 @@ setEffectSizeLimits <- function(effectSizes, lowerLimit, upperLimit) {
 }
 
 # Dictionary lookups for clustering options to reduce number of if statements in the heatmap function.
-distanceFunctionDictionary = list('1 - correlation'=Jdfs, 'euclidean'=EuclideanDist, 'manhattan'=ManhattanDist)
+distanceFunctionDictionary = list('1 - correlation'=Jdfs, 'euclidean'=EuclideanDist, 'manhattan'=ManhattanDist, '1 - abs(correlation)'=JdfsAbsolute)
 clusteringMethodDictionary = list('complete'='complete', 'average'='average', 'ward\'s'='ward.D2')
 
 shinyServer(
