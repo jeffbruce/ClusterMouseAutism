@@ -3,6 +3,10 @@ output: html_document
 ---
 # ClusterMouseAutism
 
+## Current Version
+
+2.00
+
 ## Introduction
 
 This project is an interactive web application coded in [R][1] for clustering mouse models of autism using neuroanatomical data.  It makes use of the [Shiny][2] web application framework (a package in R).  The app presents data from a research paper published in Molecular Psychiatry (reference) entitled <insert paper title> (reference).  
