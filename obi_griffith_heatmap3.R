@@ -287,7 +287,7 @@ heatmap.3 <- function(x,
   }
   
   if (!missing(ColSideColors) && !is.null(ColSideColors)) {
-    
+        
     if (!is.matrix(ColSideColors)){
       par(mar = c(0.5, 0, 0, margins[2]))
       image(cbind(1:nc), col = ColSideColors[colInd], axes = FALSE)

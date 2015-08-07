@@ -319,10 +319,10 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, rlab, clab) {
     selectedRegionMetadata = NULL
   }
     
-  legendColors = ExtendLegendColors(clab, rlab)
-  legendLabels = ExtendLegendLabels(selectedRegionMetadata, selectedStrainMetadata)
+  legendColors = ExtendLegendColors(clab, rlab, selectedStrainMetadata, selectedRegionMetadata)
+  legendLabels = ExtendLegendLabels(selectedStrainMetadata, selectedRegionMetadata)
   
-  numLegendColumns = length(names(selectedRegionMetadata)) + length(names(selectedStrainMetadata))
+  numLegendColumns = length(names(selectedStrainMetadata)) + length(names(selectedRegionMetadata)) 
   
   heatmap.3(x=x, 
             hclustfun=hclustfun, 
