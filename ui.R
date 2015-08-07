@@ -3,7 +3,7 @@
 # This file is run once.  It generates HTML which is cached and sent to each browser that connects.
 
 shinyUI(
-  navbarPage(title='Menu', 
+  navbarPage(title='Clustering Autism in the Mouse', 
              position='fixed-top', 
              inverse=TRUE,
              collapsible=TRUE,
