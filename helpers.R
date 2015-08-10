@@ -373,7 +373,7 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, rlab, clab) {
     for (i in 1:numStrainMetadataColumns) {
       legend(
         x=xcoords[i], 
-        y=0.1,
+        y=0.05,
         #          'bottomleft',
         # +1 required here because the first column is always Strain
         legend=unique(selectedStrainMetadata[, i]), 
@@ -393,7 +393,7 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, rlab, clab) {
     for (i in 1:numRegionMetadataRows) {
       legend(
         x=xcoords[i+numStrainMetadataColumns], 
-        y=0.1,
+        y=0.05,
         #          'bottomleft',
         # +1 required here because first column is always Region
         legend=unique(selectedRegionMetadata[, i]), 
