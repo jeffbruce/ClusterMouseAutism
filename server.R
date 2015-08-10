@@ -95,25 +95,25 @@ shinyServer(
           
           # Create colors to annotate mouse strain metadata.
           strainMetadataColumns = input$strainMetadata
-          rlab=NULL
+          rlab=list()
           if (!is.null(strainMetadataColumns)) {
             strainMetadataSubset = strainMetadata[strainMetadata$Strain %in% isolate(input$strains), ]
             for (i in 1:length(strainMetadataColumns)) {
-              rlab=rbind(rlab, GenerateColors(strainMetadataSubset, strainMetadataColumns[i], 'snow', columnSidebarColorScheme[i]))
+              rlab[[i]] = GenerateColors(strainMetadataSubset, strainMetadataColumns[i], 'snow', columnSidebarColorScheme[i])
             }
-            rownames(rlab) = strainMetadataColumns
           }
-          
+          rlab = setNames(rlab, strainMetadataColumns) 
+                    
           # Create colors to annotate brain region metadata.
           regionMetadataColumns = input$regionMetadata
-          clab=NULL
+          clab=list()
           if (!is.null(regionMetadataColumns)) {
             regionMetadataSubset = regionMetadata[regionMetadata$Region %in% isolate(input$regions), ]
             for (i in 1:length(regionMetadataColumns)) {
-              clab=cbind(clab, GenerateColors(regionMetadataSubset, regionMetadataColumns[i], 'snow', rowSidebarColorScheme[i]))
+              clab[[i]] = GenerateColors(regionMetadataSubset, regionMetadataColumns[i], 'snow', rowSidebarColorScheme[i])
             }
-            colnames(clab) = regionMetadataColumns
           }
+          clab = setNames(clab, regionMetadataColumns) 
 
           # choose appropriate distance function to plot with, call a wrapper function to create the heatmap
           heatmap = Heatmap3Wrapper(x=mousedatamat,
@@ -126,7 +126,7 @@ shinyServer(
           
           heatmap
         }
-      }, height=800)
+      }, height=1000)
     } 
 
 # Tab 1 Widgets ----------------------------------------------------------

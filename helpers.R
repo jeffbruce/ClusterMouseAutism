@@ -300,37 +300,53 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, rlab, clab) {
   #   x: A matrix of effect sizes with mouse model rows and brain region columns.
   #   distfun: A function used to compute distance, also defined in helpers.R.
   #   hclustfun: A function used to cluster the data (e.g. average, complete).
-  #   rlab: A matrix of color labels for each strain metadata column.
-  #   clab: A matrix of color labels for each region metadata row.
+  #   rlab: A named list of color labels for each strain metadata column.
+  #   clab: A named list of color labels for each region metadata row.
   # Returns:
   #   A heatmap.3 object of mouse model rows and brain region columns.
-      
+        
   strainMetadataSubset = subset(strainMetadata, strainMetadata$Strain %in% rownames(x))
-  if (!is.null(rlab)) {
-    selectedStrainMetadata = as.data.frame(strainMetadataSubset[, rownames(rlab)], stringsAsFactors=FALSE)
+  if (length(rlab) != 0) {
+    selectedStrainMetadata = as.data.frame(strainMetadataSubset[, names(rlab)], stringsAsFactors=FALSE)
   } else {
     selectedStrainMetadata = NULL
   }
   
   regionMetadataSubset = subset(regionMetadata, regionMetadata$Region %in% colnames(x))
-  if (!is.null(clab)) {
-    selectedRegionMetadata = as.data.frame(regionMetadataSubset[, colnames(clab)], stringsAsFactors=FALSE)
+  if (length(clab) != 0) {
+    selectedRegionMetadata = as.data.frame(regionMetadataSubset[, names(clab)], stringsAsFactors=FALSE)
   } else {
     selectedRegionMetadata = NULL
   }
-    
-  legendColors = ExtendLegendColors(clab, rlab, selectedStrainMetadata, selectedRegionMetadata)
-  legendLabels = ExtendLegendLabels(selectedStrainMetadata, selectedRegionMetadata)
+     
+#   legendColors = ExtendLegendColors(clab, rlab, selectedStrainMetadata, selectedRegionMetadata)
+#   legendLabels = ExtendLegendLabels(selectedStrainMetadata, selectedRegionMetadata)
   
-  numLegendColumns = length(names(selectedStrainMetadata)) + length(names(selectedRegionMetadata)) 
+  numStrainMetadataColumns = length(names(selectedStrainMetadata))
+  numRegionMetadataRows = length(names(selectedRegionMetadata))
+  numLegendColumns = numStrainMetadataColumns + numRegionMetadataRows
   
+  if (length(rlab) != 0) {
+    rlabMatrix = t(matrix(unlist(rlab, use.names=FALSE), ncol=numStrainMetadataColumns))
+    rownames(rlabMatrix) = names(rlab)
+  } else {
+    rlabMatrix = NULL
+  }
+
+  if (length(clab) != 0) {
+    clabMatrix = matrix(unlist(clab, use.names=FALSE), ncol=numRegionMetadataRows)
+    colnames(clabMatrix) = names(clab)
+  } else {
+    clabMatrix = NULL
+  }
+
   heatmap.3(x=x, 
             hclustfun=hclustfun, 
             distfun=distfun, 
             dendrogram='both', 
-            margins=c(30,14), 
-            ColSideColors=clab, 
-            RowSideColors=rlab,
+            margins=c(40,14), 
+            ColSideColors=clabMatrix, 
+            RowSideColors=rlabMatrix,
             col=bluered,
             breaks=seq(-3, 3, by=0.4),
             symbreaks=FALSE,
@@ -350,19 +366,48 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, rlab, clab) {
             KeyTitle='Effect Size'
             )
   if (numLegendColumns != 0) {
-    legend(
-      x=0, 
-      y=0,
-      #          'bottomleft',
-      legend=legendLabels, 
-      fill=legendColors, 
-      border=FALSE, 
-      bty='n', 
-      y.intersp=1, 
-      cex=1,
-      ncol=numLegendColumns,
-      xpd=TRUE  # enables legend outside plot area
-    )
+    # Use x=0.8 as the rightmost legend boundary; x=1 results in labels spilling off plot.
+    xcoords = seq(from=0, to=0.8, by=0.8/(numLegendColumns-1))
+  }
+  if (numStrainMetadataColumns != 0) {
+    for (i in 1:numStrainMetadataColumns) {
+      legend(
+        x=xcoords[i], 
+        y=0.1,
+        #          'bottomleft',
+        # +1 required here because the first column is always Strain
+        legend=unique(selectedStrainMetadata[, i]), 
+        fill=unique(rlab[[i]]), 
+        border=FALSE, 
+        bty='n', 
+        y.intersp=1, 
+        cex=1,
+        ncol=1,
+        xpd=TRUE,  # enables legend outside plot area
+        title=names(rlab)[i],
+        title.adj=0
+      )
+    }
+  }
+  if (numRegionMetadataRows != 0) {
+    for (i in 1:numRegionMetadataRows) {
+      legend(
+        x=xcoords[i+numStrainMetadataColumns], 
+        y=0.1,
+        #          'bottomleft',
+        # +1 required here because first column is always Region
+        legend=unique(selectedRegionMetadata[, i]), 
+        fill=unique(clab[[i]]), 
+        border=FALSE, 
+        bty='n', 
+        y.intersp=1, 
+        cex=1,
+        ncol=1,
+        xpd=TRUE,  # enables legend outside plot area
+        title=names(clab)[i],
+        title.adj=0
+      )
+    }
   }
 }
 

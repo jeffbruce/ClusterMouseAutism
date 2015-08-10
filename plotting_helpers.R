@@ -37,101 +37,101 @@ GenerateColors <- function(dataFrame, column, color1, color2) {
 }
 
 
-MaxMetadataLevels <- function(selectedStrainMetadata, selectedRegionMetadata) {
-  # Summary:
-  #   Returns the maximum metadata levels out of all metadata columns selected for the plot.
-  
-  numMetadataRows = dim(selectedStrainMetadata)[2]
-  numMetadataColumns = dim(selectedRegionMetadata)[2]
-  
-  # Determine the height of the legend (maximum levels for a single metadata column).
-  maxMetadataLevels = 0
-  if (!is.null(numMetadataRows)) {
-    for (j in 1:numMetadataRows) {
-      maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedStrainMetadata[, j])))
-    }
-  }
-  if (!is.null(numMetadataColumns)) {
-    for (j in 1:numMetadataColumns) {
-      maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedRegionMetadata[, j])))
-    }
-  }
-  
-  maxMetadataLevels
-}
+# MaxMetadataLevels <- function(selectedStrainMetadata, selectedRegionMetadata) {
+#   # Summary:
+#   #   Returns the maximum metadata levels out of all metadata columns selected for the plot.
+#   
+#   numMetadataRows = dim(selectedStrainMetadata)[2]
+#   numMetadataColumns = dim(selectedRegionMetadata)[2]
+#   
+#   # Determine the height of the legend (maximum levels for a single metadata column).
+#   maxMetadataLevels = 0
+#   if (!is.null(numMetadataRows)) {
+#     for (j in 1:numMetadataRows) {
+#       maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedStrainMetadata[, j])))
+#     }
+#   }
+#   if (!is.null(numMetadataColumns)) {
+#     for (j in 1:numMetadataColumns) {
+#       maxMetadataLevels = max(maxMetadataLevels, length(unique(selectedRegionMetadata[, j])))
+#     }
+#   }
+#   
+#   maxMetadataLevels
+# }
+# 
+# ExtendLegendColors <- function(clab, rlab, selectedStrainMetadata, selectedRegionMetadata) {
+#   # Summary:
+#   #   Creates a vector of colors to use to draw a legend for a heatmap with several metadata annotation sidebars.
+#   # Args:
+#   #   clab: A matrix of colors denoting metadata for the columns of a heatmap.
+#   #   rlab: A matrix of colors denoting metadata for the rows of a heatmap.
+#   # Returns:
+#   #   colors: A vector of colors containing colors to use for a heatmap legend.
+#   
+#   numMetadataRows = dim(rlab)[1]
+#   numMetadataColumns = dim(clab)[2]
+#   maxMetadataLevels = MaxMetadataLevels(selectedStrainMetadata, selectedRegionMetadata)
+#   
+#   colors = vector(mode='character')
+#   
+#   if (!is.null(numMetadataRows)) {
+#     for (i in 1:numMetadataRows) {
+#       tempColors = unique(rlab[i, ])
+#       while (length(tempColors) < maxMetadataLevels) {
+#         tempColors = c('white', tempColors)
+#       }
+#       colors = c(colors, tempColors)
+#     }
+#   }
+#   
+#   if (!is.null(numMetadataColumns)) {
+#     for (j in 1:numMetadataColumns) {
+#       tempColors = unique(clab[, j])
+#       while (length(tempColors) < maxMetadataLevels) {
+#         tempColors = c('white', tempColors)
+#       }
+#       colors = c(colors, tempColors)
+#     }
+#   }
+#   
+#   colors
+# }
 
-ExtendLegendColors <- function(clab, rlab, selectedStrainMetadata, selectedRegionMetadata) {
-  # Summary:
-  #   Creates a vector of colors to use to draw a legend for a heatmap with several metadata annotation sidebars.
-  # Args:
-  #   clab: A matrix of colors denoting metadata for the columns of a heatmap.
-  #   rlab: A matrix of colors denoting metadata for the rows of a heatmap.
-  # Returns:
-  #   colors: A vector of colors containing colors to use for a heatmap legend.
-  
-  numMetadataRows = dim(rlab)[1]
-  numMetadataColumns = dim(clab)[2]
-  maxMetadataLevels = MaxMetadataLevels(selectedStrainMetadata, selectedRegionMetadata)
-  
-  colors = vector(mode='character')
-  
-  if (!is.null(numMetadataRows)) {
-    for (i in 1:numMetadataRows) {
-      tempColors = unique(rlab[i, ])
-      while (length(tempColors) < maxMetadataLevels) {
-        tempColors = c('white', tempColors)
-      }
-      colors = c(colors, tempColors)
-    }
-  }
-  
-  if (!is.null(numMetadataColumns)) {
-    for (j in 1:numMetadataColumns) {
-      tempColors = unique(clab[, j])
-      while (length(tempColors) < maxMetadataLevels) {
-        tempColors = c('white', tempColors)
-      }
-      colors = c(colors, tempColors)
-    }
-  }
-  
-  colors
-}
-
-ExtendLegendLabels <- function(selectedStrainMetadata, selectedRegionMetadata) {
-  # Summary:
-  #   Creates a vector of labels to use to draw a legend for a heatmap with several metadata annotation sidebars.
-  # Args:
-  #   selectedRegionMetadata: A data.frame containing metadata for the brain regions.
-  #   selectedStrainMetadata: A data.frame containing metadata for the mouse strains.
-  # Returns:
-  #   labels: A vector of strings containing labels to use for a heatmap legend.
-    
-  numMetadataRows = dim(selectedStrainMetadata)[2]
-  numMetadataColumns = dim(selectedRegionMetadata)[2]
-  maxMetadataLevels = MaxMetadataLevels(selectedStrainMetadata, selectedRegionMetadata)
-  
-  labels = vector(mode='character')
-  
-  if (!is.null(numMetadataRows)) {
-    for (j in 1:numMetadataRows) {
-      tempLabels = unique(selectedStrainMetadata[, j])
-      while (length(tempLabels) < maxMetadataLevels) {
-        tempLabels = c('', tempLabels)
-      }
-      labels = c(labels, tempLabels)
-    }
-  }
-  
-  if (!is.null(numMetadataColumns)) {
-    for (j in 1:numMetadataColumns) {
-      tempLabels = unique(selectedRegionMetadata[, j])
-      while (length(tempLabels) < maxMetadataLevels) {
-        tempLabels = c('', tempLabels)
-      }
-      labels = c(labels, tempLabels)
-    }
-  }
-
-  labels
-}
+# ExtendLegendLabels <- function(selectedStrainMetadata, selectedRegionMetadata) {
+#   # Summary:
+#   #   Creates a vector of labels to use to draw a legend for a heatmap with several metadata annotation sidebars.
+#   # Args:
+#   #   selectedRegionMetadata: A data.frame containing metadata for the brain regions.
+#   #   selectedStrainMetadata: A data.frame containing metadata for the mouse strains.
+#   # Returns:
+#   #   labels: A vector of strings containing labels to use for a heatmap legend.
+#     
+#   numMetadataRows = dim(selectedStrainMetadata)[2]
+#   numMetadataColumns = dim(selectedRegionMetadata)[2]
+#   maxMetadataLevels = MaxMetadataLevels(selectedStrainMetadata, selectedRegionMetadata)
+#   
+#   labels = vector(mode='character')
+#   
+#   if (!is.null(numMetadataRows)) {
+#     for (j in 1:numMetadataRows) {
+#       tempLabels = unique(selectedStrainMetadata[, j])
+#       while (length(tempLabels) < maxMetadataLevels) {
+#         tempLabels = c('', tempLabels)
+#       }
+#       labels = c(labels, tempLabels)
+#     }
+#   }
+#   
+#   if (!is.null(numMetadataColumns)) {
+#     for (j in 1:numMetadataColumns) {
+#       tempLabels = unique(selectedRegionMetadata[, j])
+#       while (length(tempLabels) < maxMetadataLevels) {
+#         tempLabels = c('', tempLabels)
+#       }
+#       labels = c(labels, tempLabels)
+#     }
+#   }
+# 
+#   labels
+# }

@@ -154,7 +154,7 @@ shinyUI(
 
         mainPanel(
 
-          fluidRow(column(12, plotOutput(outputId='heatmap1', height='800px'))),
+          fluidRow(column(12, plotOutput(outputId='heatmap1', height='1000px'))),
 
           hr(),
 
@@ -234,7 +234,7 @@ shinyUI(
       
       fluidRow(
         column(12, plotOutput(outputId='heatmap2', 
-                              height='800px'))
+                              height='1000px'))
       )
     ),
     

@@ -15,11 +15,11 @@ setwd('//micehome//jbruce//Documents//Code//R//')
 setwd('/Users/jeffbruce/Projects/Development/')
 # WINDOWS
 setwd('C:/Users/STORMTROOPER/Projects/')
-#runApp(appDir='ClusterMouseAutism', launch.browser=TRUE, display.mode='showcase')
-runApp(appDir='ClusterMouseAutism', launch.browser=TRUE, display.mode='normal')
+#runApp(appDir='ClusterMouseAutism', launch.browser=FALSE, display.mode='showcase')
+runApp(appDir='ClusterMouseAutism', launch.browser=FALSE, display.mode='normal')
 
 
-deploy app on shinyapps.io server
+# deploy app on shinyapps.io server
 library(shinyapps)
 
 setwd('//micehome//jbruce//Documents//Code//R//')
