@@ -363,10 +363,11 @@ Heatmap3Wrapper = function(x, distfun, hclustfun, rlab, clab) {
             ColSideColorsSize=2, 
             RowSideColorsSize=2,
             KeyValueName='Smaller        Larger',
-            KeyTitle='Effect Size'
+            KeyTitle='Effect Size',
+            cexAxis=1.75
             )
   if (numLegendColumns != 0) {
-    # Use x=0.8 as the rightmost legend boundary; x=1 results in labels spilling off plot.
+    # Use x=0.8 as the rightmost legend boundary; x=1 results in labels spilling off the plot.
     xcoords = seq(from=0, to=0.8, by=0.8/(numLegendColumns-1))
   }
   if (numStrainMetadataColumns != 0) {
