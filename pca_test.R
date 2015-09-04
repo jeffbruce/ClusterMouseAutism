@@ -11,15 +11,15 @@ library(caret)  # apply Box-Box transformation to correct for skewness, center a
 
 setwd('//micehome//jbruce//Documents//Code//R//ClusterMouseAutism')
 source('helpers.R')
+LoadData()
 
 # Visualizing the distributions of the different features (regions)
-id_long = IndividualData(datadefs, 'absolute')
+id_long = IndividualData(datadefs, 'relative')
 testplot = ggplot(data=id_long, aes(x=volume))
 testplot + geom_histogram() + facet_wrap(~region, scales='free')
 
 # Execute IndividualData2 function listed below
-LoadData() 
-id = IndividualData2(datadefs, 'absolute')
+id = IndividualData2(datadefs, 'relative')
 id
 
 # Recommended practice for running pca -- first log transform 
