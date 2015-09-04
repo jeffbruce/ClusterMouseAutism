@@ -25,3 +25,6 @@ vignettes/*.pdf
 # test files
 testing_heatmap_functions.R
 paper_heatmap_labels.R
+
+# image files
+*.png
